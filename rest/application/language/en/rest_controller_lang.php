@@ -136,6 +136,12 @@ $lang['ticket_id_req'] = 'Ticket id required';
 $lang['message_req'] = 'Message is required';
 $lang['module_url_req'] = 'Module url is required';
 $lang['password_req'] = 'Password is required';
+$lang['master_id_req'] = 'Master id required';
+$lang['child_name_req'] = 'Child name  required';
+$lang['master_add'] = 'Master added successfully';
+$lang['child_name_duplicate'] = 'Child name already exists';
+$lang['master_update'] = 'Master updated successfully';
+$lang['master_key_req'] = 'Master key is required';
 
 
 

@@ -17,7 +17,7 @@ class Ticket extends REST_Controller
     public function __construct()
     {
         parent::__construct();
-        $this->load->model('Ticket_model');
+        //$this->load->model('Ticket_model');
         $getLoggedUserId=$this->User_model->getLoggedUserId();
         $this->session_user_id=$getLoggedUserId[0]['id'];
         $this->session_user_parent_id=$getLoggedUserId[0]['parent_user_id'];
@@ -69,8 +69,8 @@ class Ticket extends REST_Controller
        $inserted_id= $this->User_model->insertdata('ticket',$ticket_data);
        if($inserted_id>0){
            $ticket_id="MINDTKTNO_".$inserted_id;
-           $this->User_model->update_data('ticket',array('ticket_id'=>$ticket_id),array('id'=>$inserted_id));
-           $ticket_chat_id=$this->User_model->insertdata('ticket_chat',array('user'=>!empty($this->session_user_id)?$this->session_user_id:'0','ticket_id'=>$inserted_id,'message'=>$data['description'],'created_on'=>currentDate()));
+           $this->User_model->update_data('ticket',array('ticket_no'=>$ticket_id),array('id'=>$inserted_id));
+           $ticket_chat_id=$this->User_model->insertdata('ticket_chat',array('sender_user_id'=>!empty($this->session_user_id)?$this->session_user_id:'0','ticket_id'=>$inserted_id,'message'=>$data['description'],'created_on'=>currentDate()));
            if(!empty($_FILES)){
                $this->User_model->insertdata('documents',array('ticket_chat_id'=>$ticket_chat_id,'document_name'=>!empty($imageName)?$imageName:'','created_by'=>!empty($this->session_user_id)?$this->session_user_id:'0','created_on'=>currentDate(),'type'=>'chat'));
            }

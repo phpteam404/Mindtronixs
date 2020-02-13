@@ -98,10 +98,10 @@ class User_model extends CI_Model
 
     public function login($data)
     {
-        $this->db->select('ur.user_role_name,u.user_role_id,u.id_user,u.profile_image,u.first_name,u.last_name,u.email,u.user_status,u.is_blocked,
+        $this->db->select('ur.user_role_name,u.user_role_id,u.id as user_id,u.profile_image,u.first_name,u.last_name,u.email,u.user_status,u.is_blocked,
         date_format(u.last_password_attempt_date,"%Y-%m-%d") as last_password_attempt_date,ur.access');
         $this->db->from('user u');        
-        $this->db->join('user_role ur','u.user_role_id=ur.id_user_role and ur.role_status=1','left');        
+        $this->db->join('user_role ur','u.user_role_id=ur.id and ur.role_status=1','left');        
         $this->db->where(array('u.email' => $data['username'], 'u.password' => md5($data['password'])));
         $query = $this->db->get();
         //echo $this->db->last_query(); exit;
@@ -178,9 +178,9 @@ class User_model extends CI_Model
 
     public function getUserInfo($data)
     {
-        $this->db->select('*');
+        $this->db->select('*,u.id as user_id');
         $this->db->from('user u');
-        $this->db->join('user_role ur','u.user_role_id=ur.id_user_role and ur.role_status=1','left');
+        $this->db->join('user_role ur','u.user_role_id=ur.id and ur.role_status=1','left');
         //$this->db->join('business_unit_user buu','u.id_user = buu.user_id','left');
         //$this->db->join('provider p','u.provider = p.id_provider','left');
         //$this->db->join('business_unit bu','bu.id_business_unit = buu.business_unit_id','left');
@@ -191,7 +191,7 @@ class User_model extends CI_Model
         if(isset($data['user_role_id_not']))
             $this->db->where_not_in('u.user_role_id',$data['user_role_id_not']);
         if(isset($data['user_id']))
-            $this->db->where('u.id_user',$data['user_id']);
+            $this->db->where('u.id',$data['user_id']);
         if(isset($data['user_status']))
             $this->db->where('u.user_status',$data['user_status']);
         $query = $this->db->get();
@@ -517,16 +517,16 @@ class User_model extends CI_Model
         $this->db->from('user u');
         if(isset($data['user_role_id']) && $data['user_role_id']>0){
             if($data['user_role_id']==4){
-                $this->db->join('student s','u.id_user=s.user_id','left');
+                $this->db->join('student s','u.id=s.user_id','left');
             }
             $this->db->where('u.user_role_id',$data['user_role_id']);
         }
         if(isset($data['agency_id']) && $data['agency_id']>0){
-            $this->db->join('agency a','u.agency_id=a.agency_id','left');
+            $this->db->join('agency a','u.agency_id=a.id','left');
             $this->db->where('u.agency_id',$data['agency_id']);
         }
         if(!empty($data['id_user'])){
-            $this->db->where('u.id_user',$data['id_user']);
+            $this->db->where('u.id',$data['id_user']);
         }
         if(isset($data['user_status'])){
             $this->db->where('u.user_status',$data['user_status']);
@@ -538,7 +538,7 @@ class User_model extends CI_Model
             $this->db->group_start();
             $this->db->where('u.first_name like "%'.$data['search_key'].'%" or u.last_name like "%'.$data['search_key'].'%" or CONCAT(u.first_name,\' \',u.last_name) like "%'.$data['search_key'].'%" or u.email like "%'.$data['search_key'].'%"  or u.phone_no like "%'.$data['search_key'].'%"');
             if(isset($data['search_key']) && $data['search_key']!=='' && $data['user_role_id']==4){
-                $this->db->or_where('s.school like "%'.$data['search_key'].'%"');
+               // $this->db->or_where('s.stuent like "%'.$data['search_key'].'%"');
                 $this->db->or_where('s.mobile_phone1 like "%'.$data['search_key'].'%"');
             }
             $this->db->group_end();
@@ -557,10 +557,10 @@ class User_model extends CI_Model
 
     public function menuList($data)
     {
-        $this->db->select('ap.module_name,ap.module_key,module_url,ur.user_role_name,ap.id_app_module,ma.id_module_access,ma.user_role_id,ma.is_access_status,ap.module_icon');
+        $this->db->select('ap.module_name,ap.module_key,module_url,ur.user_role_name,ap.id as app_module_id,ma.id as module_access_id,ma.user_role_id,ma.is_access_status,ap.module_icon');
         $this->db->from('app_module ap');
-        $this->db->join('module_access ma','ap.id_app_module=ma.app_module_id','left');
-        $this->db->join('user_role ur','ma.user_role_id=ur.id_user_role','left');
+        $this->db->join('module_access ma','ap.id=ma.app_module_id','left');
+        $this->db->join('user_role ur','ma.user_role_id=ur.id','left');
         if(isset($data['user_role_id']) && $data['user_role_id']>0){
             $this->db->where('ma.user_role_id',$data['user_role_id']);
         }

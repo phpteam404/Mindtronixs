@@ -66,6 +66,7 @@ class Signup extends CI_Controller
        // print_r($result);exit;
         $result = $this->User_model->login($data);
         // echo ''.$this->db->last_query();exit;
+      //  print_r($result);exit;
         if(count($result)==0){
             $result = array('status'=>FALSE,'error'=>array('message'=>$this->lang->line('text_rest_invalid_credentials')),'data'=>'');
             echo json_encode($result);exit;
@@ -74,7 +75,7 @@ class Signup extends CI_Controller
            
         $rest_auth = strtolower($this->config->item('rest_auth'));
         if($rest_auth=='oauth'){
-                $client_credentials = $this->User_model->createOauthCredentials($result->id_user,$result->first_name,$result->last_name);
+                $client_credentials = $this->User_model->createOauthCredentials($result->user_id,$result->first_name,$result->last_name);
                 $client_id = $client_credentials["client_id"];
                 $secret  =$client_credentials["client_secret"];
                 $this->load->library('Oauth');
@@ -95,7 +96,7 @@ class Signup extends CI_Controller
         $server = $_SERVER;
         /* User log start */
          $this->User_model->addUserLog(array(
-                    'user_id' => $result->id_user,
+                    'user_id' => $result->user_id,
                     'client_browser' => $server['HTTP_USER_AGENT'],
                     'client_os' => getUserOS($server['HTTP_USER_AGENT']),
                     'client_remote_address' => $server['REMOTE_ADDR'],
@@ -105,13 +106,13 @@ class Signup extends CI_Controller
 
             
          $this->User_model->addUserLogin(array(
-                'parent_user_id' => $result->id_user,
+                'parent_user_id' => $result->user_id,
                 'child_user_id' => NULL,
                 'access_token' => isset($token->access_token)?$token->access_token:NULL
         ));
             
-        if(isset($result->id_user))
-            $result->id_user= $result->id_user;
+        if(isset($result->user_id))
+            $result->user_id= $result->user_id;
     
         if(isset($result->user_role_id))
             $result->user_role_id=$result->user_role_id;

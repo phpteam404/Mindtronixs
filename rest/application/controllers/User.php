@@ -129,8 +129,8 @@ class User extends REST_Controller
             $result = array('status'=>FALSE,'error'=>$validated,'data'=>'');
             $this->response($result, REST_Controller::HTTP_OK);
         }
-        if(isset($data['id_user']) && $data['id_user']>0){
-            $email_check = $this->User_model->check_email(array('email' => $data['email'],'id'=>$data['id_user']));//echo $this->db->last_query();exit;
+        if(isset($data['user_id']) && $data['user_id']>0){
+            $email_check = $this->User_model->check_email(array('email' => $data['email'],'id'=>$data['user_id']));//echo $this->db->last_query();exit;
             if(!empty($email_check)){
                 $result = array('status'=>FALSE,'error'=>array('email' => $this->lang->line('email_duplicate')),'data'=>'');
                 $this->response($result, REST_Controller::HTTP_OK);
@@ -171,17 +171,17 @@ class User extends REST_Controller
             );
         }
 
-        if(isset($data['id_user']) && $data['id_user']>0){
+        if(isset($data['user_id']) && $data['user_id']>0){
             $user_data['updated_by'] = !empty($this->session_user_id)?$this->session_user_id:'0';
             $user_data['updated_on'] = currentDate();
-            $is_update = $this->User_model->update_data('user',$user_data,array('id_user'=>$data['id_user']));
+            $is_update = $this->User_model->update_data('user',$user_data,array('id'=>$data['user_id']));
             if(isset($data['user_role_id']) && $data['user_role_id']==4){
                 $student_data['updated_by']=!empty($this->session_user_id)?$this->session_user_id:'0';
                 $student_data['updated_on']=currentDate();
-                 $this->User_model->update_data('student',$student_data,array('user_id'=>$data['id_user']));
+                 $this->User_model->update_data('student',$student_data,array('user_id'=>$data['user_id']));
             }
             if($is_update>0){
-                $result = array('status'=>TRUE, 'message' => $this->lang->line('user_update'), 'data'=>array('data' => $data['id_user']));
+                $result = array('status'=>TRUE, 'message' => $this->lang->line('user_update'), 'data'=>array('data' => $data['user_id']));
                 $this->response($result, REST_Controller::HTTP_OK);
             }
             else{

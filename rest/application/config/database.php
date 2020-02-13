@@ -75,10 +75,10 @@ $query_builder = TRUE;
 
 $db['default'] = array(
 	'dsn'	=> '',
-	'hostname' => '192.168.0.63',
-	'username' => 'naresh',
-	'password' => '123456',
-	'database' => 'mindtronics',
+	'hostname' => DB_HOST,
+	'username' => DB_USERNAME,
+	'password' => DB_PASSWORD,
+	'database' => DB_NAME,
 	'dbdriver' => 'mysqli',
 	'dbprefix' => '',
 	'pconnect' => FALSE,

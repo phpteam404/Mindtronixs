@@ -79,7 +79,7 @@ $lang['is_manual_password_req'] = 'Manual Password field is required';
 $lang['customer_id_req'] = 'Customer id required';
 $lang['company_name_req'] = 'Company name required';
 $lang['company_address_req'] = 'Company address required';
-$lang['postal_code_req'] = 'Postal code required';
+$lang['postal_code_req'] = 'Pincode required';
 $lang['postal_code_num'] = 'Postal code must be number';
 $lang['vat_number_req'] = 'Vat number required';
 $lang['country_id_req'] = 'Country id required';
@@ -276,3 +276,4 @@ $lang['provider_id_req'] = "Provider id required.";
 $lang['recurrence_till_req'] = "Recurrence till Date required.";
 $lang['recurrence_req'] = "Recurrence required.";
 $lang['review_added_to_calender'] = "Review Added to Calender.";
+

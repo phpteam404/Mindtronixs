@@ -483,6 +483,12 @@ class User_model extends CI_Model
         $this->db->insert($tablename,$data);
         return $this->db->insert_id();
     }
+    public function insertbatch($tablename,$data)
+    {
+        $this->db->insert_batch($tablename, $data);
+        return $this->db->insert_id();
+    }
+
     public function update_data($table,$data,$where)
     {
         $this->db->where($where);

@@ -100,32 +100,30 @@ class User extends REST_Controller
             'min_len-10' => $this->lang->line('std_phone_num_min_len'),
             'max_len-10' => $this->lang->line('std_phone_num_max_len'),
         );
-       $this->form_validator->add_rules('password', array('required' => $this->lang->line('password_req')));
-       $this->form_validator->add_rules('agency_id', array('required' => $this->lang->line('agency_id_req')));
+        $this->form_validator->add_rules('password', array('required' => $this->lang->line('password_req')));
+        $this->form_validator->add_rules('agency_id', array('required' => $this->lang->line('agency_id_req')));
         $this->form_validator->add_rules('user_role_id', array('required' => $this->lang->line('user_role_id_req')));
         $this->form_validator->add_rules('first_name', $firstNameRules);
         $this->form_validator->add_rules('last_name', $lastNameRules);
         $this->form_validator->add_rules('email', $emailRules);
         $this->form_validator->add_rules('phone_no', $phonennodRules);
-        if(isset($data['user_role_id']) && $data['user_role_id']==4){
-        $this->form_validator->add_rules('mobile_phone1', $stdentphonennodRules); 
-        $this->form_validator->add_rules('school_id', array('required' => $this->lang->line('school_req')));
-        $this->form_validator->add_rules('grade', array('required' => $this->lang->line('grade_req')));
-        $this->form_validator->add_rules('parent', array('required' => $this->lang->line('parent_req')));
 
+        if(isset($data['user_role_id']) && $data['user_role_id']==4){
+            $this->form_validator->add_rules('mobile_phone1', $stdentphonennodRules); 
+            $this->form_validator->add_rules('school_id', array('required' => $this->lang->line('school_req')));
+            $this->form_validator->add_rules('grade', array('required' => $this->lang->line('grade_req')));
+            $this->form_validator->add_rules('parent', array('required' => $this->lang->line('parent_req')));
         }
 
 
         $validated = $this->form_validator->validate($data);
-        if($validated != 1)
-        {
+        if($validated != 1){
             $result = array('status'=>FALSE,'error'=>$validated,'data'=>'');
             $this->response($result, REST_Controller::HTTP_OK);
         }
         //print_r($validated);exit;
         $validated = $this->form_validator->validate($data);    
-        if($validated != 1)
-        {
+        if($validated != 1){
             $result = array('status'=>FALSE,'error'=>$validated,'data'=>'');
             $this->response($result, REST_Controller::HTTP_OK);
         }
@@ -135,8 +133,7 @@ class User extends REST_Controller
                 $result = array('status'=>FALSE,'error'=>array('email' => $this->lang->line('email_duplicate')),'data'=>'');
                 $this->response($result, REST_Controller::HTTP_OK);
             }
-        }
-        else{
+        }else{
             $email_check = $this->User_model->check_email(array('email' => $data['email']));
             if(!empty($email_check)){
                 $result = array('status'=>FALSE,'error'=>array('email' => $this->lang->line('email_duplicate')),'data'=>'');
@@ -201,12 +198,11 @@ class User extends REST_Controller
                 $this->User_model->insertdata('student',$student_data);
             }
             if($is_insert>0){
-             $result = array('status'=>TRUE, 'message' => $this->lang->line('user_add'), 'data'=>array('data' => $is_insert));
-             $this->response($result, REST_Controller::HTTP_OK);   
-            }
-            else{
-                 $result = array('status'=>FALSE,'error'=>array('message'=>$this->lang->line('invalid_data')),'data'=>'');
-                 $this->response($result, REST_Controller::HTTP_OK);
+                $result = array('status'=>TRUE, 'message' => $this->lang->line('user_add'), 'data'=>array('data' => $is_insert));
+                $this->response($result, REST_Controller::HTTP_OK);   
+            }else{
+                $result = array('status'=>FALSE,'error'=>array('message'=>$this->lang->line('invalid_data')),'data'=>'');
+                $this->response($result, REST_Controller::HTTP_OK);
             }
         }
     }
@@ -294,130 +290,7 @@ class User extends REST_Controller
         
     }
 
-    // public function addTicket_post()
-    // {
-    //     $data=$this->input->post();
-    //     $allowed_types=array('image/gif','image/jpg','image/jpeg','image/png'); 
-    //     if(isset($_FILES) && !empty($_FILES['document']['name']))
-    //     { 
-    //         if(in_array($_FILES['document']['type'],$allowed_types))
-    //         {
-    //             $path='uploads/';
-    //             $imageName = doUpload(array(
-    //                 'temp_name' => $_FILES['document']['tmp_name'],
-    //                 'image' => $_FILES['document']['name'],
-    //                 'upload_path' => $path,''
-    //                 ));
-    //         }
-    //         else
-    //         {
-    //             $result = array('status'=>FALSE,'error'=>array('document' => $this->lang->line('upload_document')),'data'=>'');
-    //             $this->response($result, REST_Controller::HTTP_OK);
-    //         }
-            
-    //     }
-        
-    //     if(empty($data)){
-    //         $result = array('status'=>FALSE,'error'=>$this->lang->line('invalid_data'),'data'=>'');
-    //         $this->response($result, REST_Controller::HTTP_OK);
-    //     }
-    //     $this->form_validator->add_rules('description', array('required' => $this->lang->line('ticket_desc')));
-    //     $validated = $this->form_validator->validate($data);    
-    //     if($validated != 1)
-    //     {
-    //         $result = array('status'=>FALSE,'error'=>$validated,'data'=>'');
-    //         $this->response($result, REST_Controller::HTTP_OK);
-    //     }
-    //     $ticket_data=array(
-    //         'description'=>$data['description'],
-    //         'ticket_rised_by'=>!empty($this->session_user_id)?$this->session_user_id:'0',
-    //         'created_on'=>currentDate()
-    //         // 'documents'=>!empty($imageName)?$imageName:''
-
-    //     );
-    //    $inserted_id= $this->User_model->insertdata('ticket',$ticket_data);
-    //    if($inserted_id>0){
-    //        $ticket_id="MINDTKTNO_".$inserted_id;
-    //        $this->User_model->update_data('ticket',array('ticket_id'=>$ticket_id),array('id'=>$inserted_id));
-    //        $this->User_model->insertdata('ticket_chat',array('user'=>!empty($this->session_user_id)?$this->session_user_id:'0','ticket_id'=>$inserted_id,'message'=>$data['description'],'created_on'=>currentDate()));
-    //        if(!empty($_FILES)){
-    //            $this->User_model->insertdata('documents',array('ticket_id'=>$inserted_id,'document_name'=>!empty($imageName)?$imageName:'','created_by'=>!empty($this->session_user_id)?$this->session_user_id:'0','created_on'=>currentDate(),'type'=>'ticket'));
-    //        }
-    //        $result = array('status'=>TRUE, 'message' => $this->lang->line('ticket_add'), 'data'=>array('data'=>$ticket_id));
-    //        $this->response($result, REST_Controller::HTTP_OK);   
-    //    }
-    //    else{
-    //         $result = array('status'=>FALSE,'error'=>$this->lang->line('invalid_data'),'data'=>'');
-    //         $this->response($result, REST_Controller::HTTP_OK);
-    //    }
-    // }
-
-
-    // public function addTicketChat_post()
-    // {
-    //     $data=$this->input->post();
-    //     // print_r($data);exit;
-    //     if(empty($data)){
-    //         $result = array('status'=>FALSE,'error'=>$this->lang->line('invalid_data'),'data'=>'');
-    //         $this->response($result, REST_Controller::HTTP_OK);
-    //     }
-    //     $this->form_validator->add_rules('ticket_id', array('required' => $this->lang->line('ticket_id_req')));
-    //     $this->form_validator->add_rules('message', array('required' => $this->lang->line('message_req')));
-    //     $validated = $this->form_validator->validate($data);    
-    //     if($validated != 1)
-    //     {
-    //         $result = array('status'=>FALSE,'error'=>$validated,'data'=>'');
-    //         $this->response($result, REST_Controller::HTTP_OK);
-    //     }
-       
-    //     if(!empty($_FILES)){
-    //         $no_of_files=count($_FILES['document']['name']);
-    //         for ($i=0; $i <$no_of_files ; $i++) { 
-    //             // print_r($_FILES['document']);//
-    //             $allowed_types=array('image/gif','image/jpg','image/jpeg','image/png');   
-    //           //  print_r(in_array($_FILES['document']['name'][$i],$allowed_types));exit;
-    //             if(in_array($_FILES['document']['type'][$i],$allowed_types))
-    //             {
-    //                 $path='uploads/';
-    //                 $imageName = doUpload(array(
-    //                     'temp_name' => $_FILES['document']['tmp_name'][$i],
-    //                     'image' => $_FILES['document']['name'][$i],
-    //                     'upload_path' => $path,''
-    //                     ));
-    //                     $this->User_model->insertdata('documents',array('ticket_id'=>$data['ticket_id'],'document_name'=>!empty($imageName)?$imageName:'','created_by'=>!empty($this->session_user_id)?$this->session_user_id:'0','created_on'=>currentDate(),'type'=>'chat'));
-    //             }
-    //             else
-    //             {
-    //                 $result = array('status'=>FALSE,'error'=>array('document' => $this->lang->line('upload_document')),'data'=>'');
-    //                 $this->response($result, REST_Controller::HTTP_OK);
-    //             }
-    //         }
-    //     }
-    //     $chat_data=array(
-    //         'ticket_id'=>$data['ticket_id'],
-    //         'message'=>$data['message'],
-    //         'created_on'=>currentDate(),
-    //         'user'=>!empty($this->session_user_id)?$this->session_user_id:'0'
-    //     );
-    //     $ticket_chart_id=$this->User_model->insertdata('ticket_chat',$chat_data);
-    // }
-
-
-    // public function getTicketChat(){
-    //     $data=$this->input->post();
-    //     if(empty($data)){
-    //         $result = array('status'=>FALSE,'error'=>$this->lang->line('invalid_data'),'data'=>'');
-    //         $this->response($result, REST_Controller::HTTP_OK);
-    //     }
-    //     $this->form_validator->add_rules('description', array('required' => $this->lang->line('ticket_desc')));
-    //     $validated = $this->form_validator->validate($data);    
-    //     if($validated != 1)
-    //     {
-    //         $result = array('status'=>FALSE,'error'=>$validated,'data'=>'');
-    //         $this->response($result, REST_Controller::HTTP_OK);
-    //     }
-
-    // }
+    
 
     ///script fro create module access//////
     //  public function addmodule_accessdata_get(){
@@ -437,6 +310,15 @@ class User extends REST_Controller
     //     echo 'access module tables data inserted';
     // }
     
+    public function Delete_delete($table,$id){
+        if($this->User_model->update_data($table,array('status'=>2),array('id'=>$id))){
+            $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>'');
+            $this->response($result, REST_Controller::HTTP_OK);
+        }else{
+            $result = array('status'=>FALSE, 'message' => $this->lang->line('invalid_data'), 'data'=>'');
+            $this->response($result, REST_Controller::HTTP_OK);
+        }
+    }
 }
 
 

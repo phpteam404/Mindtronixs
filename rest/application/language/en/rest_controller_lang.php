@@ -382,3 +382,37 @@ $lang['contract_value_req'] = "Projected value required.";
 //Missileneous
 $lang['id_stored_module_req'] = "Store module id required.";
 $lang['activate_in_next_review_req'] = "Activation status is required.";
+
+/* agency*/
+$lang['agency_name_req'] ='Agency Name required';
+$lang['agency_add_req'] ='Agency Address required';
+$lang['created_by_req'] ='Created By required';
+$lang['agency_create'] ='Agency Created Successfully';
+$lang['updated_by_req'] ='Updated By Required';
+$lang['agency_update'] ='Agency Updated Successfully';
+$lang['agency_manager'] ='Agency Manager Required';
+$lang['agency_email'] ='Email is required';
+$lang['agency_phone_primary'] ='Primary Phone Number is required';
+$lang['agency_phone_alternative'] ='Alternative Phone Number is required';
+$lang['agency_recheck'] ='Already You Have Selected This Plan';
+
+/*Fee*/
+$lang['fee_name'] ='Fee name required';
+$lang['fee_added'] ='Fee Details Added Successfully';
+$lang['fee_desc'] ='Fee Description required';
+$lang['fee_update'] ='Fee Details Updated Successfully';
+$lang['fee_price'] ='Fee Price Required';
+
+/*school*/
+$lang['school_name'] ='School Name required';
+$lang['school_create'] ='School Information added successfully';
+$lang['school_update'] ='school Information updated successfully';
+$lang['school_add'] ='School address required';
+$lang['school_email'] ='Email is required';
+$lang['school_phone'] ='phone is required';
+
+/* task*/
+$lang['task_date'] ='Task Date Required';
+$lang['task_desc'] ='Task Description Required';
+$lang['task_create'] ='Schedule Created Successfully';
+$lang['task_update'] ='Schedule Updated Successfully';

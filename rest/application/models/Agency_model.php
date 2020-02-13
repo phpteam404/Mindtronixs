@@ -6,7 +6,7 @@ class Agency_model extends CI_Model
 {
     public function __construct(){
         parent::__construct();
-        $this->load->model('Mcommon');
+        // $this->load->model('Mcommon');
     }
 
     public function addAgency($data)
@@ -24,11 +24,19 @@ class Agency_model extends CI_Model
 
     public function listfranchise($data)
     {
-        $this->db->select('*');
+        $this->db->select('a.id agency_id,a.name,a.manager,a.address,a.landmark,a.city,a.email,a.pincode,a.primary_contact,a.alternative_contact,a.status');
         $this->db->from('agency a');
+        if(isset($data['agency_id']) && $data['agency_id'] > 0){
+            $this->db->select('GROUP_CONCAT(af.fee_master_id) fee_master_id');
+            $this->db->join('agency_fee af','a.id = af.agency_id','');
+            $this->db->join('fee_master fm','fm.id = af.fee_master_id','');
+            $this->db->where('a.id',$data['agency_id']);
+            $this->db->where('af.status',1);
+            //$this->db->where('fm.status',1);
+        }
+
         $this->db->where_in('a.status',array(0,1));
-        if(isset($data['search']))
-        {
+        if(isset($data['search'])){
             $this->db->group_start();
             $this->db->like('a.name', $data['search'], 'both');
             $this->db->or_like('a.address', $data['search'], 'both');

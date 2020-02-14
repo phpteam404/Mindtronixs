@@ -40,7 +40,7 @@ class Master extends REST_Controller
             'child_name'=>$data['child_name'],
             'child_key'=> $child_key,
             'description'=>!empty($data['description'])?$data['description']:'',
-            'status'=>isset($data['status'])?$data['status']:'0'   
+            'status'=>isset($data['status'])?$data['status']:'1'   
         );
         if(isset($data['child_id']) && $data['child_id']){
             $check_existance=$this->Master_model->check_not_in('master_child',array('child_name'=>$data['child_name']),array('id'=>array($data['child_id'])));

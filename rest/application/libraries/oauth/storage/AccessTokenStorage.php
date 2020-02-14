@@ -92,7 +92,7 @@ class AccessTokenStorage extends AbstractStorage implements AccessTokenInterface
             }
             if(($expire_time-$login_time)<=0)
             {
-                $this->db->where('id_user', $user);
+                $this->db->where('id', $user);
                 $this->db->set('last_login', currentDate());
                 $this->db->update('user');
             }

@@ -230,11 +230,13 @@ class User_model extends CI_Model
         return 1;
     }
 
-    public function check_record($table,$where=null){
+    public function check_record($table,$where=null,$orderby=null){
         $this->db->select('*');
         $this->db->from($table);
-        if(isset($where))
+        if(!empty($where))
             $this->db->where($where);
+        if(!empty($orderby))
+        $this->db->order_by($orderby['column_name'],$orderby['order_type']);
         $query = $this->db->get();//echo '<pre>'.$this->db->last_query();
         return $query->result_array();
     }
@@ -519,8 +521,10 @@ class User_model extends CI_Model
     }
     public function getuserlist($data=null)
     {
-        $this->db->select('*');
+        $this->db->select('u.id as user_id,u.user_role_id,u.agency_id,u.first_name,u.last_name,u.email,u.phone_no,u.gender,a.name as agency_name');
         $this->db->from('user u');
+        $this->db->join('agency a','u.agency_id=a.id','left');
+
         if(isset($data['user_role_id']) && $data['user_role_id']>0){
             if($data['user_role_id']==4){
                 $this->db->join('student s','u.id=s.user_id','left');
@@ -528,11 +532,10 @@ class User_model extends CI_Model
             $this->db->where('u.user_role_id',$data['user_role_id']);
         }
         if(isset($data['agency_id']) && $data['agency_id']>0){
-            $this->db->join('agency a','u.agency_id=a.id','left');
             $this->db->where('u.agency_id',$data['agency_id']);
         }
-        if(!empty($data['id_user'])){
-            $this->db->where('u.id',$data['id_user']);
+        if(!empty($data['user_id'])){
+            $this->db->where('u.id',$data['user_id']);
         }
         if(isset($data['user_status'])){
             $this->db->where('u.user_status',$data['user_status']);
@@ -563,7 +566,7 @@ class User_model extends CI_Model
 
     public function menuList($data)
     {
-        $this->db->select('ap.module_name,ap.module_key,module_url,ur.user_role_name,ap.id as app_module_id,ma.id as module_access_id,ma.user_role_id,ma.is_access_status,ap.module_icon');
+        $this->db->select('ap.module_name,ap.module_key,module_url,ur.user_role_name,ap.id as app_module_id,ma.id as module_access_id,ma.user_role_id,ma.is_access_status,ap.module_icon,ma.id as module_access');
         $this->db->from('app_module ap');
         $this->db->join('module_access ma','ap.id=ma.app_module_id','left');
         $this->db->join('user_role ur','ma.user_role_id=ur.id','left');
@@ -645,6 +648,51 @@ class User_model extends CI_Model
             return 1;
         }
     }
+    public function listTasks($data)
+    {
+        $this->db->select('t.id as task_id,t.description,t.date,t.trainer_id,t.status,u.user_role_id');
+        $this->db->from('task t');
+        $this->db->join('user u','u.id=t.trainer_id','left');
+        $this->db->where_in('t.status',array(0,1));
+        if($data['user_role_id'] !=1 && $data['user_role_id']!=2 && $data['user_role_id']!=4){
+            $this->db->where('t.trainer_id',$data['user_id']);
+        }
+        else if($data['user_role_id'] ==2){
+            $this->db->where('u.user_role_id',2);
+            $this->db->where('u.agency_id',$data['agency_id']);
+        }
+        if(isset($data['date']))
+            $this->db->where('t.date',$data['date']);
+        if(isset($data['search']))
+        {
+            $this->db->group_start();
+            $this->db->like('t.description', $data['search'], 'both');
+            $this->db->group_end();
+        }
+        $all_clients_count_db=clone $this->db;
+        $all_clients_count = $all_clients_count_db->get()->num_rows();
+
+        if(isset($data['limit']) && isset($data['offset']))
+           $this->db->limit($data['limit'],$data['offset']);
+        
+        $query = $this->db->get();
+        return array('total_records' => $all_clients_count,'data' => $query->result_array());
+    }
+    public function update_data_batch($tablename,$data,$where){
+        $this->db->update_batch($tablename,$data,$where);
+        return $this->db->affected_rows();
+    }
+    public function update_where_in($table,$data,$wherein){
+        if(isset($wherein)){
+            foreach($wherein as $columnname=>$values){
+                $this->db->where_in($columnname,$values);
+            }
+        }  
+
+        $this->db->update($table, $data);
+         return $this->db->affected_rows();
+    }
+
     // public function getUsermodules($data)
     // {
     //     $this->db->select('ap.module_name,ap.module_key,module_url,ur.user_role_name,ap.id_app_module,ma.id_module_access,ma.user_role_id,ma.is_access_status,ap.module_icon');

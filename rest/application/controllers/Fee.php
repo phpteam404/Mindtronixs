@@ -30,11 +30,16 @@ class Fee extends REST_Controller
             $result = array('status'=>FALSE,'error'=>$this->lang->line('invalid_data'),'data'=>'');
             $this->response($result, REST_Controller::HTTP_OK);
         }
-
-        $this->form_validator->add_rules('name', array('required'=>$this->lang->line('fee_name')));
-        $this->form_validator->add_rules('description',array('required'=>$this->lang->line('fee_desc')));
-        $this->form_validator->add_rules('price',array('requied' =>$this->lang->line('fee_price')));
+        //print_r($data);exit;
+        $this->form_validator->add_rules('name', array('required' => $this->lang->line('fee_name')));
+        $this->form_validator->add_rules('description', array('required' => $this->lang->line('fee_desc')));
+        $this->form_validator->add_rules('price', array('required' => $this->lang->line('fee_price')));
+        
+        // $this->form_validator->add_rules('name', array('required'=> $this->lang->line('fee_name')));
+        // $this->form_validator->add_rules('description', array('required'=> $this->lang->line('fee_desc')));
+        // $this->form_validator->add_rules('price', array('requied' => $this->lang->line('fee_price')));
         $validated = $this->form_validator->validate($data);
+        //print_r($validated);exit;
         if($validated != 1)
         {
             $result = array('status'=>FALSE,'error'=>$validated,'data'=>'');
@@ -52,9 +57,10 @@ class Fee extends REST_Controller
              'discount' =>isset($data['discount'])?$data['discount']:'',
              'discount_details' =>isset($data['discount_details'])?$data['discount_details']:'',
              'offer_type' =>isset($data['offer_type'])?$data['offer_type']:'',
+             'status'=>isset($data['status'])?$data['status']:'1'
         );
-
         if(isset($data['id']) && $data['id']>0){
+            // print_r($data);exit;
             $add['updated_by'] =  $this->session_user_id;
             $add['updated_on'] = currentDate();
             $update = $this->User_model->update_data('fee_master',$add,array('id'=>$data['id']));
@@ -97,7 +103,8 @@ class Fee extends REST_Controller
         }
         
         $result = $this->Fee_model->listFeeMasterInfo($data);
-        //echo ''.$this->db->last_query(); exit;
+        // echo ''.$this->db->last_query(); exit;
+        //print_r($result);exit;
         $result = array('status'=>TRUE, 'message' => $this->lang->line('success'),'data' =>$result['data'],'total_records' =>$result['total_records']);
         $this->response($result, REST_Controller::HTTP_OK);
 

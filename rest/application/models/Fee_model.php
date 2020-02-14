@@ -16,7 +16,7 @@ class Fee_model extends CI_Model
     }
     public function listFeeMasterInfo($data)
     {
-        $this->db->select('*');
+        $this->db->select('fm.id as fee_id,fm.*');
         $this->db->from('fee_master fm');
         if(isset($data['search']))
         {
@@ -27,6 +27,9 @@ class Fee_model extends CI_Model
             $this->db->or_like('fm.offer_type', $data['search'], 'both');
             $this->db->or_like('fm.price',$data['search'],'both');
             $this->db->group_end();
+        }
+        if(isset($data['status']) && $data['status']!=''){
+            $this->db->where('fm.status',$data['status']);
         }
         $all_clients_count_db=clone $this->db;
         $all_clients_count = $all_clients_count_db->get()->num_rows();

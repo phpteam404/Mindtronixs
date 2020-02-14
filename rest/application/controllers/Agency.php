@@ -163,10 +163,10 @@ class Agency extends REST_Controller
             'phone' => $data['phone'],
             'status' =>isset($data['status'])?$data['status']:1,
         );
-        if(isset($data['school_id']) && $data['school_id']>0){
+        if(isset($data['id']) && $data['id']>0){
             $add['updated_by'] = $this->session_user_id;
             $add['updated_on'] = currentDate();
-            $update = $this->User_model->update_data('school_master',$add,array('school_id'=>$data['school_id']));
+            $update = $this->User_model->update_data('school_master',$add,array('id'=>$data['id']));
             //echo ''.$this->db->last_query(); exit;
             if($update>0){
                 $result = array('status'=>TRUE, 'message' => $this->lang->line('school_update'),'data' =>'2');

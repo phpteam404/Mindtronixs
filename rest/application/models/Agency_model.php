@@ -63,9 +63,12 @@ class Agency_model extends CI_Model
 
     public function listSchools($data)
     {
-        $this->db->select('*');
+        $this->db->select('sm.id as school_id,sm.*');
         $this->db->from('school_master sm');
         $this->db->where_in('sm.status',array(0,1));
+        if(isset($data['status']) && $data['status']!==''){
+            $this->db->where('sm.status',$data['status']);
+        }
         if(isset($data['search']))
         {
             $this->db->group_start();

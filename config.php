@@ -56,7 +56,7 @@ switch(ENV)
        define('DB_HOST', '192.168.0.63:3308');//Here you need to mention your ip address  
        define('DB_USERNAME', 'naresh');//UserName
        define('DB_PASSWORD', '123456');//Password
-       define('DB_NAME', 'mindtronics'); // Here  you need to give your database name
+       define('DB_NAME', 'mindtronics_13th'); // Here  you need to give your database name
        define('LOG_DB_NAME', '');
     break;
 

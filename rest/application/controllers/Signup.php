@@ -103,7 +103,7 @@ class Signup extends CI_Controller
                     'logged_on' => currentDate()
         ));
         /* User log end */
-
+// print_r($result);exit;
             
          $this->User_model->addUserLogin(array(
                 'parent_user_id' => $result->user_id,

@@ -230,28 +230,25 @@ class User extends REST_Controller
             $this->response($result, REST_Controller::HTTP_OK);
         }
         $modules= $this->User_model->menuList(array('user_role_id'=>$data['user_role_id']));
-        $user_roles= $this->User_model->check_record('user_role');
+        $user_roles= $this->User_model->check_record('user_role','',array('column_name'=>'role_level','order_type'=>'ASC'));//echo $this->db->last_query();exit;
         $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>array('modules' => $modules,'user_roles'=>$user_roles));
         $this->response($result, REST_Controller::HTTP_OK);
     }
     
     public function updateRolesManagement_post(){
         $data=$this->input->post();
+        // print_r($data);exit;
         if(empty($data)){
             $result = array('status'=>FALSE,'error'=>$this->lang->line('invalid_data'),'data'=>'');
             $this->response($result, REST_Controller::HTTP_OK);
         }
-        $this->form_validator->add_rules('app_module_id', array('required' => $this->lang->line('app_module_id_req')));
-        $this->form_validator->add_rules('user_role_id', array('required' => $this->lang->line('user_role_id_req')));
-        $this->form_validator->add_rules('is_access_status', array('required' => $this->lang->line('access_status_req')));
-        $validated = $this->form_validator->validate($data);    
-        if($validated != 1)
-        {
-            $result = array('status'=>FALSE,'error'=>$validated,'data'=>'');
-            $this->response($result, REST_Controller::HTTP_OK);
+        $modules=$data['modules'];
+        // $modules= $this->User_model->menuList(array('user_role_id'=>2));
+        foreach($modules as $m=>$module){
+            $update_data[$m]['id']=$module['module_access_id'];
+            $update_data[$m]['is_access_status']=$module['is_access_status'];    
         }
-        
-        $is_update=$this->User_model->update_data('module_access',array('is_access_status'=>$data['is_access_status']),array('app_module_id'=>$data['app_module_id'],'user_role_id'=>$data['user_role_id']));
+        $is_update=$this->User_model->update_data_batch('module_access',$update_data,'id');
         if(isset($is_update)){
             $result = array('status'=>TRUE, 'message' => $this->lang->line('roles_updated'), 'data'=>array());
             $this->response($result, REST_Controller::HTTP_OK); 
@@ -318,6 +315,95 @@ class User extends REST_Controller
             $result = array('status'=>FALSE, 'message' => $this->lang->line('invalid_data'), 'data'=>'');
             $this->response($result, REST_Controller::HTTP_OK);
         }
+    }
+    public function addTraineSchedule_post()
+    {
+        $data = $this->input->post();
+        //   print_r($data);exit;
+        $data['user_role_id'] = $this->session_user_info->user_role_id;
+        if(empty($data)){
+            $result = array('status'=>FALSE,'error'=>$this->lang->line('invalid_data'),'data'=>'1');
+            $this->response($result, REST_Controller::HTTP_OK);
+        }
+        
+        $this->form_validator->add_rules('date', array('required'=>$this->lang->line('task_date')));
+        if($data['user_role_id'] ==2 || $data['user_role_id'] ==1){
+            $this->form_validator->add_rules('user_id', array('required'=>$this->lang->line('user_id_req')));
+        }
+        $this->form_validator->add_rules('description',array('required' =>$this->lang->line('task_desc')));
+        $validated = $this->form_validator->validate($data);
+        if($validated != 1)
+        {
+            $result = array('status'=>FALSE,'error'=>$validated,'data'=>'');
+            $this->response($result, REST_Controller::HTTP_OK);
+        }
+
+        if(isset($data['created_by'])) {
+            $data['created_by'] = $data['created_by'];
+            if($data['created_by']!=$this->session_user_id){
+                $result = array('status'=>FALSE, 'error' =>array('message'=>$this->lang->line('permission_not_allowed')), 'data'=>'');
+                $this->response($result, REST_Controller::HTTP_OK);
+            }
+        }
+
+        $add = array(
+            'date' => $data['date'],
+            'trainer_id' =>isset($data['user_id'])?$data['user_id']:$this->session_user_id,
+            'description'  =>$data['description'],
+            'status' =>isset($data['status'])?$data['status']:1,
+    
+        );
+        if(isset($data['id']) && $data['id']>0){
+            $add['updated_by'] = $this->session_user_id;
+            $add['updated_on'] = currentDate();
+            // print_r($add);exit;
+            $update = $this->User_model->update_data('task',$add,array('id'=>$data['id']));
+            // echo $this->db->last_query(); exit;
+            if($update>0){
+                $result = array('status'=>TRUE, 'message' => $this->lang->line('task_update'),'data' =>'2');
+                $this->response($result, REST_Controller::HTTP_OK);
+            }
+            else{
+                $result = array('status'=>FALSE,'error'=>array('message'=>$this->lang->line('invalid_data')),'data'=>'4');
+                $this->response($result, REST_Controller::HTTP_OK);
+            }
+
+        }
+        else{
+            $add['created_on'] = currentDate();
+            $add['created_by'] = $this->session_user_id;
+            $addData = $this->User_model->insertdata('task',$add);
+            //echo ''.$this->db->last_query(); exit;
+            if($addData >0){
+             $result = array('status'=>TRUE, 'message' => $this->lang->line('task_create'), 'data' => '1');
+             $this->response($result, REST_Controller::HTTP_OK);  
+            }
+            else{
+                 $result = array('status'=>FALSE,'error'=>array('message'=>$this->lang->line('invalid_data')),'data'=>'3');
+                 $this->response($result, REST_Controller::HTTP_OK);
+            }
+        }
+       
+        $result = array('status'=>TRUE, 'message' => $this->lang->line('Success'), 'data'=>'5');
+        $this->response($result, REST_Controller::HTTP_OK);
+
+    }
+    public function tasksList_get() //this function is used to get tasks list information
+    {
+        $data = $this->input->get();
+        $data['user_id'] =$this->session_user_id;
+        $data['user_role_id'] =$this->session_user_info->user_role_id;
+        $data['agency_id'] =$this->session_user_info->agency_id;
+        $validated = $this->form_validator->validate($data);
+        if($validated != 1)
+        {
+            $result = array('status'=>FALSE,'error'=>$validated,'data'=>'');
+            $this->response($result, REST_Controller::HTTP_OK);
+        }
+        $result = $this->User_model->listTasks($data);
+        //echo ''.$this->db->last_query(); exit;
+        $result = array('status'=>TRUE, 'message' => $this->lang->line('success'),'data' =>$result['data'],'total_records' =>$result['total_records']);
+        $this->response($result, REST_Controller::HTTP_OK);
     }
 }
 

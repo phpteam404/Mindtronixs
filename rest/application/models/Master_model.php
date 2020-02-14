@@ -35,9 +35,7 @@ class Master_model extends CI_Model
         $this->db->where('mc.status',1);
         if(isset($data['order']))
             $this->db->order_by($data['order']);
-        else if($data['master_key']=='company_estimated_no_of_competitors'){
-
-        }else{
+        else{
             $this->db->order_by('mc.child_name');
         }
         $query = $this->db->get();

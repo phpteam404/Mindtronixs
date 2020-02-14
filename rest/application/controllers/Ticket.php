@@ -28,28 +28,34 @@ class Ticket extends REST_Controller
     public function addTicket_post()
     {
         $data=$this->input->post();
-        $allowed_types=array('image/gif','image/jpg','image/jpeg','image/png'); 
-        if(isset($_FILES) && !empty($_FILES['document']['name']))
-        { 
-            if(in_array($_FILES['document']['type'],$allowed_types))
-            {
-                $path='uploads/';
-                $imageName = doUpload(array(
-                    'temp_name' => $_FILES['document']['tmp_name'],
-                    'image' => $_FILES['document']['name'],
-                    'upload_path' => $path,''
-                    ));
-            }
-            else
-            {
-                $result = array('status'=>FALSE,'error'=>array('document' => $this->lang->line('upload_document')),'data'=>'');
-                $this->response($result, REST_Controller::HTTP_OK);
+        // print_r($_FILES);exit;
+        if(!empty($_FILES)){
+            $no_of_files=count($_FILES['document']['name']);
+            for ($i=0; $i <$no_of_files ; $i++) { 
+                //  print_r($_FILES['document']['type'][$i]);exit;
+                $allowed_types=array('image/gif','image/jpg','image/jpeg','image/png');   
+            //    print_r(in_array($_FILES['document']['type'][$i],$allowed_types));exit;
+                if(in_array($_FILES['document']['type'][$i],$allowed_types))
+                {
+                    $path='uploads/';
+                    $imageName = doUpload(array(
+                        'temp_name' => $_FILES['document']['tmp_name'][$i],
+                        'image' => $_FILES['document']['name'][$i],
+                        'upload_path' => $path,''
+                        ));
+                        $document_id[]=$this->User_model->insertdata('documents',array('document_name'=>!empty($imageName)?$imageName:'','created_by'=>!empty($this->session_user_id)?$this->session_user_id:'0','created_on'=>currentDate(),'type'=>'chat'));
+                }
+                else
+                {
+                    $result = array('status'=>FALSE,'error'=>array('document' => $this->lang->line('upload_document')),'data'=>'');
+                    $this->response($result, REST_Controller::HTTP_OK);
+                }
             }
             
         }
-        
+        //  print_r($data);exit;
         if(empty($data)){
-            $result = array('status'=>FALSE,'error'=>$this->lang->line('invalid_data'),'data'=>'');
+            $result = array('status'=>FALSE,'error'=>$this->lang->line('invalid_data'),'data'=>'1');
             $this->response($result, REST_Controller::HTTP_OK);
         }
         $this->form_validator->add_rules('description', array('required' => $this->lang->line('ticket_desc')));
@@ -62,20 +68,35 @@ class Ticket extends REST_Controller
         $ticket_data=array(
             'description'=>$data['description'],
             'ticket_rised_by'=>!empty($this->session_user_id)?$this->session_user_id:'0',
-            'created_on'=>currentDate()
+            'created_on'=>currentDate(),
+            'status'=>1
             // 'documents'=>!empty($imageName)?$imageName:''
 
         );
-       $inserted_id= $this->User_model->insertdata('ticket',$ticket_data);
-       if($inserted_id>0){
-           $ticket_id="MINDTKTNO_".$inserted_id;
-           $this->User_model->update_data('ticket',array('ticket_no'=>$ticket_id),array('id'=>$inserted_id));
-           $ticket_chat_id=$this->User_model->insertdata('ticket_chat',array('sender_user_id'=>!empty($this->session_user_id)?$this->session_user_id:'0','ticket_id'=>$inserted_id,'message'=>$data['description'],'created_on'=>currentDate()));
-           if(!empty($_FILES)){
-               $this->User_model->insertdata('documents',array('ticket_chat_id'=>$ticket_chat_id,'document_name'=>!empty($imageName)?$imageName:'','created_by'=>!empty($this->session_user_id)?$this->session_user_id:'0','created_on'=>currentDate(),'type'=>'chat'));
-           }
+       if(!empty($_FILES) && count($document_id)>0){
+
+           $inserted_id= $this->User_model->insertdata('ticket',$ticket_data);
+           if($inserted_id>0){
+               $ticket_id="MINDTKTNO_".$inserted_id;
+               $this->User_model->update_data('ticket',array('ticket_no'=>$ticket_id),array('id'=>$inserted_id));
+               $ticket_chat_id=$this->User_model->insertdata('ticket_chat',array('sender_user_id'=>!empty($this->session_user_id)?$this->session_user_id:'0','ticket_id'=>$inserted_id,'message'=>$data['description'],'created_on'=>currentDate()));
+            }
+            $this->User_model->update_where_in('documents',array('ticket_chat_id'=>$ticket_chat_id),array('id'=>$document_id));
+        //    if(!empty($_FILES) && $document_id){
+        //        $this->User_model->insertdata('documents',array('ticket_chat_id'=>$ticket_chat_id,'document_name'=>!empty($imageName)?$imageName:'','created_by'=>!empty($this->session_user_id)?$this->session_user_id:'0','created_on'=>currentDate(),'type'=>'chat'));
+        //    }
            $result = array('status'=>TRUE, 'message' => $this->lang->line('ticket_add'), 'data'=>array('data'=>$ticket_id));
            $this->response($result, REST_Controller::HTTP_OK);   
+       }
+       elseif(empty($_FILES)){
+            $inserted_id= $this->User_model->insertdata('ticket',$ticket_data);
+            if($inserted_id>0){
+            $ticket_id="MINDTKTNO_".$inserted_id;
+            $this->User_model->update_data('ticket',array('ticket_no'=>$ticket_id),array('id'=>$inserted_id));
+            $ticket_chat_id=$this->User_model->insertdata('ticket_chat',array('sender_user_id'=>!empty($this->session_user_id)?$this->session_user_id:'0','ticket_id'=>$inserted_id,'message'=>$data['description'],'created_on'=>currentDate()));
+            $result = array('status'=>TRUE, 'message' => $this->lang->line('ticket_add'), 'data'=>array('data'=>$ticket_id));
+           $this->response($result, REST_Controller::HTTP_OK);
+         }
        }
        else{
             $result = array('status'=>FALSE,'error'=>$this->lang->line('invalid_data'),'data'=>'');
@@ -107,7 +128,6 @@ class Ticket extends REST_Controller
             'created_on'=>currentDate(), 
             'sender_user_id'=>!empty($this->session_user_id)?$this->session_user_id:'0'
         );
-        $ticket_chat_id=$this->User_model->insertdata('ticket_chat',$chat_data);
         if(!empty($_FILES)){
             $no_of_files=count($_FILES['document']['name']);
             for ($i=0; $i <$no_of_files ; $i++) { 
@@ -122,7 +142,7 @@ class Ticket extends REST_Controller
                         'image' => $_FILES['document']['name'][$i],
                         'upload_path' => $path,''
                         ));
-                        $document_id=$this->User_model->insertdata('documents',array('ticket_chat_id'=>$ticket_chat_id,'document_name'=>!empty($imageName)?$imageName:'','created_by'=>!empty($this->session_user_id)?$this->session_user_id:'0','created_on'=>currentDate(),'type'=>'chat'));
+                        $document_id[]=$this->User_model->insertdata('documents',array('ticket_chat_id'=>$ticket_chat_id,'document_name'=>!empty($imageName)?$imageName:'','created_by'=>!empty($this->session_user_id)?$this->session_user_id:'0','created_on'=>currentDate(),'type'=>'chat'));
                 }
                 else
                 {
@@ -132,9 +152,22 @@ class Ticket extends REST_Controller
             }
             
         }
-        if($document_id>0 || $ticket_chat_id){
+        if(!empty($_FILES) && count($document_id)>0){
+            $ticket_chat_id=$this->User_model->insertdata('ticket_chat',$chat_data);
+            $this->User_model->update_where_in('documents',array('ticket_chat_id'=>$ticket_chat_id),array('id'=>$document_id));
+            $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>array());
+            $this->response($result, REST_Controller::HTTP_OK);
+
+        }
+
+        elseif(empty($_FILES)){
+            $ticket_chat_id=$this->User_model->insertdata('ticket_chat',$chat_data);
             $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>array());
            $this->response($result, REST_Controller::HTTP_OK);
+        }
+        else{
+            $result = array('status'=>FALSE,'error'=>$this->lang->line('invalid_data'),'data'=>'');
+            $this->response($result, REST_Controller::HTTP_OK); 
         }
         
     }

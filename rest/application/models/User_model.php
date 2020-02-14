@@ -142,7 +142,7 @@ class User_model extends CI_Model
         $this->db->select('u.*,date_format(u.last_password_attempt_date,"%Y-%m-%d") as last_password_attempt_date');
         $this->db->from('user u');
         if(isset($data['id']) && $data['id']!=0 && $data['id']!='')
-            $this->db->where('u.id_user!=',$data['id']);
+            $this->db->where('u.id!=',$data['id']);
         $this->db->where('u.email',addslashes($data['email']));
         $query = $this->db->get();
         return $query->row();
@@ -559,7 +559,7 @@ class User_model extends CI_Model
         $query = $this->db->get();//echo $this->db->last_query();exit;
         return array('total_records'=>$count_result,'data'=>$query->result_array());
 
-    }   
+    }
 
     public function menuList($data)
     {
@@ -585,6 +585,65 @@ class User_model extends CI_Model
         // }
         $query = $this->db->get();//echo $this->db->last_query();exit;
         return $query->result_array();
+    }
+
+
+    ///Email Templates:
+    public function EmailTemplateList($data)
+    {
+        $this->db->select('*');
+        $this->db->from('email_template e');
+        $this->db->join('email_template_language el','e.id_email_template=el.email_template_id','left');
+        if(isset($data['language_id']))
+            $this->db->where('el.language_id',$data['language_id']);
+        if(isset($data['customer_id']))
+            $this->db->where('e.customer_id',$data['customer_id']);
+        if(isset($data['module_key']))
+            $this->db->where('e.module_key',$data['module_key']);
+        if(isset($data['parent_email_template_id']))
+            $this->db->where('e.parent_email_template_id',$data['parent_email_template_id']);
+        
+        
+        if(isset($data['status']))
+            $this->db->where_in('e.status',explode(',',$data['status']));
+        else
+            $this->db->where('e.status',1);
+        /* results count start */
+        $all_clients_db = clone $this->db;
+        $all_clients_count = $all_clients_db->count_all_results();
+        /* results count end */
+
+        if(isset($data['pagination']['number']) && $data['pagination']['number']!='')
+            $this->db->limit($data['pagination']['number'],$data['pagination']['start']);
+        if(isset($data['sort']['predicate']) && $data['sort']['predicate']!='' && isset($data['sort']['reverse']))
+            $this->db->order_by($data['sort']['predicate'],$data['sort']['reverse']);
+        else
+            $this->db->order_by('e.id_email_template','ASC');
+        $query = $this->db->get();
+        // if(isset($data['customer_id']) && $data['customer_id']>0 && isset($data['module_key']) && $data['module_key']!='' && $all_clients_count<=0){
+        //     $data['customer_id']=0;
+        //     return $this->EmailTemplateList($data);
+        // }
+        $final_result=$query->result_array();
+        /*foreach($final_result as $k=>$v){
+            $final_result[$k]['template_content']=EMAIL_HEADER_CONTENT.$v['template_content'].EMAIL_FOOTER_CONTENT;
+        }*/
+        return array('total_records' => $all_clients_count,'data' => $final_result);
+    }
+
+    public function addMailer($data)
+    {
+        $this->db->insert('mailer', $data);
+        return $this->db->insert_id();
+    }
+
+    public function updateMailer($data)
+    {
+        if(isset($data['mailer_id'])) {
+            $this->db->where('mailer_id', $data['mailer_id']);
+            $this->db->update('mailer', $data);
+            return 1;
+        }
     }
     // public function getUsermodules($data)
     // {

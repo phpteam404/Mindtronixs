@@ -206,6 +206,7 @@ class User extends REST_Controller
             }
         }
     }
+    
     public function getUserList_get(){
         $data = $this->input->get();
         $result=$this->User_model->getuserlist($data);

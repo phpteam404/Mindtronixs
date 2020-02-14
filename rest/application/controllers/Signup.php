@@ -390,43 +390,16 @@ class Signup extends CI_Controller
         $result = $this->User_model->check_email(array('email' => $data['email']));
         if(empty($result)){
             //Message should not be shown
-            $result = array('status'=>TRUE, 'message' => $this->lang->line('new_password'), 'data'=>'');
+            $result = array('status'=>FALSE, 'message' => $this->lang->line('email_wrong'), 'data'=>'');
             echo json_encode($result);exit;
         }
         else
         {
-            $customer_details = $this->Customer_model->getCustomer(array('id_customer' => $result->customer_id));
-
-            if($customer_details[0]['company_logo']=='') {
-                $customer_logo = getImageUrlSendEmail($customer_details[0]['company_logo'], 'company');
-                /*$result->customer_logo_small = getImageUrl($customer_details[0]['company_logo'], 'company');
-                $result->customer_logo = getImageUrl($customer_details[0]['company_logo'], 'company');*/
-            }
-            else{
-                $customer_logo = getImageUrlSendEmail($customer_details[0]['company_logo'], 'profile', SMALL_IMAGE);
-                /*$result->customer_logo_small = getImageUrl($customer_details[0]['company_logo'], 'profile', SMALL_IMAGE);
-                $result->customer_logo = getImageUrl($customer_details[0]['company_logo'], 'profile');*/
-            }
-            if(!empty($customer_details)){ $customer_name = $customer_details[0]['company_name']; }
-            $this->User_model->changePassword(array('user_id' => $result->id_user,'password' => $result->password));
-
             $new_password = generatePassword(8);
             $this->User_model->updatePassword($new_password,$result->id_user);
 
-            //$user_info = $this->User_model->getUserInfo(array('user_id' => $result->id_user));
-           /* $message = str_replace(array('{first_name}','{last_name}','{password}'),array($result->first_name,$result->last_name,$new_password),$this->lang->line('forget_password_mail'));
-
-            $template_data = array(
-                'web_base_url' => WEB_BASE_URL,
-                'message' => $message,
-                'mail_footer' => $this->lang->line('mail_footer')
-            );
-            $subject = $this->lang->line('forget_password_subject');
-            $template_data = $this->parser->parse('templates/notification.html',$template_data);
-            sendmail($data['email'],$subject,$template_data);*/
-
             $user_info = $this->User_model->getUserInfo(array('user_id' => $result->id_user));
-            $template_configurations=$this->Customer_model->EmailTemplateList(array('customer_id' => $user_info->customer_id,'language_id' =>1,'module_key'=>'FORGOT_PASSWORD'));
+            $template_configurations=$this->User_model->EmailTemplateList(array('customer_id' => $user_info->customer_id,'language_id' =>1,'module_key'=>'FORGOT_PASSWORD'));
             if($template_configurations['total_records']>0){
                 $template_configurations=$template_configurations['data'][0];
                 $wildcards=$template_configurations['wildcards'];
@@ -457,13 +430,13 @@ class Signup extends CI_Controller
                 $mailer_data['send_date']=currentDate();
                 $mailer_data['is_cron']=0;
                 $mailer_data['email_template_id']=$template_configurations['id_email_template'];
-                $mailer_id=$this->Customer_model->addMailer($mailer_data);
+                $mailer_id=$this->User_model->addMailer($mailer_data);
                 if($mailer_data['is_cron']==0) {
                     //$mail_sent_status=sendmail($to, $subject, $body, $from);
                     $this->load->library('sendgridlibrary');
                     $mail_sent_status=$this->sendgridlibrary->sendemail($from_name,$from,$subject,$body,$to_name,$to,array(),$mailer_id);
                     if($mail_sent_status==1)
-                        $this->Customer_model->updateMailer(array('status'=>1,'mailer_id'=>$mailer_id));
+                        $this->User_model->updateMailer(array('status'=>1,'mailer_id'=>$mailer_id));
                 }
             }
 

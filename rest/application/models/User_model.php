@@ -566,7 +566,7 @@ class User_model extends CI_Model
 
     public function menuList($data)
     {
-        $this->db->select('ap.module_name,ap.module_key,module_url,ur.user_role_name,ap.id as app_module_id,ma.id as module_access_id,ma.user_role_id,ma.is_access_status,ap.module_icon,ma.id as module_access');
+        $this->db->select('ap.module_name,ap.module_key,module_url,ur.user_role_name,ap.id as app_module_id,ma.id as module_access_id,ma.user_role_id,ma.is_access_status,ap.module_icon,ma.id as module_access,ap.parent_module_id ');
         $this->db->from('app_module ap');
         $this->db->join('module_access ma','ap.id=ma.app_module_id','left');
         $this->db->join('user_role ur','ma.user_role_id=ur.id','left');
@@ -586,6 +586,12 @@ class User_model extends CI_Model
         // else{
         //     $this->db->where('ap.is_menu',0);  
         // }
+        if(isset($data['parent_module_id']) && $data['parent_module_id']!=''){
+            $this->db->where('ap.parent_module_id',$data['parent_module_id']);
+        }
+        if(isset($data['is_access_status']) && $data['is_access_status']!=''){
+            $this->db->where('ma.is_access_status',$data['is_access_status']);
+        }
         $query = $this->db->get();//echo $this->db->last_query();exit;
         return $query->result_array();
     }

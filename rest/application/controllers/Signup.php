@@ -116,8 +116,11 @@ class Signup extends CI_Controller
     
         if(isset($result->user_role_id))
             $result->user_role_id=$result->user_role_id;
-            //  print_r($result);exit;
-        $menu=$this->User_model->menuList(array('user_role_id'=>$result->user_role_id,'type'=>'menu'));//echo $this->db->last_query();exit;
+        $menu=$this->User_model->menuList(array('user_role_id'=>$result->user_role_id,'type'=>'menu','parent_module_id'=>0));
+        foreach($menu as $k=>$v){
+        $sub_menus=$this->User_model->menuList(array('user_role_id'=>$result->user_role_id,'parent_module_id'=>$v['app_module_id'],'is_access_status'=>1));
+                $menu[$k]['sub_menus']=$sub_menus;
+        }
         $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>array('data' => $result), 'access_token' => $access_token,'menu'=>$menu);
        header('Content-Type: application/json');
         echo json_encode($result);exit;

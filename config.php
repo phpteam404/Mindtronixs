@@ -14,7 +14,7 @@ define('EXCEL_UPLOAD_SIZE','5097152');
 define('IMAGE_UPLOAD_SIZE','5097152');
 define('PASSWORD_EXPIRY_DAYS',17);
 define('PASSWORD_NOTIFICATION_DAYS',10);
-define('SITE_ACCESS_TOKEN_EXPIRY',600);//in seconds
+define('SITE_ACCESS_TOKEN_EXPIRY',1800);//in seconds
 define('SEND_GRID_API_KEY', '');//new code
 define('SEND_GRID_FROM_EMAIL', 'no-reply@mindtronix.com');
 define('SEND_GRID_FROM_NAME', 'Mindtronix');

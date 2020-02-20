@@ -404,6 +404,9 @@ $lang['agency_email'] ='Email is required';
 $lang['agency_phone_primary'] ='Primary Phone Number is required';
 $lang['agency_phone_alternative'] ='Alternative Phone Number is required';
 $lang['agency_recheck'] ='Already You Have Selected This Plan';
+
+
+$lang['agency_fee_id_req'] ='Agency Fee id required';
 $lang['id_relationship_category_req'] = 'Category required';
 $lang['fee_name'] ='Fee name required';
 $lang['fee_added'] ='Fee Details Added Successfully';

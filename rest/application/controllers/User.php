@@ -113,6 +113,7 @@ class User extends REST_Controller
             $this->form_validator->add_rules('school_id', array('required' => $this->lang->line('school_req')));
             $this->form_validator->add_rules('grade', array('required' => $this->lang->line('grade_req')));
             $this->form_validator->add_rules('parent', array('required' => $this->lang->line('parent_req')));
+            $this->form_validator->add_rules('agency_fee_id', array('required' => $this->lang->line('agency_fee_id_req')));
         }
 
 
@@ -157,14 +158,18 @@ class User extends REST_Controller
 
         if(isset($data['user_role_id']) && $data['user_role_id']==4){
             $student_data=array(
-                'school_id'=>isset($data['school'])?$data['school'] :'',
+                'school_id'=>isset($data['school'])?$data['school'] :0,
+                'agency_id'=>isset($data['agency_id'])?$data['agency_id'] :0,
+                'nantionality'=>isset($data['nantionality'])?$data['nantionality'] :null,
+                'date_of_birth'=>isset($data['date_of_birth'])?$data['date_of_birth'] :null,
                 'grade'=>isset($data['grade'])?$data['grade'] :'',
                 'mother_tongue'=>isset($data['mother_tongue'])?$data['mother_tongue'] : '',
                 'parent'=>isset($data['parent'])?$data['parent'] : '',
                 'mobile_phone1'=>isset($data['mobile_phone1'])?$data['mobile_phone1'] : '',
                 'mobile_phone2'=>isset($data['mobile_phone2'])?$data['mobile_phone2'] : '',
                 'blood_group'=>isset($data['blood_group'])?$data['blood_group'] : '',
-                'history_of_illness'=>isset($data['history_of_illness'])?$data['history_of_illness'] : ''  
+                'history_of_illness'=>isset($data['history_of_illness'])?$data['history_of_illness'] : '',
+                'agency_fee_id'=>isset($data['agency_fee_id'])?$data['agency_fee_id'] : ''
             );
         }
 
@@ -175,7 +180,7 @@ class User extends REST_Controller
             if(isset($data['user_role_id']) && $data['user_role_id']==4){
                 $student_data['updated_by']=!empty($this->session_user_id)?$this->session_user_id:'0';
                 $student_data['updated_on']=currentDate();
-                 $this->User_model->update_data('student',$student_data,array('user_id'=>$data['user_id']));
+                $this->User_model->update_data('student',$student_data,array('user_id'=>$data['user_id']));
             }
             if($is_update>0){
                 $result = array('status'=>TRUE, 'message' => $this->lang->line('user_update'), 'data'=>array('data' => $data['user_id']));
@@ -247,9 +252,9 @@ class User extends REST_Controller
         }
     }
 
-    public function access_get()
+    public function access_post()
     {
-        $data=$this->input->get();
+        $data=$this->input->post();
         if(empty($data)){
             $result = array('status'=>FALSE,'error'=>$this->lang->line('invalid_data'),'data'=>'');
             $this->response($result, REST_Controller::HTTP_OK);

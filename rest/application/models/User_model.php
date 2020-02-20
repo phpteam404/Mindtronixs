@@ -99,7 +99,7 @@ class User_model extends CI_Model
     public function login($data)
     {
         $this->db->select('ur.user_role_name,u.user_role_id,u.id as user_id,u.profile_image,u.first_name,u.last_name,u.email,u.user_status,u.is_blocked,
-        date_format(u.last_password_attempt_date,"%Y-%m-%d") as last_password_attempt_date,ur.access');
+        date_format(u.last_password_attempt_date,"%Y-%m-%d") as last_password_attempt_date,ur.access,u.agency_id');
         $this->db->from('user u');        
         $this->db->join('user_role ur','u.user_role_id=ur.id and ur.role_status=1','left');        
         $this->db->where(array('u.email' => $data['username'], 'u.password' => md5($data['password'])));
@@ -250,10 +250,10 @@ class User_model extends CI_Model
         //return $query->result_array();
     }
     
-    public function check_record_selected($selected,$table,$where){
+    public function check_record_selected($selected,$table,$where=null){
         $this->db->select($selected!=''?$selected:'*');
         $this->db->from($table);
-        if(isset($where))
+        if(!empty($where))
             $this->db->where($where);
         $query = $this->db->get();//echo '<pre>'.$this->db->last_query();exit;
         return $query->result_array();

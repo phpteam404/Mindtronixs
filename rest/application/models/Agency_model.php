@@ -78,6 +78,9 @@ class Agency_model extends CI_Model
             $this->db->or_like('sm.phone',$data['search'],'both');
             $this->db->group_end();
         }
+        if(isset($data['school_id']) && $data['school_id']>0){
+            $this->db->where('sm.id',$data['school_id']);
+        }
         $all_clients_count_db=clone $this->db;
         $all_clients_count = $all_clients_count_db->get()->num_rows();
 

@@ -92,8 +92,10 @@ class Master extends REST_Controller
             $result = array('status'=>FALSE,'error'=>$validated,'data'=>'');
             $this->response($result, REST_Controller::HTTP_OK);
         }
+        $data = tableOptions($data);
         $result = $this->Master_model->getMaster($data);
-        $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>$result);
+        // print_r($result);exit;
+        $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>array('data'=>$result['data'],'total_records'=>$result['total_records']));
         $this->response($result, REST_Controller::HTTP_OK);
          
     }

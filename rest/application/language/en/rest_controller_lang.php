@@ -403,6 +403,7 @@ $lang['agency_phone_alternative'] ='Alternative Phone Number is required';
 $lang['agency_recheck'] ='Already You Have Selected This Plan';
 
 /*Fee*/
+$lang['agency_fee_id_req'] ='Agency Fee id required';
 $lang['fee_name'] ='Fee name required';
 $lang['fee_added'] ='Fee Details Added Successfully';
 $lang['fee_desc'] ='Fee Description required';

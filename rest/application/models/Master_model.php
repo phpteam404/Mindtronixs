@@ -24,8 +24,7 @@ class Master_model extends CI_Model
     }
     function getMaster($data)
     {
-        $this->db->select('mc.id as child_id ,mc.child_name as name,m.master_key,mc.child_key,m.master_name,CONCAT(UCASE(LEFT(mc.description, 1)), 
-        SUBSTRING(mc.description, 2)) description');
+        $this->db->select(' `mc`.`id` as `master_child_id`, `mc`.`child_name`,  `mc`.`child_key`,`m`.`master_key`, `m`.`master_name`,m.id as master_id, CONCAT(UCASE(LEFT(mc.description, 1)), SUBSTRING(mc.description, 2)) description');
         $this->db->from('master m');
         $this->db->join('master_child mc','m.id=mc.master_id','left');
         if(isset($data['master_key']))

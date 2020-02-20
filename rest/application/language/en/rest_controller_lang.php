@@ -127,21 +127,7 @@ $lang['provider_exists'] = 'Provider name already exists';
 $lang['provider_failed'] = 'Provider not created';
 $lang['user_type_req'] = 'User type required';
 $lang['user_del'] = 'User delete successfully';
-$lang['agency_id_req'] = 'Agency id required';
-$lang['success'] = 'Success';
-$lang['ticket_desc'] = 'Ticket description required';
-$lang['upload_document'] = 'upload image type documents only';
-$lang['ticket_add'] = 'Ticket created successfully';
-$lang['ticket_id_req'] = 'Ticket id required';
-$lang['message_req'] = 'Message is required';
-$lang['module_url_req'] = 'Module url is required';
-$lang['password_req'] = 'Password is required';
-$lang['master_id_req'] = 'Master id required';
-$lang['child_name_req'] = 'Child name  required';
-$lang['master_add'] = 'Master added successfully';
-$lang['child_name_duplicate'] = 'Child name already exists';
-$lang['master_update'] = 'Master updated successfully';
-$lang['master_key_req'] = 'Master key is required';
+
 
 
 
@@ -389,7 +375,24 @@ $lang['contract_value_req'] = "Projected value required.";
 $lang['id_stored_module_req'] = "Store module id required.";
 $lang['activate_in_next_review_req'] = "Activation status is required.";
 
-/* agency*/
+
+
+/* Mindtroix */
+$lang['agency_id_req'] = 'Agency id required';
+$lang['success'] = 'Success';
+$lang['ticket_desc'] = 'Ticket description required';
+$lang['upload_document'] = 'upload image type documents only';
+$lang['ticket_add'] = 'Ticket created successfully';
+$lang['ticket_id_req'] = 'Ticket id required';
+$lang['message_req'] = 'Message is required';
+$lang['module_url_req'] = 'Module url is required';
+$lang['password_req'] = 'Password is required';
+$lang['master_id_req'] = 'Master id required';
+$lang['child_name_req'] = 'Child name  required';
+$lang['master_add'] = 'Master added successfully';
+$lang['child_name_duplicate'] = 'Child name already exists';
+$lang['master_update'] = 'Master updated successfully';
+$lang['master_key_req'] = 'Master key is required';
 $lang['agency_name_req'] ='Agency Name required';
 $lang['agency_add_req'] ='Agency Address required';
 $lang['created_by_req'] ='Created By required';
@@ -402,24 +405,31 @@ $lang['agency_phone_primary'] ='Primary Phone Number is required';
 $lang['agency_phone_alternative'] ='Alternative Phone Number is required';
 $lang['agency_recheck'] ='Already You Have Selected This Plan';
 
-/*Fee*/
+
 $lang['agency_fee_id_req'] ='Agency Fee id required';
+$lang['id_relationship_category_req'] = 'Category required';
 $lang['fee_name'] ='Fee name required';
 $lang['fee_added'] ='Fee Details Added Successfully';
 $lang['fee_desc'] ='Fee Description required';
 $lang['fee_update'] ='Fee Details Updated Successfully';
 $lang['fee_price'] ='Fee Price Required';
-
-/*school*/
 $lang['school_name'] ='School Name required';
 $lang['school_create'] ='School Information added successfully';
 $lang['school_update'] ='school Information updated successfully';
 $lang['school_add'] ='School address required';
 $lang['school_email'] ='Email is required';
 $lang['school_phone'] ='phone is required';
-
-/* task*/
 $lang['task_date'] ='Task Date Required';
 $lang['task_desc'] ='Task Description Required';
 $lang['task_create'] ='Schedule Created Successfully';
 $lang['task_update'] ='Schedule Updated Successfully';
+$lang['category_req'] = 'Category is required';
+$lang['invalid_doc_format'] = 'Select Valid content files';
+$lang['content_add'] = 'Content added Successfully';
+$lang['content_update'] = 'Content updated Successfully';
+$lang['title_req_desc'] = 'Ticket title is required';
+$lang['assigned_req'] = 'Assigned user is required';
+$lang['ticket_assign'] = 'Ticket assigned Successfully';
+$lang['ticket_close'] = 'Ticket closed Successfully';
+$lang['agency_status_inactive'] = 'Your agency is disabled. Please contact your administrator.';
+

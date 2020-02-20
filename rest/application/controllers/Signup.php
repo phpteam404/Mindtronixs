@@ -66,7 +66,7 @@ class Signup extends CI_Controller
        // print_r($result);exit;
         $result = $this->User_model->login($data);
         // echo ''.$this->db->last_query();exit;
-      //  print_r($result);exit;
+    //    print_r($result);exit;
         if(count($result)==0){
             $result = array('status'=>FALSE,'error'=>array('message'=>$this->lang->line('text_rest_invalid_credentials')),'data'=>'');
             echo json_encode($result);exit;
@@ -116,14 +116,24 @@ class Signup extends CI_Controller
     
         if(isset($result->user_role_id))
             $result->user_role_id=$result->user_role_id;
-        $menu=$this->User_model->menuList(array('user_role_id'=>$result->user_role_id,'type'=>'menu','parent_module_id'=>0));
+            $menu=$this->User_model->menuList(array('user_role_id'=>$result->user_role_id,'type'=>'menu','parent_module_id'=>0));
+            // echo $this->db->last_query();exit;
         foreach($menu as $k=>$v){
         $sub_menus=$this->User_model->menuList(array('user_role_id'=>$result->user_role_id,'parent_module_id'=>$v['app_module_id'],'is_access_status'=>1));
                 $menu[$k]['sub_menus']=$sub_menus;
         }
-        $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>array('data' => $result), 'access_token' => $access_token,'menu'=>$menu);
-       header('Content-Type: application/json');
-        echo json_encode($result);exit;
+        $check_agency=$this->User_model->check_record('agency',array('id'=>$result->agency_id));
+        // print_r($check_agency[0]['status']);exit;
+        if($check_agency[0]['status']==1){
+            $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>array('data' => $result), 'access_token' => $access_token,'menu'=>$menu);
+            header('Content-Type: application/json');
+            echo json_encode($result);exit;
+        }
+        else{
+            $result = array('status'=>FALSE,'error'=>array('message'=>$this->lang->line('agency_status_inactive')),'data'=>'');
+            echo json_encode($result);exit;
+        }
+
         //echo 'dta';exit;
     }
 

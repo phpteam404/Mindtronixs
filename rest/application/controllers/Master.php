@@ -92,10 +92,17 @@ class Master extends REST_Controller
             $result = array('status'=>FALSE,'error'=>$validated,'data'=>'');
             $this->response($result, REST_Controller::HTTP_OK);
         }
-        $result = $this->Master_model->getMaster($data); 
+        $result = $this->Master_model->getMaster($data);
         $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>$result);
         $this->response($result, REST_Controller::HTTP_OK);
          
+    }
+    public function masterList_get(){
+         $data=$this->input->get();
+        $master_list=$this->User_model->check_record_selected('id as master_id, master_name,master_key,status','master',!empty($data)?$data:'');
+        $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>$master_list);
+        $this->response($result, REST_Controller::HTTP_OK);
+            
     }
     
 

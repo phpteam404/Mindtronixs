@@ -24,11 +24,15 @@ class Agency_model extends CI_Model
 
     public function listfranchise($data)
     {
-        $this->db->select('a.id as agency_id,a.name as agency_name,a.franchise_code,a.primary_contact as contact_number,a.website_address,a.country,a.state,a.address,a.landmark,a.city,a.email,a.created_on,a.status,a.agency_contacts,a.owner_name');
+        $this->db->select('a.id as agency_id,a.name as agency_name, a.email,a.primary_contact as contact_number,a.franchise_code,
+        CONCAT(mc.child_name,"-",mc.id) as city,a.status,DATE_FORMAT(a.created_on, "%d-%m-%Y") as created_on');
         // $this->db->select('*');
         $this->db->from('agency a');
+        $this->db->join('master_child mc','a.city=mc.id AND mc.master_id=14','left');
+        $this->db->join('master_child mc1','a.state=mc1.id AND mc1.master_id=13','left');
+        $this->db->join('master_child mc2','a.country=mc2.id AND mc2.master_id=12','left');
         if(isset($data['agency_id']) && $data['agency_id'] > 0){
-            // $this->db->select('GROUP_CONCAT(af.fee_master_id) fee_master_id');
+            $this->db->select('a.agency_contacts,a.website_address,a.owner_name,a.address,CONCAT(mc1.child_name,"-",mc1.id) as state,CONCAT(mc2.child_name,"-",mc2.id) as country');
             // $this->db->join('agency_fee af','a.id = af.agency_id','');
             // $this->db->join('fee_master fm','fm.id = af.fee_master_id','');
             $this->db->where('a.id',$data['agency_id']);

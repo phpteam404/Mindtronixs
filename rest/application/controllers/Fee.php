@@ -32,24 +32,16 @@ class Fee extends REST_Controller
         }
         //print_r($data);exit;
         $this->form_validator->add_rules('name', array('required' => $this->lang->line('fee_name')));
-        // $this->form_validator->add_rules('description', array('required' => $this->lang->line('fee_desc')));
         $this->form_validator->add_rules('amount', array('required' => $this->lang->line('amount_price')));
         $this->form_validator->add_rules('term', array('required' => $this->lang->line('term_req')));
         
-        // $this->form_validator->add_rules('name', array('required'=> $this->lang->line('fee_name')));
-        // $this->form_validator->add_rules('description', array('required'=> $this->lang->line('fee_desc')));
-        // $this->form_validator->add_rules('price', array('requied' => $this->lang->line('fee_price')));
         $validated = $this->form_validator->validate($data);
-        //print_r($validated);exit;
         if($validated != 1)
         {
             $result = array('status'=>FALSE,'error'=>$validated,'data'=>'');
             $this->response($result, REST_Controller::HTTP_OK);
         }
-        // if(isset($data['fee_id'])) {
-        //     $data['fee_id'] = $data['fee_id'];
-        // }
-        /*adding record*/
+        
         $add =array(
              'name' => $data['name'],
              'amount'=>$data['amount'],
@@ -95,15 +87,24 @@ class Fee extends REST_Controller
     {
         $data = $this->input->get();
         $validated = $this->form_validator->validate($data);
-        if($validated != 1)
-        {
+        if($validated != 1){
             $result = array('status'=>FALSE,'error'=>$validated,'data'=>'');
             $this->response($result, REST_Controller::HTTP_OK);
         }
         $data = tableOptions($data);
         $result = $this->Fee_model->listFeeMasterInfo($data);
-        // echo ''.$this->db->last_query(); exit;
-        //print_r($result);exit;
+
+        foreach($result['data'] as $k => $v){
+            if(isset($data['fee_master_id']) && $data['fee_master_id'] > 0){
+                //Getting Objects for dropdown When One record is needed.
+                $result['data'][$k]['status']=getStatusObj($v['status']);
+                $result['data'][$k]['term']=getObjOnId($v['term'],true);
+            }else{
+                //Getting Lable for List when List is needed.
+                $result['data'][$k]['status']=getStatusText($v['status']);
+                $result['data'][$k]['term']=getObjOnId($v['term'],false);
+            }
+        }
         $result = array('status'=>TRUE, 'message' => $this->lang->line('success'),'data' =>$result['data'],'total_records' =>$result['total_records']);
         $this->response($result, REST_Controller::HTTP_OK);
 

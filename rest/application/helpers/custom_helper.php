@@ -280,22 +280,33 @@ if (!function_exists('currencyFormat')) {
     }
 }
 
-if (!function_exists('getStatusObj')) {
-    function getStatusObj($status){
-        if((int)$status){
-            return array('lable'=>'Active','value'=>1);
-        }else{
-            return array('lable'=>'Inactive','value'=>0);
-        }
-    }
-}
-
 if (!function_exists('getStatusText')) {
     function getStatusText($status){
         if((int)$status){
             return 'Active';
         }else{
             return 'Inactive';
+        }
+    }
+}
+
+if (!function_exists('getObjOnId')) {
+    function getObjOnId($v,$bool){
+        $v = explode('-',$v);
+        if($bool){
+            return array('label'=>$v[0],'value'=>(int)$v[1]);
+        }else{
+            return $v[0];
+        }
+    }
+}
+
+if (!function_exists('getStatusObj')) {
+    function getStatusObj($status){
+        if((int)$status){
+            return array('label'=>'Active','value'=>1);
+        }else{
+            return array('label'=>'Inactive','value'=>0);
         }
     }
 }

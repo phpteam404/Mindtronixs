@@ -24,34 +24,34 @@ class Agency_model extends CI_Model
 
     public function listfranchise($data)
     {
-        $this->db->select('a.id agency_id,a.name,a.manager,a.address,a.landmark,a.city,a.email,a.pincode,a.primary_contact,a.alternative_contact,a.status');
+        $this->db->select('a.id as agency_id,a.name as agency_name,a.franchise_code,a.primary_contact as contact_number,a.website_address,a.country,a.state,a.address,a.landmark,a.city,a.email,a.created_on,a.status,a.agency_contacts,a.owner_name');
+        // $this->db->select('*');
         $this->db->from('agency a');
         if(isset($data['agency_id']) && $data['agency_id'] > 0){
-            $this->db->select('GROUP_CONCAT(af.fee_master_id) fee_master_id');
-            $this->db->join('agency_fee af','a.id = af.agency_id','');
-            $this->db->join('fee_master fm','fm.id = af.fee_master_id','');
+            // $this->db->select('GROUP_CONCAT(af.fee_master_id) fee_master_id');
+            // $this->db->join('agency_fee af','a.id = af.agency_id','');
+            // $this->db->join('fee_master fm','fm.id = af.fee_master_id','');
             $this->db->where('a.id',$data['agency_id']);
-            $this->db->where('af.status',1);
+            // $this->db->where('af.status',1);
             //$this->db->where('fm.status',1);
         }
-
+        // print_r($data);exit;
         $this->db->where_in('a.status',array(0,1));
         if(isset($data['search'])){
             $this->db->group_start();
             $this->db->like('a.name', $data['search'], 'both');
-            $this->db->or_like('a.address', $data['search'], 'both');
+            $this->db->or_like('a.franchise_code', $data['search'], 'both');
             $this->db->or_like('a.email', $data['search'], 'both');
-            $this->db->or_like('a.manager', $data['search'], 'both');
-            $this->db->or_like('a.phone',$data['search'],'both');
+            $this->db->or_like('a.city', $data['search'], 'both');
+            $this->db->or_like('a.primary_contact',$data['search'],'both');
             $this->db->group_end();
         }
         $all_clients_count_db=clone $this->db;
         $all_clients_count = $all_clients_count_db->get()->num_rows();
-
-        if(isset($data['limit']) && isset($data['offset']))
-           $this->db->limit($data['limit'],$data['offset']);
+        if(isset($data['pagination']['number']) && $data['pagination']['number']!='')
+            $this->db->limit($data['pagination']['number'],$data['pagination']['start']);
         
-        $query = $this->db->get();
+        $query = $this->db->get();//echo $this->db->last_query();exit;
         return array('total_records' => $all_clients_count,'data' => $query->result_array());
     }
 
@@ -84,8 +84,10 @@ class Agency_model extends CI_Model
         $all_clients_count_db=clone $this->db;
         $all_clients_count = $all_clients_count_db->get()->num_rows();
 
-        if(isset($data['limit']) && isset($data['offset']))
-           $this->db->limit($data['limit'],$data['offset']);
+        // if(isset($data['limit']) && isset($data['offset']))
+        //    $this->db->limit($data['limit'],$data['offset']);
+        if(isset($data['pagination']['number']) && $data['pagination']['number']!='')
+        $this->db->limit($data['pagination']['number'],$data['pagination']['start']);
         
         $query = $this->db->get();
         return array('total_records' => $all_clients_count,'data' => $query->result_array());

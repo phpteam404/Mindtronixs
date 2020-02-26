@@ -32,8 +32,9 @@ class Fee extends REST_Controller
         }
         //print_r($data);exit;
         $this->form_validator->add_rules('name', array('required' => $this->lang->line('fee_name')));
-        $this->form_validator->add_rules('description', array('required' => $this->lang->line('fee_desc')));
-        $this->form_validator->add_rules('price', array('required' => $this->lang->line('fee_price')));
+        // $this->form_validator->add_rules('description', array('required' => $this->lang->line('fee_desc')));
+        $this->form_validator->add_rules('amount', array('required' => $this->lang->line('amount_price')));
+        $this->form_validator->add_rules('term', array('required' => $this->lang->line('term_req')));
         
         // $this->form_validator->add_rules('name', array('required'=> $this->lang->line('fee_name')));
         // $this->form_validator->add_rules('description', array('required'=> $this->lang->line('fee_desc')));
@@ -45,25 +46,23 @@ class Fee extends REST_Controller
             $result = array('status'=>FALSE,'error'=>$validated,'data'=>'');
             $this->response($result, REST_Controller::HTTP_OK);
         }
-        if(isset($data['fee_id'])) {
-            $data['fee_id'] = $data['fee_id'];
-        }
+        // if(isset($data['fee_id'])) {
+        //     $data['fee_id'] = $data['fee_id'];
+        // }
         /*adding record*/
         $add =array(
              'name' => $data['name'],
-             'description' => $data['description'],
-             'price'=>$data['price'],
-             'offer_details' =>isset($data['offer_details'])?$data['offer_details']:'',
+             'amount'=>$data['amount'],
+             'term' =>isset($data['term'])?$data['term']:'',
              'discount' =>isset($data['discount'])?$data['discount']:'',
              'discount_details' =>isset($data['discount_details'])?$data['discount_details']:'',
-             'offer_type' =>isset($data['offer_type'])?$data['offer_type']:'',
              'status'=>isset($data['status'])?$data['status']:'1'
         );
-        if(isset($data['id']) && $data['id']>0){
+        if(isset($data['fee_master_id']) && $data['fee_master_id']>0){
             // print_r($data);exit;
             $add['updated_by'] =  $this->session_user_id;
             $add['updated_on'] = currentDate();
-            $update = $this->User_model->update_data('fee_master',$add,array('id'=>$data['id']));
+            $update = $this->User_model->update_data('fee_master',$add,array('id'=>$data['fee_master_id']));
             if($update>0){
                 $result = array('status'=>TRUE, 'message' => $this->lang->line('fee_update'),'data' =>'2');
                 $this->response($result, REST_Controller::HTTP_OK);
@@ -101,7 +100,7 @@ class Fee extends REST_Controller
             $result = array('status'=>FALSE,'error'=>$validated,'data'=>'');
             $this->response($result, REST_Controller::HTTP_OK);
         }
-        
+        $data = tableOptions($data);
         $result = $this->Fee_model->listFeeMasterInfo($data);
         // echo ''.$this->db->last_query(); exit;
         //print_r($result);exit;

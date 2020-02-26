@@ -29,44 +29,36 @@ class Digitalcontent extends REST_Controller
     Public function addDigitalContent_post()
     {
         $data=$this->input->post();
-        // print_r(PATHINFO_EXTENSION);exit;
-        // print_r(json_decode($data['tags']));exit;
+        if(!empty($data['tags'])){
+            $data['tags']='['.$data['tags'].']';
+        }
+        // print_r($data);exit;
         if(empty($data)){
             $result = array('status'=>FALSE,'error'=>$this->lang->line('invalid_data'),'data'=>'');
             $this->response($result, REST_Controller::HTTP_OK);
         }
         
-        $this->form_validator->add_rules('category', array('required' => $this->lang->line('category_req')));
+        $this->form_validator->add_rules('category_id', array('required' => $this->lang->line('category_req')));
         $validated = $this->form_validator->validate($data);    
         if($validated != 1)
         {
             $result = array('status'=>FALSE,'error'=>$validated,'data'=>'');
             $this->response($result, REST_Controller::HTTP_OK);
         }
-        // $extensions[] = pathinfo($_FILES['document']['name'], PATHINFO_EXTENSION);
-        // print_r($_FILES);exit;
-
         $content_data=array(
-            'category'=>!empty($data['category'])?$data['category']:'',
-            'sub_category'=>!empty($data['sub_category'])?$data['sub_category']:'',
+            'category'=>!empty($data['category_id'])?$data['category_id']:'',
+            'sub_category'=>!empty($data['sub_category_id'])?$data['sub_category_id']:'',
             'tags'=>!empty($data['tags'])?$data['tags']:'',
-            'grade'=>!empty($data['grade'])?$data['grade']:'',
+            'grade'=>!empty($data['grade_id'])?$data['grade_id']:'',
             'status'=>!empty($data['status'])?$data['status']:'1'
         );
-
         if(!empty($_FILES)){
             $allowed_types=array('gif','jpg','jpeg','png','pdf','mp4','xlsx','xls');   
             $no_of_files=count($_FILES['document']['name']);
             for ($i=0; $i <$no_of_files ; $i++) {
                 $extensions[] = pathinfo($_FILES['document']['name'][$i], PATHINFO_EXTENSION);
             }
-            // $extensions_unique=array_unique($extensions); 
-            // $extensions=array_unique($extensions);
             $intersect_data=array_intersect($extensions,$allowed_types);
-            // $intersect_data =array_unique($intersect_data);
-            //  print_r($extensions);
-            //  print_r($intersect_data);exit;
-
             for($i=0; $i <$no_of_files ; $i++) { 
                 if($extensions==$intersect_data)
                 {
@@ -89,8 +81,7 @@ class Digitalcontent extends REST_Controller
             }
             
         }
-        if(!empty($_FILES) && count($document_id>0)){
-
+        if(!empty($_FILES) && count($document_id>0)){   
             if(isset($data['digital_content_management_id']) && $data['digital_content_management_id']>0){
                 // $content_data['updated_by']=!empty($this->session_user_id)?$this->session_user_id:'0';
                 // $content_data['updated_on']=currentDate();
@@ -118,21 +109,16 @@ class Digitalcontent extends REST_Controller
 
     }
 
-
-
     public function digitalContetList_get(){
         $data=$this->input->get();
-        $data['tags'][0]=1;
-        $data['tags'][1]=5;
-        $data['tags'][2]=7;
-        $data['category']=1;
-        // $data['sub_category']=2;
-        // print_r(DOCUMENT_PATH);exit;
-        if(isset($data['tag']) && $data['tag']!='')
+        $data = tableOptions($data);
+        if(isset($data['tags']) && $data['tags']!='')
         {
-            $data['tag']= explode(",",$data['tag']);
+            $data['tags']= explode(",",$data['tags']);
         }
-        $content_data=$this->Digitalcontent_model->getContentList($data);
+        $content_data=$this->Digitalcontent_model->getContentList($data);//echo $this->db->last_query();exit;
+        $total_records=$content_data['total_records'];
+        $content_data=$content_data['data'];
         foreach($content_data as $k=>$v){
             if(!empty($v['documents'])){
                 $content_data[$k]['documents']=explode(",",$v['documents']); 
@@ -144,9 +130,14 @@ class Digitalcontent extends REST_Controller
                 unset($content_data[$k]['documents'][$l]);
                 $content_data[$k]['documents']=$document[$k];
             }
-
+            if(!empty($v['tags'])){
+                $tags_ids=json_decode($v['tags']);
+                $tags_names=$this->User_model->check_record_where_in('GROUP_CONCAT(child_name) tags_names','master_child',array('master_id'=>4,'status'=>1),array('id'=>$tags_ids));
+                $content_data[$k]['tags_names']=!empty($tags_names[0]['tags_names'])?$tags_names[0]['tags_names']:'';
+                unset($tags_names);
+            }
         }
-        $result = array('status'=>TRUE, 'message' => $this->lang->line('Success'), 'data'=>array('data' => $content_data));
+        $result = array('status'=>TRUE, 'message' => $this->lang->line('Success'), 'data'=>array('data' => $content_data,'total_records'=>$total_records));
         $this->response($result, REST_Controller::HTTP_OK);
         
     }

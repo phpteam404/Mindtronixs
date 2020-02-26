@@ -96,6 +96,11 @@ $lang['grade_req'] = 'Grade is required';
 $lang['app_module_id_req'] = 'App module is required';
 $lang['access_status_req'] = 'Access status required';
 $lang['roles_updated'] = 'Roles management updated successfully ';
+$lang['std1_phone_num_min_len'] = 'Student Phone Number2 must be minimum 10 digits';
+$lang['std1_phone_num_max_len'] = 'Student Phone Number2 must be maximum 10 digits';
+$lang['nationality_req'] = 'Nationality is required';
+
+
 
 
 /* Customer */
@@ -401,18 +406,18 @@ $lang['updated_by_req'] ='Updated By Required';
 $lang['agency_update'] ='Agency Updated Successfully';
 $lang['agency_manager'] ='Agency Manager Required';
 $lang['agency_email'] ='Email is required';
-$lang['agency_phone_primary'] ='Primary Phone Number is required';
+$lang['agency_phone_primary'] ='Phone Number is required';
 $lang['agency_phone_alternative'] ='Alternative Phone Number is required';
 $lang['agency_recheck'] ='Already You Have Selected This Plan';
 
 
 $lang['agency_fee_id_req'] ='Agency Fee id required';
 $lang['id_relationship_category_req'] = 'Category required';
-$lang['fee_name'] ='Fee name required';
+$lang['fee_name'] ='Fee title required';
 $lang['fee_added'] ='Fee Details Added Successfully';
 $lang['fee_desc'] ='Fee Description required';
 $lang['fee_update'] ='Fee Details Updated Successfully';
-$lang['fee_price'] ='Fee Price Required';
+$lang['amount_price'] ='Fee amount Required';
 $lang['school_name'] ='School Name required';
 $lang['school_create'] ='School Information added successfully';
 $lang['school_update'] ='school Information updated successfully';
@@ -431,5 +436,16 @@ $lang['title_req_desc'] = 'Ticket title is required';
 $lang['assigned_req'] = 'Assigned user is required';
 $lang['ticket_assign'] = 'Ticket assigned Successfully';
 $lang['ticket_close'] = 'Ticket closed Successfully';
-$lang['agency_status_inactive'] = 'Your agency is disabled. Please contact your administrator.';
+$lang['agency_status_inactive'] = 'Your agency is disabled. Please contact your administrator';
+$lang['franchisecode_req'] = 'Franchise code  required';
+$lang['owner_name_req'] = 'Owner name is required';
+$lang['country_req'] = 'Country is required';
+$lang['state_req'] = 'State is required';
+$lang['city_req'] = 'City is required';
+$lang['fee_master_id_req'] = 'Fee master id is required';
+$lang['date_of_birth_req'] = 'Date of birth is required';
+$lang['home_phone_no_req'] = 'Home phoneno is required';
+$lang['blood_group_req'] = 'Blood group is required';
+$lang['term_req'] = 'Fee term is required';
+
 

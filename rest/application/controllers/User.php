@@ -25,46 +25,9 @@ class User extends REST_Controller
         $this->session_user_id_acting=$getLoggedUserId[0]['child_user_id'];
         $this->session_user_info=$this->User_model->getUserInfo(array('user_id'=>$this->session_user_id));
     }
-    // public function userInfo_get() //this function is to get user logged user information
-    // {
-    //     $data = $this->input->get();
-    //     if(empty($data)){
-    //         $result = array('status'=>FALSE,'error'=>$this->lang->line('invalid_data'),'data'=>'');
-    //         $this->response($result, REST_Controller::HTTP_OK);
-    //     }
-    //     //validating data
-    //     $this->form_validator->add_rules('user_id', array('required'=> $this->lang->line('user_id_req')));
-    //     $validated = $this->form_validator->validate($data);
-    //     if($validated != 1)
-    //     {
-    //         $result = array('status'=>FALSE,'error'=>$validated,'data'=>'');
-    //         $this->response($result, REST_Controller::HTTP_OK);
-    //     }
-        
-    //     if(isset($data['user_id'])) {
-    //         $data['user_id'] = $data['user_id'];
-    //     }
-        
-    //     if(isset($data['user_role_id'])) {
-    //         $data['user_role_id'] = $data['user_role_id'];
-    //     }
-        
-    //     $result = $this->User_model->getUserInfo($data);
-    //     //echo ''.$this->db->last_query(); exit;
-    //     if(isset($result->id_user))
-    //         $result->id_user= $result->id_user;
-        
-    //     if(isset($result->user_role_id))
-    //         $result->user_role_id= $result->user_role_id;
-    //     $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>$result);
-    //     $this->response($result, REST_Controller::HTTP_OK);
-    // }
-
     public function addUser_post() //this function is to add user data to the user table
     {
-        //print_r($this->session_user_id);exit;
         $data = $this->input->post();
-         //print_r($data); exit;
         if(empty($data)){
             $result = array('status'=>FALSE,'error'=>$this->lang->line('invalid_data'),'data'=>'');
             $this->response($result, REST_Controller::HTTP_OK);
@@ -100,20 +63,31 @@ class User extends REST_Controller
             'min_len-10' => $this->lang->line('std_phone_num_min_len'),
             'max_len-10' => $this->lang->line('std_phone_num_max_len'),
         );
+        $mobile2   = array(
+            'min_len-10' => $this->lang->line('std1_phone_num_min_len'),
+            'max_len-10' => $this->lang->line('std1_phone_num_max_len'),
+        );
+
         $this->form_validator->add_rules('password', array('required' => $this->lang->line('password_req')));
         $this->form_validator->add_rules('agency_id', array('required' => $this->lang->line('agency_id_req')));
         $this->form_validator->add_rules('user_role_id', array('required' => $this->lang->line('user_role_id_req')));
-        $this->form_validator->add_rules('first_name', $firstNameRules);
+        // $this->form_validator->add_rules('first_name', $firstNameRules);
         $this->form_validator->add_rules('last_name', $lastNameRules);
         $this->form_validator->add_rules('email', $emailRules);
         $this->form_validator->add_rules('phone_no', $phonennodRules);
+        $this->form_validator->add_rules('password', $passwordRules);
 
         if(isset($data['user_role_id']) && $data['user_role_id']==4){
             $this->form_validator->add_rules('mobile_phone1', $stdentphonennodRules); 
+            $this->form_validator->add_rules('mobile_phone2', $mobile2); 
             $this->form_validator->add_rules('school_id', array('required' => $this->lang->line('school_req')));
             $this->form_validator->add_rules('grade', array('required' => $this->lang->line('grade_req')));
             $this->form_validator->add_rules('parent', array('required' => $this->lang->line('parent_req')));
             $this->form_validator->add_rules('agency_fee_id', array('required' => $this->lang->line('agency_fee_id_req')));
+            $this->form_validator->add_rules('date_of_birth', array('required' => $this->lang->line('date_of_birth_req')));
+            // $this->form_validator->add_rules('home_phone_no', array('required' => $this->lang->line('home_phone_no_req')));
+            $this->form_validator->add_rules('blood_group', array('required' => $this->lang->line('blood_group_req')));
+            $this->form_validator->add_rules('nationality', array('required' => $this->lang->line('nationality_req')));
         }
 
 
@@ -144,13 +118,13 @@ class User extends REST_Controller
 
         $user_data = array(
             'user_role_id' => isset($data['user_role_id'])?$data['user_role_id']:5,
-            'first_name' => $data['first_name'],
-            'last_name' => $data['last_name'],
-            'email' => $data['email'],
-            'password' => md5($data['password']),
-            'gender' => isset($data['gender']) ? $data['gender'] : '',
-            'user_status' => 1,
-            'profile_image' =>isset($data['profile_image'])?$data['profile_image']:'',
+            'first_name' => !empty($data['first_name'])? $data['first_name']:'',
+            'last_name' => !empty($data['last_name'])?$data['last_name']:'',
+            'email' => !empty($data['email'])?$data['email']:'',
+            'password' => !empty($data['password'])?md5($data['password']):'',
+            //'gender' => isset($data['gender']) ? $data['gender'] : '',
+            'user_status' => isset($data['user_status'])?$data['user_status']:'1',
+            // 'profile_image' =>isset($data['profile_image'])?$data['profile_image']:'',
             'address'=>$data['address'],
             'phone_no'=>$data['phone_no'],
             'agency_id'=>$data['agency_id']
@@ -160,7 +134,8 @@ class User extends REST_Controller
             $student_data=array(
                 'school_id'=>isset($data['school'])?$data['school'] :0,
                 'agency_id'=>isset($data['agency_id'])?$data['agency_id'] :0,
-                'nantionality'=>isset($data['nantionality'])?$data['nantionality'] :null,
+                'nationality'=>isset($data['nationality'])?$data['nationality'] :null,
+                'place_of_birth'=>isset($data['place_of_birth'])?$data['place_of_birth'] :null,
                 'date_of_birth'=>isset($data['date_of_birth'])?$data['date_of_birth'] :null,
                 'grade'=>isset($data['grade'])?$data['grade'] :'',
                 'mother_tongue'=>isset($data['mother_tongue'])?$data['mother_tongue'] : '',
@@ -169,10 +144,14 @@ class User extends REST_Controller
                 'mobile_phone2'=>isset($data['mobile_phone2'])?$data['mobile_phone2'] : '',
                 'blood_group'=>isset($data['blood_group'])?$data['blood_group'] : '',
                 'history_of_illness'=>isset($data['history_of_illness'])?$data['history_of_illness'] : '',
-                'agency_fee_id'=>isset($data['agency_fee_id'])?$data['agency_fee_id'] : ''
+                'agency_fee_id'=>isset($data['agency_fee_id'])?$data['agency_fee_id'] : '',
+                'status'=>isset($data['status'])?$data['status'] :'1',
+                'relation_with_student'=>isset($data['relation_with_student'])?$data['relation_with_student'] :'',
+                'occupation'=>isset($data['occupation'])?$data['occupation'] :''
+
             );
         }
-
+// print_r($student_data);exit;
         if(isset($data['user_id']) && $data['user_id']>0){
             $user_data['updated_by'] = !empty($this->session_user_id)?$this->session_user_id:'0';
             $user_data['updated_on'] = currentDate();
@@ -393,6 +372,7 @@ class User extends REST_Controller
             $result = array('status'=>FALSE,'error'=>$validated,'data'=>'');
             $this->response($result, REST_Controller::HTTP_OK);
         }
+        $data = tableOptions($data);
         $result = $this->User_model->listTasks($data);
         //echo ''.$this->db->last_query(); exit;
         $result = array('status'=>TRUE, 'message' => $this->lang->line('success'),'data' =>$result['data'],'total_records' =>$result['total_records']);

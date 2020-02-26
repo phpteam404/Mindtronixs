@@ -23,20 +23,24 @@ class Agency extends REST_Controller
     }
 
     public function PostAgency_post()
-    {   //this function is to add/update agency information.
+    {   
+        //this function is to add/update agency information.
         $data = $this->input->post();
         //print_r($data); exit;
         if(empty($data)){
             $result = array('status'=>FALSE,'error'=>$this->lang->line('invalid_data'),'data'=>'1');
             $this->response($result, REST_Controller::HTTP_OK);
         }
-        
         $this->form_validator->add_rules('name', array('required'=>$this->lang->line('agency_name_req')));
-        $this->form_validator->add_rules('address', array('required'=>$this->lang->line('agency_add_req')));
-        $this->form_validator->add_rules('manager', array('required' =>$this->lang->line('agency_manager')));
+        // $this->form_validator->add_rules('address', array('required'=>$this->lang->line('agency_add_req')));
+        $this->form_validator->add_rules('franchise_code', array('required' =>$this->lang->line('franchisecode_req')));
         $this->form_validator->add_rules('email',array('required'=>$this->lang->line('agency_email')));
+        $this->form_validator->add_rules('owner_name',array('required'=>$this->lang->line('owner_name_req')));
         $this->form_validator->add_rules('primary_contact',array('required'=>$this->lang->line('agency_phone_primary')));
-        $this->form_validator->add_rules('pincode',array('required'=>$this->lang->line('postal_code_req')));
+        $this->form_validator->add_rules('country',array('required'=>$this->lang->line('country_req')));
+        $this->form_validator->add_rules('state',array('required'=>$this->lang->line('state_req')));
+        $this->form_validator->add_rules('city',array('required'=>$this->lang->line('city_req')));
+        $this->form_validator->add_rules('fee_master_id',array('required'=>$this->lang->line('fee_master_id_req')));
         $validated = $this->form_validator->validate($data);
         if($validated != 1){
             $result = array('status'=>FALSE,'error'=>$validated,'data'=>'');
@@ -44,22 +48,22 @@ class Agency extends REST_Controller
         }
         
         $add = array(
-            'name' => $data['name'],
-            'manager'  =>$data['manager'],
-            'address' =>$data['address'],
-            'email' => $data['email'],
-            'primary_contact' =>$data['primary_contact'],
-            'pincode' =>$data['pincode']
+            'name' => !empty($data['name'])?$data['name']:'',
+            'franchise_code'  => !empty($data['franchise_code'])?$data['franchise_code']:'',
+            'website_address' => !empty($data['website_address'])?$data['website_address']:'',
+            'owner_name'=>!empty($data['owner_name'])?$data['owner_name']:'',
+            'email' => !empty($data['email'])?$data['email']:'',
+            'primary_contact' =>!empty($data['primary_contact'])?$data['primary_contact']:'',
+            'pincode' =>!empty($data['pincode'])?$data['pincode']:'',
+            'address'=>!empty($data['address'])?$data['address']:'',
+            'country'=>!empty($data['country'])?$data['country']:'',
+            'state'=>!empty($data['state'])?$data['state']:'',
+            'landmark'=>!empty($data['landmark'])?$data['landmark']:'',
+            'status'=>isset($data['status'])?$data['status']:1,
+            'city'=>isset($data['city'])?$data['city']:'',
+            'agency_contacts'=>isset($data['agency_contacts'])?$data['agency_contacts']:''
         );
-        if(isset($data['landmark']))
-            $add['landmark'] = $data['landmark'];
-        if(isset($data['city']))
-            $add['city'] = $data['city'];
-        if(isset($data['alternative_contact']))
-            $add['alternative_contact'] = $data['alternative_contact'];
-        if(isset($data['status']))
-            $add['status'] = $data['status'];
-
+        // print_r($add);exit;
         if(isset($data['agency_id']) && $data['agency_id']>0){
             $add['updated_by'] = $this->session_user_id;
             $add['updated_on'] = currentDate();
@@ -102,7 +106,8 @@ class Agency extends REST_Controller
     }
 
     function createFeeMaster($data)
-    {//This Function will Create Agency fee records.
+    {
+        //This Function will Create Agency fee records.
         if(isset($data['fee_master_id']) && count(explode(',',$data['fee_master_id']))>0){
             $fee_master_id_exp=explode(',',$data['fee_master_id']);
             $insert_batch_array = array();
@@ -123,17 +128,46 @@ class Agency extends REST_Controller
     }
 
     public function franchiseList_get() 
-    {//this function is used to get franchise(agencies) list information
-        $data = $this->input->get();
-        // $validated = $this->form_validator->validate($data);
-        // if($validated != 1){
-        //     $result = array('status'=>FALSE,'error'=>$validated,'data'=>'');
-        //     $this->response($result, REST_Controller::HTTP_OK);
-        // }
-        
+    {
+        //this function is used to get franchise(agencies) list information
+        $data = $this->input->get(); 
+        $data = tableOptions($data); //print_r($data);exit; 
         $result = $this->Agency_model->listfranchise($data);
-
-        $result = array('status'=>TRUE, 'message' => $this->lang->line('success'),'data' =>$result['data'],'total_records' =>$result['total_records']);
+        $franchise_list=$result['data'];
+        foreach($franchise_list as $f=>$l){ 
+            if(!empty($l['agency_contacts'])){
+                $franchise_list[$f]['agency_contacts']=json_decode($l['agency_contacts']);
+            }
+            if(!empty($franchise_list[$f]['agency_contacts'])){
+                foreach($franchise_list[$f]['agency_contacts'] as $k=>$v){
+                    $franchise_list[$f]['agency_contact_list'][$k]['name']=$v->name;
+                    $franchise_list[$f]['agency_contact_list'][$k]['contact_phone']=$v->contact_phone;
+                    $franchise_list[$f]['agency_contact_list'][$k]['contact_title']=$v->contact_title;
+                }
+            }     
+            $franchise_list[$f]['agency_contact_list']=!empty($franchise_list[$f]['agency_contact_list'])?$franchise_list[$f]['agency_contact_list']:array();
+            unset($franchise_list[$f]['agency_contacts']);
+            $agency_fee=$this->User_model->check_record('agency_fee',array('agency_id'=>$franchise_list[$f]['agency_id'],'status'=>1));
+           foreach($agency_fee as $a=>$b){
+                $fee_details=$this->User_model->check_record('fee_master',array('id'=>$b['fee_master_id']));  
+                if(!empty($fee_details)){
+                    $franchise_list[$f]['fee_details'][]=$fee_details[0];
+                }
+                else{
+                    $franchise_list[$f]['fee_details']=array();
+                }
+           }  
+        }
+        if(!empty($data['agency_id'])){
+            $no_of_students = $this->User_model->custom_query('SELECT count(DISTINCT(id)) as no_of_students FROM student where school_id!=0 and  agency_id = '.$data['agency_id']);
+            $no_of_schools = $this->User_model->custom_query('SELECT count(DISTINCT(id)) as no_of_schools FROM school_master where status!=0 and  agency_id = '.$data['agency_id']);
+            $no_of_trainers=$this->User_model->check_record('user',array('user_role_id'=>3,'agency_id'=>$data['agency_id'],'user_status'=>1));
+        }
+        $student_invoice_amount=0;
+        $student_collected_amount=0;
+        $mindtronix_invoice_amount=0;
+        $mindtronix_collected_amount=0;
+        $result = array('status'=>TRUE, 'message' => $this->lang->line('success'),'data' =>$franchise_list,'total_records' =>$result['total_records'],'no_of_student'=>!empty($no_of_students[0]['no_of_students'])?$no_of_students[0]['no_of_students']:'0','no_of_schools'=>!empty($no_of_schools[0]['no_of_schools'])?$no_of_schools[0]['no_of_schools']:'0','no_of_trainers'=>!empty(count($no_of_trainers))?count($no_of_trainers):'0','student_invoice_amount'=>$student_invoice_amount,'student_collected_amount'=>$student_collected_amount,'mindtronix_invoice_amount'=>$mindtronix_invoice_amount,'mindtronix_collected_amount'=>$mindtronix_collected_amount);
         $this->response($result, REST_Controller::HTTP_OK);
     }
 
@@ -149,6 +183,7 @@ class Agency extends REST_Controller
         $this->form_validator->add_rules('address', array('required'=>$this->lang->line('school_add')));
         $this->form_validator->add_rules('email',array('required' =>$this->lang->line('school_email')));
         $this->form_validator->add_rules('phone',array('required' =>$this->lang->line('school_phone')));
+        $this->form_validator->add_rules('agency_id',array('required' =>$this->lang->line('agency_id_req')));
         $validated = $this->form_validator->validate($data);
         if($validated != 1)
         {
@@ -158,6 +193,7 @@ class Agency extends REST_Controller
 
         $add = array(
             'name' => $data['name'],
+            'agency_id'=>$data['agency_id'],
             'address' =>$data['address'],
             'email'  =>$data['email'],
             'phone' => $data['phone'],
@@ -198,15 +234,11 @@ class Agency extends REST_Controller
     }
 
     public function schoolsList_get() 
-    {//this function is used to get schools list information
+    {
+        //this function is used to get schools list information
         $data = $this->input->get();
-        // $validated = $this->form_validator->validate($data);
-        // if($validated != 1){
-        //     $result = array('status'=>FALSE,'error'=>$validated,'data'=>'');
-        //     $this->response($result, REST_Controller::HTTP_OK);
-        // }
+        $data = tableOptions($data);
         $result = $this->Agency_model->listSchools($data);
-        //echo ''.$this->db->last_query(); exit;
         $result = array('status'=>TRUE, 'message' => $this->lang->line('success'),'data' =>$result['data'],'total_records' =>$result['total_records']);
         $this->response($result, REST_Controller::HTTP_OK);
     }

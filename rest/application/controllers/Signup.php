@@ -97,7 +97,7 @@ class Signup extends CI_Controller
                 'child_user_id' => NULL,
                 'access_token' => isset($token->access_token)?$token->access_token:NULL
         ));
-            
+            $this->User_model->update_data('user',array('last_login'=>currentDate()),array('id'=>$result->user_id));    
         if(isset($result->user_id))
             $result->user_id= $result->user_id;
     

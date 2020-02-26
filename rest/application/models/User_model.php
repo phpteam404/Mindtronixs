@@ -680,8 +680,10 @@ class User_model extends CI_Model
         $all_clients_count_db=clone $this->db;
         $all_clients_count = $all_clients_count_db->get()->num_rows();
 
-        if(isset($data['limit']) && isset($data['offset']))
-           $this->db->limit($data['limit'],$data['offset']);
+        // if(isset($data['limit']) && isset($data['offset']))
+        //    $this->db->limit($data['limit'],$data['offset']);
+        if(isset($data['pagination']['number']) && $data['pagination']['number']!='')
+        $this->db->limit($data['pagination']['number'],$data['pagination']['start']);
         
         $query = $this->db->get();
         return array('total_records' => $all_clients_count,'data' => $query->result_array());
@@ -701,41 +703,21 @@ class User_model extends CI_Model
          return $this->db->affected_rows();
     }
 
-    // public function getUsermodules($data)
-    // {
-    //     $this->db->select('ap.module_name,ap.module_key,module_url,ur.user_role_name,ap.id_app_module,ma.id_module_access,ma.user_role_id,ma.is_access_status,ap.module_icon');
-    //     $this->db->from('app_module ap');
-    //     $this->db->join('module_access ma','ap.id_app_module=ma.app_module_id','left');
-    //     $this->db->join('user_role ur','ma.user_role_id=ur.id_user_role','left');
-    //     if(isset($data['user_role_id']) && $data['user_role_id']>0){
-    //         $this->db->where('ma.user_role_id',$data['user_role_id']);
-    //         $this->db->where('ma.is_access_status',1);
-    //         $query = $this->db->get();//echo $this->db->last_query();exit;
-    //          return $query->result_array();
-    //     }
-    // }
+    public function check_record_where_in($selected,$table,$where=null,$wherein=null){
+        $this->db->select($selected!=''?$selected:'*');
+        $this->db->from($table);
+        if(!empty($where)){
+            $this->db->where($where);
+        }
+        if(isset($wherein)){
+            foreach($wherein as $columnname=>$values){
+                $this->db->where_in($columnname,$values);
+            }
+        }  
+        $query = $this->db->get();
+        return $query->result_array();
+    }
 
-
-
-
-
-
-
-
-
-
-    // public function getModuleListByRoles($data)
-    // {
-    //     $this->db->select('*');
-    //     $this->db->from('app_module ap');
-    //     $this->db->join('module_access ma','ap.id_app_module=ma.app_module_id','left');
-    //     $this->db->join('user_role ur','ma.user_role_id=ur.id_user_role','left');
-    //     if(isset($data['user_role_id']) && $data['user_role_id']>0){
-    //         $this->db->where('ma.user_role_id',$data['user_role_id']);
-    //     }
-    //     $query = $this->db->get();
-    //     return $query->result_array();echo $this
-    // }
 
 }
 

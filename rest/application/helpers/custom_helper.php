@@ -280,6 +280,26 @@ if (!function_exists('currencyFormat')) {
     }
 }
 
+if (!function_exists('getStatusObj')) {
+    function getStatusObj($status){
+        if((int)$status){
+            return array('lable'=>'Active','value'=>1);
+        }else{
+            return array('lable'=>'Inactive','value'=>0);
+        }
+    }
+}
+
+if (!function_exists('getStatusText')) {
+    function getStatusText($status){
+        if((int)$status){
+            return 'Active';
+        }else{
+            return 'Inactive';
+        }
+    }
+}
+
 if (!function_exists('getUserBrowser')) {
     function getUserBrowser($u_agent)
     {

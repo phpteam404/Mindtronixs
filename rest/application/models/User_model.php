@@ -521,14 +521,11 @@ class User_model extends CI_Model
     }
     public function getuserlist($data=null)
     {
-        $this->db->select('u.id as user_id,u.user_role_id,u.agency_id,u.first_name,u.last_name,u.email,u.phone_no,u.gender,a.name as agency_name');
+        $this->db->select('u.id as user_id,u.user_role_id,u.agency_id,u.first_name,u.last_name,u.email,u.phone_no,u.gender,a.name as agency_name,u.user_status as status,CONCAT(ur.user_role_name,"-",ur.id)  as user_role,CONCAT(a.name,"-",a.id) agency_name');
         $this->db->from('user u');
         $this->db->join('agency a','u.agency_id=a.id','left');
-
+        $this->db->join('user_role ur','u.user_role_id=ur.id','left');
         if(isset($data['user_role_id']) && $data['user_role_id']>0){
-            if($data['user_role_id']==4){
-                $this->db->join('student s','u.id=s.user_id','left');
-            }
             $this->db->where('u.user_role_id',$data['user_role_id']);
         }
         if(isset($data['agency_id']) && $data['agency_id']>0){
@@ -546,19 +543,15 @@ class User_model extends CI_Model
         if(isset($data['search_key']) && $data['search_key']!==''){
             $this->db->group_start();
             $this->db->where('u.first_name like "%'.$data['search_key'].'%" or u.last_name like "%'.$data['search_key'].'%" or CONCAT(u.first_name,\' \',u.last_name) like "%'.$data['search_key'].'%" or u.email like "%'.$data['search_key'].'%"  or u.phone_no like "%'.$data['search_key'].'%"');
-            if(isset($data['search_key']) && $data['search_key']!=='' && $data['user_role_id']==4){
-               // $this->db->or_where('s.stuent like "%'.$data['search_key'].'%"');
-                $this->db->or_where('s.mobile_phone1 like "%'.$data['search_key'].'%"');
-            }
             $this->db->group_end();
         }
         $count_result_db = clone $this->db;
         $count_result = $count_result_db->get();
         $count_result = $count_result->num_rows();
-        if(isset($data['offset']) && isset($data['limit']))
-            $this->db->limit($data['limit'],$data['offset']);
-        // if(isset($data['pagination']['number']) && $data['pagination']['number']!='')
-        // $this->db->limit($data['pagination']['number'],$data['pagination']['start']);
+        // if(isset($data['offset']) && isset($data['limit']))
+        //     $this->db->limit($data['limit'],$data['offset']);
+        if(isset($data['pagination']['number']) && $data['pagination']['number']!='')
+        $this->db->limit($data['pagination']['number'],$data['pagination']['start']);
         $query = $this->db->get();//echo $this->db->last_query();exit;
         return array('total_records'=>$count_result,'data'=>$query->result_array());
 

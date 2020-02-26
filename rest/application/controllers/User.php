@@ -193,7 +193,22 @@ class User extends REST_Controller
     
     public function getUserList_get(){
         $data = $this->input->get();
+        $data = tableOptions($data);
         $result=$this->User_model->getuserlist($data);
+        foreach($result['data'] as $k=>$v){
+            if(!empty($data['user_id'])){
+                $result['data'][$k]['status']=getStatusObj($v['status']);
+                $result['data'][$k]['agency_name']=getObjOnId($v['agency_name'],true);
+                $result['data'][$k]['user_role']=getObjOnId($v['user_role'],true);
+
+            }
+            else{
+                $result['data'][$k]['status']=getStatusText($v['status']);
+                $result['data'][$k]['agency_name']=getObjOnId($v['agency_name'],false);
+                $result['data'][$k]['user_role']=getObjOnId($v['user_role'],false);
+
+            }
+        }
         $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>array('data' => $result['data'],'total_records'=>$result['total_records']));
          $this->response($result, REST_Controller::HTTP_OK); 
     }
@@ -374,7 +389,6 @@ class User extends REST_Controller
         }
         $data = tableOptions($data);
         $result = $this->User_model->listTasks($data);
-        //echo ''.$this->db->last_query(); exit;
         $result = array('status'=>TRUE, 'message' => $this->lang->line('success'),'data' =>$result['data'],'total_records' =>$result['total_records']);
         $this->response($result, REST_Controller::HTTP_OK);
     }

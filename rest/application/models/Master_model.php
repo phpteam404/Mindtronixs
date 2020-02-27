@@ -24,7 +24,16 @@ class Master_model extends CI_Model
     }
     function getMaster($data)
     {
-        $this->db->select(' `mc`.`id` as `master_child_id`, `mc`.`child_name`,  `mc`.`child_key`,`m`.`master_key`, `m`.`master_name`,m.id as master_id, CONCAT(UCASE(LEFT(mc.description, 1)), SUBSTRING(mc.description, 2)) description');
+        if(isset($data['dropdown']) && $data['dropdown']!=''){
+            // print_r($data);exit;
+            if(isset($data['master_key']) && $data['master_key']=='status')
+            $this->db->select('mc.child_name as label,if(mc.child_name="Active","1","0")as value');
+            else
+            $this->db->select('mc.child_name as label,mc.id as value');
+        }
+        else{
+            $this->db->select(' `mc`.`id` as `master_child_id`, `mc`.`child_name`,  `mc`.`child_key`,`m`.`master_key`, `m`.`master_name`,m.id as master_id, CONCAT(UCASE(LEFT(mc.description, 1)), SUBSTRING(mc.description, 2)) description');
+        }
         $this->db->from('master m');
         $this->db->join('master_child mc','m.id=mc.master_id','left');
         if(isset($data['master_key']))

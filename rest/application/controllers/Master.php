@@ -92,17 +92,23 @@ class Master extends REST_Controller
             $result = array('status'=>FALSE,'error'=>$validated,'data'=>'');
             $this->response($result, REST_Controller::HTTP_OK);
         }
-        $data = tableOptions($data);
+        // $data = tableOptions($data);
         $result = $this->Master_model->getMaster($data);
         // print_r($result);exit;
-        $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>array('data'=>$result['data'],'total_records'=>$result['total_records']),'table_headers'=>getTableHeads('master_list'));
+        if(isset($data['dropdown']) && $data['dropdown']!=''){
+        $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>array('data'=>$result['data']));
+        }
+        else{
+
+            $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>array('data'=>$result['data'],'total_records'=>$result['total_records'],'table_headers'=>getTableHeads('master_list')));
+        }
         $this->response($result, REST_Controller::HTTP_OK);
          
     }
     public function masterList_get(){
          $data=$this->input->get();
         $master_list=$this->User_model->check_record_selected('id as master_id, master_name,master_key,status','master',!empty($data)?$data:'');
-        $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>$master_list);
+        $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>array('data'=>$master_list));
         $this->response($result, REST_Controller::HTTP_OK);
             
     }

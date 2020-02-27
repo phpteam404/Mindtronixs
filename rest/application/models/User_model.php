@@ -231,7 +231,10 @@ class User_model extends CI_Model
     }
 
     public function check_record($table,$where=null,$orderby=null){
-        $this->db->select('*');
+        if($orderby['dropdown'])
+            $this->db->select('user_role_name as label, id as value');
+        else
+            $this->db->select('*');
         $this->db->from($table);
         if(!empty($where))
             $this->db->where($where);

@@ -392,6 +392,51 @@ class User extends REST_Controller
         $result = array('status'=>TRUE, 'message' => $this->lang->line('success'),'data' =>$result['data'],'total_records' =>$result['total_records']);
         $this->response($result, REST_Controller::HTTP_OK);
     }
+    public function studentList_get(){//this function is used to get list of students and prepopulate the student details when click student edit
+        $data = $this->input->get();
+        // $data = tableOptions($data);
+        $data['type']='edit';//this key used for filter the select statement
+        $student_list=$this->User_model->getStudentList($data);
+        foreach($student_list['data'] as $k=>$v){
+            if(!empty($data['user_id'])){
+                $student_list['data'][$k]['blood_group']=getObjOnId($v['blood_group'],true);//getting the bloodgroup dropdown object values 
+                $student_list['data'][$k]['relation']=getObjOnId($v['relation'],true);
+                $student_list['data'][$k]['grade']=getObjOnId($v['grade'],true);//getting object  of  dropdown grade field
+                $student_list['data'][$k]['nationality']=getObjOnId($v['nationality'],true);
+                $student_list['data'][$k]['mother_tongue']=getObjOnId($v['mother_tongue'],true);
+                $student_list['data'][$k]['fee_structure']=getObjOnId($v['fee_structure'],true);
+                $student_list['data'][$k]['status']=getStatusObj($v['status']);
+
+            }
+            else{
+                $student_list['data'][$k]['grade']=getObjOnId($v['grade'],false);//getting the garde value for list service
+                $student_list['data'][$k]['status']=getStatusText($v['status']);
+
+            }
+        }
+        $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>array('data'=>$student_list['data'],'total_records'=>$student_list['total_records']));
+        $this->response($result, REST_Controller::HTTP_OK);
+    }
+    public function studentInfo_get(){//this function is used to get the student information
+       $data=$this->input->get();
+       if(empty($data)){
+            $result = array('status'=>FALSE,'error'=>$this->lang->line('invalid_data'),'data'=>'1');
+            $this->response($result, REST_Controller::HTTP_OK);
+        }
+        $this->form_validator->add_rules('user_id', array('required'=>$this->lang->line('user_id_req')));
+        $validated = $this->form_validator->validate($data);
+        if($validated != 1)
+        {
+            $result = array('status'=>FALSE,'error'=>$validated,'data'=>'');
+            $this->response($result, REST_Controller::HTTP_OK);
+        }   
+       $data['type']='view';//this key used for filter the select statement
+       $student_info=$this->User_model->getStudentList($data);//this model is used to get the student data
+        
+       $result = array('status'=>TRUE, 'message' =>$this->lang->line('success'), 'data'=>array('data'=>$student_info['data']));
+       $this->response($result, REST_Controller::HTTP_OK);
+    }
+    
 }
 
 

@@ -184,7 +184,8 @@ class Agency extends REST_Controller
         // }
         // else{
         // }
-        $result = array('status'=>TRUE, 'message' => $this->lang->line('success'),'data' =>$franchise_list,'total_records' =>$result['total_records']);
+
+        $result = array('status'=>TRUE, 'message' => $this->lang->line('success'),'data'=>array('data' =>$franchise_list,'total_records' =>$result['total_records'],'table_headers'=>getTableHeads('franchilse_list')));
         $this->response($result, REST_Controller::HTTP_OK);
     }
 
@@ -200,6 +201,9 @@ class Agency extends REST_Controller
         $this->form_validator->add_rules('address', array('required'=>$this->lang->line('school_add')));
         $this->form_validator->add_rules('email',array('required' =>$this->lang->line('school_email')));
         $this->form_validator->add_rules('phone',array('required' =>$this->lang->line('school_phone')));
+        $this->form_validator->add_rules('state',array('required' =>$this->lang->line('state_req')));
+        $this->form_validator->add_rules('city',array('required' =>$this->lang->line('city_req')));
+        $this->form_validator->add_rules('code',array('required' =>$this->lang->line('school_code_req')));
         $this->form_validator->add_rules('agency_id',array('required' =>$this->lang->line('agency_id_req')));
         $validated = $this->form_validator->validate($data);
         if($validated != 1)
@@ -255,8 +259,8 @@ class Agency extends REST_Controller
         //this function is used to get schools list information
         $data = $this->input->get();
         // $data = tableOptions($data);
-        $result = $this->Agency_model->listSchools($data);
-        $result = array('status'=>TRUE, 'message' => $this->lang->line('success'),'data' =>$result['data'],'total_records' =>$result['total_records']);
+        $result = $this->Agency_model->listSchools($data);//echo $this->db->last_query();exit;
+        $result = array('status'=>TRUE, 'message' => $this->lang->line('success'),'data'=>array('data' =>$result['data'],'total_records' =>$result['total_records'],'table_headers'=>getTableHeads('school_mngmt_list')));
         $this->response($result, REST_Controller::HTTP_OK);
     }
     public  function agencyInfo_get()//this function used to get franchise information
@@ -307,7 +311,7 @@ class Agency extends REST_Controller
         $student_collected_amount=0;
         $mindtronix_invoice_amount=0;
         $mindtronix_collected_amount=0;
-        $result = array('status'=>TRUE, 'message' => $this->lang->line('success'),'data' =>$agency_info,'no_of_student'=>!empty($no_of_students[0]['no_of_students'])?$no_of_students[0]['no_of_students']:'0','no_of_schools'=>!empty($no_of_schools[0]['no_of_schools'])?$no_of_schools[0]['no_of_schools']:'0','no_of_trainers'=>!empty(count($no_of_trainers))?count($no_of_trainers):'0','student_invoice_amount'=>$student_invoice_amount,'student_collected_amount'=>$student_collected_amount,'mindtronix_invoice_amount'=>$mindtronix_invoice_amount,'mindtronix_collected_amount'=>$mindtronix_collected_amount,'statistics_graph'=>array());
+        $result = array('status'=>TRUE, 'message' => $this->lang->line('success'),'data'=>array('data' =>$agency_info,'no_of_student'=>!empty($no_of_students[0]['no_of_students'])?$no_of_students[0]['no_of_students']:'0','no_of_schools'=>!empty($no_of_schools[0]['no_of_schools'])?$no_of_schools[0]['no_of_schools']:'0','no_of_trainers'=>!empty(count($no_of_trainers))?count($no_of_trainers):'0','student_invoice_amount'=>$student_invoice_amount,'student_collected_amount'=>$student_collected_amount,'mindtronix_invoice_amount'=>$mindtronix_invoice_amount,'mindtronix_collected_amount'=>$mindtronix_collected_amount,'statistics_graph'=>array()));
         $this->response($result, REST_Controller::HTTP_OK);
     }
 

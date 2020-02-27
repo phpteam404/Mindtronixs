@@ -34,6 +34,10 @@ class Fee_model extends CI_Model
         if(isset($data['fee_master_id']) && $data['fee_master_id'] > 0){
             $this->db->where('fm.id',$data['fee_master_id']);
         }
+        if(isset($data['sort']))
+            $this->db->order_by($data['sort'],$data['order']);
+        else
+        $this->db->order_by('fm.id','desc');
         $all_clients_count_db=clone $this->db;
         $all_clients_count = $all_clients_count_db->get()->num_rows();
 

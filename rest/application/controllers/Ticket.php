@@ -216,7 +216,7 @@ class Ticket extends REST_Controller
             }
                 
         }
-        $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>array($chatdata));
+        $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>array('data'=>$chatdata));
         $this->response($result, REST_Controller::HTTP_OK);
         
     } 
@@ -234,7 +234,7 @@ class Ticket extends REST_Controller
         else{
             $ticket_list=array();    
         }
-        $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>array('data'=>$ticket_list['data'],'total_records'=>$ticket_list['total_records']));
+        $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>array('data'=>$ticket_list['data'],'total_records'=>$ticket_list['total_records'],'table_headers'=>getTableHeads('ticket_list')));
         $this->response($result, REST_Controller::HTTP_OK);
 
     }

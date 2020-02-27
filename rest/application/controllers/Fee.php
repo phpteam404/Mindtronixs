@@ -91,7 +91,7 @@ class Fee extends REST_Controller
             $result = array('status'=>FALSE,'error'=>$validated,'data'=>'');
             $this->response($result, REST_Controller::HTTP_OK);
         }
-        $data = tableOptions($data);
+        // $data = tableOptions($data);//print_r($data);exit
         $result = $this->Fee_model->listFeeMasterInfo($data);
 
         foreach($result['data'] as $k => $v){
@@ -105,7 +105,7 @@ class Fee extends REST_Controller
                 $result['data'][$k]['term']=getObjOnId($v['term'],false);
             }
         }
-        $result = array('status'=>TRUE, 'message' => $this->lang->line('success'),'data' =>$result['data'],'total_records' =>$result['total_records']);
+        $result = array('status'=>TRUE, 'message' => $this->lang->line('success'),'data' =>array('data'=>$result['data'],'total_records' =>$result['total_records'],'table_headers'=>getTableHeads('fee_structure_list')));
         $this->response($result, REST_Controller::HTTP_OK);
 
     }

@@ -56,6 +56,8 @@ class Agency_model extends CI_Model
             $this->db->limit($data['number'],$data['start']);
         if(isset($data['sort']))
             $this->db->order_by($data['sort'],$data['order']);
+        else
+        $this->db->order_by('a.id','desc');
         
         $query = $this->db->get();//echo $this->db->last_query();exit;
         return array('total_records' => $all_clients_count,'data' => $query->result_array());
@@ -69,12 +71,16 @@ class Agency_model extends CI_Model
 
     public function listSchools($data)
     {
-        $this->db->select('sm.id as school_id,sm.*');
+        // $this->db->select('sm.id as school_id,sm.*');
+        // $this->db->from('school_master sm');
+        // $this->db->where_in('sm.status',array(0,1));
+        // if(isset($data['status']) && $data['status']!==''){
+        //     $this->db->where('sm.status',$data['status']);
+        // }
+
+        $this->db->select('sm.id as school_id,sm.school_code code,sm.name,COUNT(DISTINCT s.id ) as no_of_students,sm.phone,sm.email');
         $this->db->from('school_master sm');
-        $this->db->where_in('sm.status',array(0,1));
-        if(isset($data['status']) && $data['status']!==''){
-            $this->db->where('sm.status',$data['status']);
-        }
+        $this->db->join('student s','sm.id=s.school_id','left');
         if(isset($data['search']))
         {
             $this->db->group_start();
@@ -87,6 +93,11 @@ class Agency_model extends CI_Model
         if(isset($data['school_id']) && $data['school_id']>0){
             $this->db->where('sm.id',$data['school_id']);
         }
+        $this->db->group_by('sm.id');
+        if(isset($data['sort']) && isset($data['order']))
+            $this->db->order_by($data['sort'],$data['order']);
+        else
+        $this->db->order_by('sm.id','desc');
         $all_clients_count_db=clone $this->db;
         $all_clients_count = $all_clients_count_db->get()->num_rows();
 
@@ -95,7 +106,7 @@ class Agency_model extends CI_Model
         if(isset($data['pagination']['number']) && $data['pagination']['number']!='')
         $this->db->limit($data['pagination']['number'],$data['pagination']['start']);
         
-        $query = $this->db->get();
+        $query = $this->db->get();//echo $this->db->last_query();exit;
         return array('total_records' => $all_clients_count,'data' => $query->result_array());
     }
   

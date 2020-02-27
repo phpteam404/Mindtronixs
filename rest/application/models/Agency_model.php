@@ -104,5 +104,30 @@ class Agency_model extends CI_Model
         $this->db->insert('agency_fee', $data);
         return $this->db->insert_id();
     }
+    public function getAgencyInfo($data)//this function is used for get agency information
+    {
+        $this->db->select('a.id as agency_id,a.name as agency_name, a.franchise_code,a.website_address,mc.child_name as country,mc1.child_name as stage,mc2.child_name as state,a.landmark,a.email,a.pincode,a.primary_contact as contact_number,a.owner_name,GROUP_CONCAT(fee_master_id) as fee_master_id,a.agency_contacts,if(a.status=1,"active","inactive") as status');
+        $this->db->from('agency a');
+        $this->db->join('master_child mc','a.country=mc.id and mc.master_id=12','left');
+        $this->db->join('master_child mc1','a.state=mc1.id and mc1.master_id=13','left');
+        $this->db->join('master_child mc2','a.city=mc2.id and mc2.master_id=14','left');
+        $this->db->join('agency_fee af','a.id=af.agency_id','left');
+        if(!empty($data['agency_id'])){
+            $this->db->where('a.id',$data['agency_id']);
+        }
+        $this->db->group_by('a.id');
+        $query = $this->db->get();//echo $this->db->last_query();exit;
+        return $query->result_array();
+    }
+    public function getFeeData($data)//this function is used for get fee data in for agency
+    {
+        $this->db->select('CASE WHEN mc.id=19 THEN "1 One Month)" WHEN mc.id=20 THEN "3 (Three Months)" WHEN mc.id=21 THEN "6 (Six Months)" WHEN mc.id=22 THEN "12 (Twelve Months)"
+        ELSE "" END as fee_title,fm.amount,mc.child_name as term,fm.discount');
+        $this->db->from('fee_master fm');
+        $this->db->join('master_child mc','fm.term=mc.id AND mc.master_id=11','left');
+        $this->db->where('fm.id',$data['fee_master_id']);
+        $query = $this->db->get();
+        return $query->result_array();
+    }
 
 }

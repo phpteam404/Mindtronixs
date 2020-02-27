@@ -172,19 +172,19 @@ class Agency extends REST_Controller
                 
            }  
         }
-        if(!empty($data['agency_id'])){
-            $no_of_students = $this->User_model->custom_query('SELECT count(DISTINCT(id)) as no_of_students FROM student where school_id!=0 and  agency_id = '.$data['agency_id']);
-            $no_of_schools = $this->User_model->custom_query('SELECT count(DISTINCT(id)) as no_of_schools FROM school_master where status!=0 and  agency_id = '.$data['agency_id']);
-            $no_of_trainers=$this->User_model->check_record('user',array('user_role_id'=>3,'agency_id'=>$data['agency_id'],'user_status'=>1));
-            $student_invoice_amount=0;
-            $student_collected_amount=0;
-            $mindtronix_invoice_amount=0;
-            $mindtronix_collected_amount=0;
-            $result = array('status'=>TRUE, 'message' => $this->lang->line('success'),'data' =>$franchise_list,'total_records' =>$result['total_records'],'no_of_student'=>!empty($no_of_students[0]['no_of_students'])?$no_of_students[0]['no_of_students']:'0','no_of_schools'=>!empty($no_of_schools[0]['no_of_schools'])?$no_of_schools[0]['no_of_schools']:'0','no_of_trainers'=>!empty(count($no_of_trainers))?count($no_of_trainers):'0','student_invoice_amount'=>$student_invoice_amount,'student_collected_amount'=>$student_collected_amount,'mindtronix_invoice_amount'=>$mindtronix_invoice_amount,'mindtronix_collected_amount'=>$mindtronix_collected_amount);
-        }
-        else{
-            $result = array('status'=>TRUE, 'message' => $this->lang->line('success'),'data' =>$franchise_list,'total_records' =>$result['total_records'],'table_headers'=>getTableHeads('franchilse_list'));
-        }
+        // if(!empty($data['agency_id'])){
+        //     $no_of_students = $this->User_model->custom_query('SELECT count(DISTINCT(id)) as no_of_students FROM student where school_id!=0 and  agency_id = '.$data['agency_id']);
+        //     $no_of_schools = $this->User_model->custom_query('SELECT count(DISTINCT(id)) as no_of_schools FROM school_master where status!=0 and  agency_id = '.$data['agency_id']);
+        //     $no_of_trainers=$this->User_model->check_record('user',array('user_role_id'=>3,'agency_id'=>$data['agency_id'],'user_status'=>1));
+        //     $student_invoice_amount=0;
+        //     $student_collected_amount=0;
+        //     $mindtronix_invoice_amount=0;
+        //     $mindtronix_collected_amount=0;
+        //     $result = array('status'=>TRUE, 'message' => $this->lang->line('success'),'data' =>$franchise_list,'total_records' =>$result['total_records'],'no_of_student'=>!empty($no_of_students[0]['no_of_students'])?$no_of_students[0]['no_of_students']:'0','no_of_schools'=>!empty($no_of_schools[0]['no_of_schools'])?$no_of_schools[0]['no_of_schools']:'0','no_of_trainers'=>!empty(count($no_of_trainers))?count($no_of_trainers):'0','student_invoice_amount'=>$student_invoice_amount,'student_collected_amount'=>$student_collected_amount,'mindtronix_invoice_amount'=>$mindtronix_invoice_amount,'mindtronix_collected_amount'=>$mindtronix_collected_amount);
+        // }
+        // else{
+        // }
+        $result = array('status'=>TRUE, 'message' => $this->lang->line('success'),'data' =>$franchise_list,'total_records' =>$result['total_records']);
         $this->response($result, REST_Controller::HTTP_OK);
     }
 
@@ -254,9 +254,60 @@ class Agency extends REST_Controller
     {
         //this function is used to get schools list information
         $data = $this->input->get();
-        $data = tableOptions($data);
+        // $data = tableOptions($data);
         $result = $this->Agency_model->listSchools($data);
         $result = array('status'=>TRUE, 'message' => $this->lang->line('success'),'data' =>$result['data'],'total_records' =>$result['total_records']);
+        $this->response($result, REST_Controller::HTTP_OK);
+    }
+    public  function agencyInfo_get()//this function used to get franchise information
+    {
+        $data=$this->input->get();
+        if(empty($data)){
+            $result = array('status'=>FALSE,'error'=>$this->lang->line('invalid_data'),'data'=>'1');
+            $this->response($result, REST_Controller::HTTP_OK);
+        }
+        $this->form_validator->add_rules('agency_id',array('required' =>$this->lang->line('agency_id_req')));
+        $validated = $this->form_validator->validate($data);
+        if($validated != 1)
+        {
+            $result = array('status'=>FALSE,'error'=>$validated,'data'=>'');
+            $this->response($result, REST_Controller::HTTP_OK);
+        }
+        $agency_info=$this->Agency_model->getAgencyInfo($data);//this model used for get the franchise information
+        foreach($agency_info as $k=>$v){
+            $agency_info[$k]['agency_contacts']=json_decode($v['agency_contacts']);
+            if(!empty($agency_info[$k]['agency_contacts'])){
+                foreach($agency_info[$k]['agency_contacts'] as $k1=>$v1){//this loop for get contacts of the franchise
+                    $agency_info[$k]['agency_contacts_information'][$k1]['contact_title']=$v1->contact_title;
+                    $agency_info[$k]['agency_contacts_information'][$k1]['contact_name']=$v1->name;
+                    $agency_info[$k]['agency_contacts_information'][$k1]['contact_phone']=$v1->contact_phone;
+                    $agency_info[$k]['agency_contacts_information'][$k1]['contact_eamil']=$v1->contact_eamil;
+                } 
+            }
+            if(!empty($agency_info[$k]['fee_master_id'])){
+                $feemaster_ids=explode(",",$agency_info[$k]['fee_master_id']);
+                foreach($feemaster_ids as $k2 =>$v2){//this loop for get fee details of franchise
+                    $get_fee_data=$this->Agency_model->getFeeData(array('fee_master_id'=>$v2));//thsi model used for get fee data of franchise
+                    if(!empty($get_fee_data)){
+                        $agency_info[$k]['fee_detalis'][$k2]=$get_fee_data[0];
+                        unset($get_fee_data);
+                    }
+
+                }
+            }
+            $agency_info[$k]['agency_contacts_information']= !empty($agency_info[$k]['agency_contacts_information'])?$agency_info[$k]['agency_contacts_information']:array();
+            $agency_info[$k]['fee_detalis']= !empty($agency_info[$k]['fee_detalis'])?$agency_info[$k]['fee_detalis']:array();
+            
+        }
+        unset($agency_info[$k]['agency_contacts']);
+        $no_of_students = $this->User_model->custom_query('SELECT count(DISTINCT(id)) as no_of_students FROM student where school_id!=0 and  agency_id = '.$data['agency_id']);//get the no of students in the franchise
+        $no_of_schools = $this->User_model->custom_query('SELECT count(DISTINCT(id)) as no_of_schools FROM school_master where status!=0 and  agency_id = '.$data['agency_id']);//get the no of schools in the franchise
+        $no_of_trainers=$this->User_model->check_record('user',array('user_role_id'=>3,'agency_id'=>$data['agency_id'],'user_status'=>1));//get the nof of trainers in franchise
+        $student_invoice_amount=0;
+        $student_collected_amount=0;
+        $mindtronix_invoice_amount=0;
+        $mindtronix_collected_amount=0;
+        $result = array('status'=>TRUE, 'message' => $this->lang->line('success'),'data' =>$agency_info,'no_of_student'=>!empty($no_of_students[0]['no_of_students'])?$no_of_students[0]['no_of_students']:'0','no_of_schools'=>!empty($no_of_schools[0]['no_of_schools'])?$no_of_schools[0]['no_of_schools']:'0','no_of_trainers'=>!empty(count($no_of_trainers))?count($no_of_trainers):'0','student_invoice_amount'=>$student_invoice_amount,'student_collected_amount'=>$student_collected_amount,'mindtronix_invoice_amount'=>$mindtronix_invoice_amount,'mindtronix_collected_amount'=>$mindtronix_collected_amount,'statistics_graph'=>array());
         $this->response($result, REST_Controller::HTTP_OK);
     }
 

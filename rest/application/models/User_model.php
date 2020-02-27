@@ -673,10 +673,10 @@ class User_model extends CI_Model
         $all_clients_count_db=clone $this->db;
         $all_clients_count = $all_clients_count_db->get()->num_rows();
 
-        // if(isset($data['limit']) && isset($data['offset']))
-        //    $this->db->limit($data['limit'],$data['offset']);
-        if(isset($data['pagination']['number']) && $data['pagination']['number']!='')
-        $this->db->limit($data['pagination']['number'],$data['pagination']['start']);
+        if(isset($data['number']) && isset($data['start']))
+           $this->db->limit($data['number'],$data['start']);
+        // if(isset($data['pagination']['number']) && $data['pagination']['number']!='')
+        // $this->db->limit($data['pagination']['number'],$data['pagination']['start']);
         
         $query = $this->db->get();
         return array('total_records' => $all_clients_count,'data' => $query->result_array());
@@ -709,6 +709,58 @@ class User_model extends CI_Model
         }  
         $query = $this->db->get();
         return $query->result_array();
+    }
+    public function getStudentList($data=null){
+        if(isset($data['type']) && $data['type']=='edit'){//this condition for prepopulate the student details and list the student details
+            $this->db->select('u.id as user_id,s.id as student_id,u.agency_id,concat(u.first_name," ",u.last_name) as student_name,u.email as contact_email,u.phone_no,u.last_login,u.user_status as status,a.name as agency_name,CONCAT(mc2.child_name,"-",mc2.id) as grade');
+            if(!empty($data['user_id'])){
+                $this->db->select('s.place_of_birth,u.address,s.date_of_birth,CONCAT(mc.child_name,"-",mc.id) as blood_group,CONCAT(mc1.child_name,"-",mc1.id) as relation,CONCAT(mc3.child_name,"-",mc3.id) as nationality,CONCAT(mc4.child_name,"-",mc4.id) as mother_tongue,CONCAT(fm.`name`,"-",fm.id) as fee_structure,s.parent as name_of_parent,u.phone_no as home_phone_no,s.mobile_phone1 as mobile_phone,s.mobile_phone2,s.occupation,sm.`name` as school_name,s.history_of_illness');
+            }
+        }
+        if(isset($data['type']) && $data['type']=='view'){//this condition for get the data for student info service
+            $this->db->select('u.id as user_id,concat(u.first_name," ",u.last_name) as student_name,u.email as contact_email,u.phone_no as ome_phone,u.last_login as last_login,
+            ,s.place_of_birth,u.address,s.date_of_birth,mc.child_name as blood_group,mc1.child_name as relation,mc2.child_name as grade,mc3.child_name as nationality,mc4.child_name as mother_tongue,fm.`name` as fee_structure,s.parent as name_of_parent,u.phone_no as home_phone_no,s.mobile_phone1 as mobile_phone,s.mobile_phone2,s.occupation,sm.`name` as school_name,s.history_of_illness,IF(u.user_status=1,"active","inactive") as status');
+        }
+        $this->db->from('user u');
+        $this->db->join('student s','u.id =s.user_id','left');
+        $this->db->join('agency a','u.agency_id =a.id','left');
+        $this->db->join('master_child mc','s.blood_group=mc.id AND master_id=9','left');
+        $this->db->join('master_child mc1','s.relation_with_student=mc1.id AND mc1.master_id=10','left');
+        $this->db->join('master_child mc2','s.grade=mc2.id AND mc2.master_id=5','left');
+        $this->db->join('master_child mc3','s.nationality=mc3.id AND mc3.master_id=7','left');
+        $this->db->join('master_child mc4','s.mother_tongue=mc4.id AND mc4.master_id=8','left');
+        $this->db->join('fee_master fm','s.agency_fee_id=fm.id','left');
+        $this->db->join('school_master sm','s.school_id=sm.id','left');
+        $this->db->where('u.user_role_id','4');
+        if(isset($data['agency_id']) && $data['agency_id']!=''){
+            $this->db->where('u.agency_id',$data['agency_id']);
+        }
+        if(isset($data['school_id']) && $data['school_id']>0){
+            $this->db->where('sm.id',$data['school_id']);
+        }
+        if(isset($data['user_id']) && $data['user_id']>0){
+            $this->db->where('u.id',$data['user_id']);
+        }
+        if(isset($data['search_key']) && $data['search_key']!==''){
+            $this->db->group_start();
+            $this->db->where('u.first_name like "%'.$data['search_key'].'%" or u.last_name like "%'.$data['search_key'].'%" or CONCAT(u.first_name,\' \',u.last_name) like "%'.$data['search_key'].'%" or u.email like "%'.$data['search_key'].'%"  or u.phone_no like "%'.$data['search_key'].'%"or sm.name like "%'.$data['search_key'].'%"or a.name like "%'.$data['search_key'].'%"');
+            $this->db->group_end();
+        }
+        // print_r($data);exit;
+        if(!empty($data['sort']) && !empty($data['reverse']))
+        { 
+            $this->db->order_by($data['sort'],$data['reverse']);
+        }
+        else{
+            $this->db->order_by('u.id','desc');
+        }
+        $count_result_db = clone $this->db;  
+        $count_result = $count_result_db->get();
+        $count_result = $count_result->num_rows();
+        if(isset($data['number']) && isset($data['start']))
+           $this->db->limit($data['number'],$data['start']);
+        $query = $this->db->get();//echo $this->db->last_query();exit;
+        return array('total_records'=>$count_result,'data'=>$query->result_array());
     }
 
 

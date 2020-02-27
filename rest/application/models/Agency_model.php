@@ -52,8 +52,10 @@ class Agency_model extends CI_Model
         }
         $all_clients_count_db=clone $this->db;
         $all_clients_count = $all_clients_count_db->get()->num_rows();
-        if(isset($data['pagination']['number']) && $data['pagination']['number']!='')
-            $this->db->limit($data['pagination']['number'],$data['pagination']['start']);
+        if(isset($data['start']) && $data['number']!='')
+            $this->db->limit($data['number'],$data['start']);
+        if(isset($data['sort']))
+            $this->db->order_by($data['sort'],$data['order']);
         
         $query = $this->db->get();//echo $this->db->last_query();exit;
         return array('total_records' => $all_clients_count,'data' => $query->result_array());

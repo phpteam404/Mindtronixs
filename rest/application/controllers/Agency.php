@@ -132,10 +132,9 @@ class Agency extends REST_Controller
     {
         //this function is used to get franchise(agencies) list information
         $data = $this->input->get(); 
-        $data = tableOptions($data);
+        //$data = tableOptions($data);
         $result = $this->Agency_model->listfranchise($data);//echo $this->db->last_query();exit;
         $franchise_list=$result['data'];
-        // print_r($franchise_list);exit;
         foreach($franchise_list as $f=>$l){ 
             if(!empty($l['agency_contacts']) && !empty($data['agency_id'])){
                 $franchise_list[$f]['agency_contacts']=json_decode($l['agency_contacts']);
@@ -145,8 +144,7 @@ class Agency extends REST_Controller
                     $franchise_list[$f]['agency_contact_list'][$k]['name']=$v->name;
                     $franchise_list[$f]['agency_contact_list'][$k]['contact_phone']=$v->contact_phone;
                     $franchise_list[$f]['agency_contact_list'][$k]['contact_title']=$v->contact_title;
-                }
-                
+                }              
             }    
             if(!empty($data['agency_id'])){
                 $franchise_list[$f]['city']=getObjOnId($l['city'],true);
@@ -185,7 +183,7 @@ class Agency extends REST_Controller
             $result = array('status'=>TRUE, 'message' => $this->lang->line('success'),'data' =>$franchise_list,'total_records' =>$result['total_records'],'no_of_student'=>!empty($no_of_students[0]['no_of_students'])?$no_of_students[0]['no_of_students']:'0','no_of_schools'=>!empty($no_of_schools[0]['no_of_schools'])?$no_of_schools[0]['no_of_schools']:'0','no_of_trainers'=>!empty(count($no_of_trainers))?count($no_of_trainers):'0','student_invoice_amount'=>$student_invoice_amount,'student_collected_amount'=>$student_collected_amount,'mindtronix_invoice_amount'=>$mindtronix_invoice_amount,'mindtronix_collected_amount'=>$mindtronix_collected_amount);
         }
         else{
-            $result = array('status'=>TRUE, 'message' => $this->lang->line('success'),'data' =>$franchise_list,'total_records' =>$result['total_records']);
+            $result = array('status'=>TRUE, 'message' => $this->lang->line('success'),'data' =>$franchise_list,'total_records' =>$result['total_records'],'table_headers'=>getTableHeads('franchilse_list'));
         }
         $this->response($result, REST_Controller::HTTP_OK);
     }

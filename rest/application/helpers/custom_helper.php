@@ -714,6 +714,7 @@ if(!function_exists('get_mime')) {
         }
     }
 }
+
 if(!function_exists('pk_encrypt')){
     function pk_encrypt($response){
         if($response!=NULL) {
@@ -723,6 +724,7 @@ if(!function_exists('pk_encrypt')){
         return $response;
     }
 }
+
 if(!function_exists('pk_decrypt')){
     function pk_decrypt($response){
         if($response!=NULL && $response!='') {
@@ -739,10 +741,149 @@ if(!function_exists('pk_decrypt')){
         return $response;
     }
 }
+
 if(!function_exists('validateDate')){
     function validateDate($date, $format = 'Y-m-d'){
         $d = DateTime::createFromFormat($format, $date);
         // The Y ( 4 digits year ) returns TRUE for any integer with any number of digits so changing the comparison from == to === fixes the issue.
         return $d && $d->format($format) === $date;
+    }
+}
+
+if (!function_exists('getTableHeads')) {
+    function getTableHeads($table){
+        switch($table){
+            case 'franchilse_list':
+                return array(
+                    array('field' => 'franchise_code', 'header' => 'Franchise Code', 'alias' => 'franchise_code'),
+                    array('field' => 'agency_name', 'header' => 'Franchise Name', 'alias' => 'agency_name'),
+                    array('field' => 'email', 'header' => 'Contact Email', 'alias' => 'email'),
+                    array('field' => 'contact_number', 'header' => 'Contact Number', 'alias' => 'contact_number'),
+                    array('field' => 'city_new', 'header' => 'City', 'alias' => 'city_new'),
+                    array('field' => 'created_on', 'header' =>'Created On', 'alias' => 'created_on'),
+                    array('field' => 'status', 'header' =>'Status', 'alias' => 'status'),
+                    array('field' => 'actions', 'header' => 'Actions', 'alias' => 'actions'),
+                );
+                break;
+            case 'fee_structure_list':
+                return array(
+                     array('field'=> 'name', 'header'=> 'Fee Title','alias'=>'name' ),
+                     array('field'=> 'amount', 'header'=> 'Fee Amount (₹)' ,'alias' =>'amount'),
+                     array('field'=> 'term', 'header'=> 'Term' ,'alias' =>'term'),
+                     array('field'=> 'discount', 'header'=> 'Discount (%)' ,'alias' =>'discount' ),
+                     array('field'=> 'status', 'header'=> 'Status','alias'=>'status' ),
+                     array('field'=> 'actions', 'header'=> 'Actions','alias'=>'actions' )
+                );
+                break;
+            case 'ticket_list':
+                return array(
+                    array('field' => 'date', 'header'=> 'Date' ,'alias'=>'date' ),
+                    array('field'=>'title', 'header'=> 'Issue' ,'alias' =>'title' ),
+                    array('field'=> 'created_by', 'header'=> 'Created By' ,'alias'=>'created_by'),
+                    array('field'=> 'type', 'header'=>'Type','alias'=>'type' ),
+                    array('field'=> 'last_update', 'header'=> 'Last Update','alais'=>'last_update' ),
+                    array('field'=> 'status', 'header'=> 'Status','alais'=>'status' ),
+                    array('field'=>'actions', 'header'=> 'Actions','alias'=>'actions')
+                );
+                break;
+            case  'students_invoice_list':
+                return array(
+                     array('field'=> 'name', 'header'=> 'Name' ,'alias'=>'name'),
+                     array('field' => 'phone', 'header'=> 'Phone','alias'=> 'phone'),
+                     array('field'=> 'month', 'header'=> 'Month','alias'=>'month' ),
+                     array('field'=> 'bill', 'header'=> 'Bill' ,'alias'=>'bill'),
+                     array('field'=> 'status', 'header'=> 'Status','alias'=>'status')
+                );
+                break;
+            case 'online_user_invoice_list':
+                return array(
+                  array('field'=> 'name', 'header'=> 'Name' ,'alias'=>'name'),
+                  array('field' => 'phone', 'header'=> 'Phone','alias'=> 'phone'),
+                  array('field'=> 'month', 'header'=> 'Month','alias'=>'month' ),
+                  array('field'=> 'bill', 'header'=> 'Bill' ,'alias'=>'bill'),
+                  array('field'=> 'status', 'header'=> 'Status','alias'=>'status')
+                );
+                break;
+            case 'franchise_invoice_list':
+                return array(
+                  array('field'=> 'name', 'header'=> 'Name' ,'alias'=>'name'),
+                  array('field' => 'phone', 'header'=> 'Phone','alias'=> 'phone'),
+                  array('field'=> 'month', 'header'=> 'Month','alias'=>'month' ),
+                  array('field'=> 'bill', 'header'=> 'Bill' ,'alias'=>'bill'),
+                  array('field'=> 'status', 'header'=> 'Status','alias'=>'status')
+                );
+                break;
+            case 'school_mngmt_list' :
+                return array(
+                  array('field'=> 'code', 'header'=> 'School code','alias'=>'code' ),
+                  array('field'=> 'name', 'header'=> 'School Name','alias'=>'name' ),
+                  array('field'=> 'no_of_students','header'=> 'Number of Students','alias'=>'no_of_students' ),
+                  array('field'=> 'phone', 'header'=> 'Phone no','alias'=>'phone' ),
+                  array('field'=> 'email', 'header'=> 'Email' ,'alias'=>'email'),
+                  array('field'=> 'actions', 'header'=> 'Actions','alias'=>'actions' )
+                );
+                break;
+            case 'master_list':
+               return array(
+                  array('field'=> 'child_name', 'header'=> 'Master Name','alias'=>'name' ),
+                  array('field'=> 'description', 'header'=> 'Master Description','alias'=>'description' ),
+                  array('field'=> 'action', 'header'=> 'Actions','alias'=>'action')
+               );
+               break;
+            case 'franchice_contact_info':
+                return array(
+                  array('field'=> 'contact_title', 'header'=> 'Contact Title' ,'alias' =>'contact_title'),
+                  array('field'=> 'contact_name', 'header'=> 'Contact Name','alias'=>'contact_name' ),
+                  array('field'=> 'contact_phone', 'header'=> 'Contact Phone' ,'alias'=>'contact_phone'),
+                  array('field'=> 'actions', 'header'=> 'Actions' ,'alias'=>'actions')
+                );
+                break;
+            case 'franchice_fee_structure_list':
+                return arary(
+                  array('field'=> 'name', 'header'=> 'Fee Title' ,'alias'=>'name'),
+                  array('field'=> 'amount', 'header'=> 'Fee Amount (₹)','alias'=>'amount' ),
+                  array('field'=> 'term', 'header'=> 'Term' ,'alias'=>'term' ),
+                  array('field'=> 'discount', 'header'=> 'Discount (%)'  ,'alias'=>'discount'),
+                  array('field'=> 'action', 'header'=> 'Actions' ,'alias'=>'action' )
+                );
+                break;
+            case 'all_users_list':
+                return array(
+                   array('field' => 'name', 'header' => 'Name', 'alias' => 'name'),
+                   array('field' => 'email', 'header' => 'Email', 'alias' => 'email'),
+                   array('field' => 'phone', 'header' => 'Phone', 'alias' => 'phone'),
+                   array('field' => 'role', 'header' => 'Role', 'alias' => 'role'),
+                   array('field' => 'manager', 'header' => 'Franchise', 'alias' => 'manager'),
+                   array('field' => 'status', 'header' => 'Status', 'alias' => 'status'),
+                   array('field' => 'actions', 'header' => 'Actions', 'alias' => 'actions')
+               );
+               break;
+            case 'students_list':
+                return array(
+                    array('field'=> 'name', 'header'=> 'Student Name','alias'=>'name'),
+                    array('field'=> 'grade', 'header'=>'Grade' ,'alias' =>'grade'),
+                    array('field'=> 'school', 'header'=> 'School','alias'=>'school' ),
+                    array('field'=> 'franchise', 'header'=> 'Franchise','alias'=>'franchise' ),
+                    array('field'=> 'email', 'header'=> 'Email','alias'=>'email' ),
+                    array('field'=> 'phone', 'header'=> 'Phone','alias'=>'phone' ),
+                    array('field'=>'last_login', 'header'=> 'Last Login','alias' =>'last_login' ),
+                    array('field'=> 'status', 'header'=> 'Status','alias'=>'status' ),
+                    array( 'field'=> 'actions', 'header'=> 'Actions' ,'alias'=>'actions')
+               );
+               break;
+            case 'online_users_list':
+                return array(
+                    array('field'=> 'name', 'header'=> 'Student Name','alias'=>'name'),
+                    array('field'=>'manager', 'header'=> 'Parent Name','alias'=>'manager' ),
+                    array('field'=> 'grade', 'header'=> 'Grade','alias'=>'grade' ),
+                    array('field'=> 'city', 'header'=> 'City','alias'=>'city' ),
+                    array('field'=> 'email', 'header'=>'Email','alias'=>'email' ),
+                    array('field'=> 'phone', 'header'=> 'Phone','alias' =>'phone' ),
+                    array('field'=> 'status', 'header'=> 'Status','alias'=>'status' ),
+                    array('field'=> 'actions', 'header'=> 'Actions','alias'=>'actions' )
+                );
+                break;
+        }
+
     }
 }

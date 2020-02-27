@@ -53,8 +53,8 @@ class Master extends REST_Controller
             $is_update=$this->User_model->update_data('master_child',$master_child_data,array('id'=>$data ['child_id']));
             //print_r($is_update);exit;
             if($is_update>0){
-                $result = array('status'=>TRUE, 'message' => $this->lang->line('master_update'), 'data'=>array  ('data'=>$inserted_id));
-                   $this->response($result, REST_Controller::HTTP_OK);
+                $result = array('status'=>TRUE, 'message' => $this->lang->line('master_update'), 'data'=>'');
+                $this->response($result, REST_Controller::HTTP_OK);
             }
             else{
                 $result = array('status'=>FALSE,'error'=>$this->lang->line('invalid_data'),'data'=>'');
@@ -95,7 +95,7 @@ class Master extends REST_Controller
         $data = tableOptions($data);
         $result = $this->Master_model->getMaster($data);
         // print_r($result);exit;
-        $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>array('data'=>$result['data'],'total_records'=>$result['total_records']));
+        $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>array('data'=>$result['data'],'total_records'=>$result['total_records']),'table_headers'=>getTableHeads('master_list'));
         $this->response($result, REST_Controller::HTTP_OK);
          
     }

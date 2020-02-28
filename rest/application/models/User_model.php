@@ -99,7 +99,7 @@ class User_model extends CI_Model
     public function login($data)
     {
         $this->db->select('ur.user_role_name,u.user_role_id,u.id as user_id,u.profile_image,u.first_name,u.last_name,u.email,u.user_status,u.is_blocked,
-        date_format(u.last_password_attempt_date,"%Y-%m-%d") as last_password_attempt_date,ur.access,u.agency_id');
+        date_format(u.last_password_attempt_date,"%Y-%m-%d") as last_password_attempt_date,ur.access,u.franchise_id');
         $this->db->from('user u');        
         $this->db->join('user_role ur','u.user_role_id=ur.id and ur.role_status=1','left');        
         $this->db->where(array('u.email' => $data['username'], 'u.password' => md5($data['password'])));
@@ -524,15 +524,15 @@ class User_model extends CI_Model
     }
     public function getuserlist($data=null)
     {
-        $this->db->select('u.id as user_id,u.user_role_id,u.agency_id,u.first_name,u.last_name,u.email,u.phone_no,u.gender,a.name as agency_name,u.user_status as status,CONCAT(ur.user_role_name,"-",ur.id)  as user_role,CONCAT(a.name,"-",a.id) agency_name');
+        $this->db->select('u.id as user_id,u.user_role_id,u.franchise_id,u.first_name,u.last_name,u.email,u.phone_no,u.gender,a.name as franchise_name,u.user_status as status,CONCAT(ur.user_role_name,"-",ur.id)  as user_role,CONCAT(a.name,"-",a.id) franchise_name');
         $this->db->from('user u');
-        $this->db->join('agency a','u.agency_id=a.id','left');
+        $this->db->join('franchise a','u.franchise_id=a.id','left');
         $this->db->join('user_role ur','u.user_role_id=ur.id','left');
         if(isset($data['user_role_id']) && $data['user_role_id']>0){
             $this->db->where('u.user_role_id',$data['user_role_id']);
         }
-        if(isset($data['agency_id']) && $data['agency_id']>0){
-            $this->db->where('u.agency_id',$data['agency_id']);
+        if(isset($data['franchise_id']) && $data['franchise_id']>0){
+            $this->db->where('u.franchise_id',$data['franchise_id']);
         }
         if(!empty($data['user_id'])){
             $this->db->where('u.id',$data['user_id']);
@@ -663,7 +663,7 @@ class User_model extends CI_Model
         }
         else if($data['user_role_id'] ==2){
             $this->db->where('u.user_role_id',2);
-            $this->db->where('u.agency_id',$data['agency_id']);
+            $this->db->where('u.franchise_id',$data['franchise_id']);
         }
         if(isset($data['date']))
             $this->db->where('t.date',$data['date']);
@@ -715,7 +715,7 @@ class User_model extends CI_Model
     }
     public function getStudentList($data=null){
         if(isset($data['type']) && $data['type']=='edit'){//this condition for prepopulate the student details and list the student details
-            $this->db->select('u.id as user_id,s.id as student_id,u.agency_id,concat(u.first_name," ",u.last_name) as student_name,u.email as contact_email,u.phone_no,u.last_login,u.user_status as status,a.name as agency_name,CONCAT(mc2.child_name,"-",mc2.id) as grade');
+            $this->db->select('u.id as user_id,s.id as student_id,u.franchise_id,concat(u.first_name," ",u.last_name) as student_name,u.email as contact_email,u.phone_no,u.last_login,u.user_status as status,a.name as franchise_name,CONCAT(mc2.child_name,"-",mc2.id) as grade');
             if(!empty($data['user_id'])){
                 $this->db->select('s.place_of_birth,u.address,s.date_of_birth,CONCAT(mc.child_name,"-",mc.id) as blood_group,CONCAT(mc1.child_name,"-",mc1.id) as relation,CONCAT(mc3.child_name,"-",mc3.id) as nationality,CONCAT(mc4.child_name,"-",mc4.id) as mother_tongue,CONCAT(fm.`name`,"-",fm.id) as fee_structure,s.parent as name_of_parent,u.phone_no as home_phone_no,s.mobile_phone1 as mobile_phone,s.mobile_phone2,s.occupation,sm.`name` as school_name,s.history_of_illness');
             }
@@ -726,17 +726,17 @@ class User_model extends CI_Model
         }
         $this->db->from('user u');
         $this->db->join('student s','u.id =s.user_id','left');
-        $this->db->join('agency a','u.agency_id =a.id','left');
+        $this->db->join('franchise a','u.franchise_id =a.id','left');
         $this->db->join('master_child mc','s.blood_group=mc.id AND master_id=9','left');
         $this->db->join('master_child mc1','s.relation_with_student=mc1.id AND mc1.master_id=10','left');
         $this->db->join('master_child mc2','s.grade=mc2.id AND mc2.master_id=5','left');
         $this->db->join('master_child mc3','s.nationality=mc3.id AND mc3.master_id=7','left');
         $this->db->join('master_child mc4','s.mother_tongue=mc4.id AND mc4.master_id=8','left');
-        $this->db->join('fee_master fm','s.agency_fee_id=fm.id','left');
+        $this->db->join('fee_master fm','s.franchise_fee_id=fm.id','left');
         $this->db->join('school_master sm','s.school_id=sm.id','left');
         $this->db->where('u.user_role_id','4');
-        if(isset($data['agency_id']) && $data['agency_id']!=''){
-            $this->db->where('u.agency_id',$data['agency_id']);
+        if(isset($data['franchise_id']) && $data['franchise_id']!=''){
+            $this->db->where('u.franchise_id',$data['franchise_id']);
         }
         if(isset($data['school_id']) && $data['school_id']>0){
             $this->db->where('sm.id',$data['school_id']);

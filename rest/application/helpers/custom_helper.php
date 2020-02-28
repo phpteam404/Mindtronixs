@@ -756,7 +756,7 @@ if (!function_exists('getTableHeads')) {
             case 'franchilse_list':
                 return array(
                     array('field' => 'franchise_code', 'header' => 'Franchise Code', 'alias' => 'franchise_code'),
-                    array('field' => 'agency_name', 'header' => 'Franchise Name', 'alias' => 'agency_name'),
+                    array('field' => 'franchise_name', 'header' => 'Franchise Name', 'alias' => 'franchise_name'),
                     array('field' => 'email', 'header' => 'Contact Email', 'alias' => 'email'),
                     array('field' => 'contact_number', 'header' => 'Contact Number', 'alias' => 'contact_number'),
                     array('field' => 'city_new', 'header' => 'City', 'alias' => 'city_new'),

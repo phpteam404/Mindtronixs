@@ -69,7 +69,7 @@ class User extends REST_Controller
         );
 
         $this->form_validator->add_rules('password', array('required' => $this->lang->line('password_req')));
-        $this->form_validator->add_rules('agency_id', array('required' => $this->lang->line('agency_id_req')));
+        $this->form_validator->add_rules('franchise_id', array('required' => $this->lang->line('franchise_id_req')));
         $this->form_validator->add_rules('user_role_id', array('required' => $this->lang->line('user_role_id_req')));
         // $this->form_validator->add_rules('first_name', $firstNameRules);
         $this->form_validator->add_rules('last_name', $lastNameRules);
@@ -83,7 +83,7 @@ class User extends REST_Controller
             $this->form_validator->add_rules('school_id', array('required' => $this->lang->line('school_req')));
             $this->form_validator->add_rules('grade', array('required' => $this->lang->line('grade_req')));
             $this->form_validator->add_rules('parent', array('required' => $this->lang->line('parent_req')));
-            $this->form_validator->add_rules('agency_fee_id', array('required' => $this->lang->line('agency_fee_id_req')));
+            $this->form_validator->add_rules('franchise_fee_id', array('required' => $this->lang->line('franchise_fee_id_req')));
             $this->form_validator->add_rules('date_of_birth', array('required' => $this->lang->line('date_of_birth_req')));
             // $this->form_validator->add_rules('home_phone_no', array('required' => $this->lang->line('home_phone_no_req')));
             $this->form_validator->add_rules('blood_group', array('required' => $this->lang->line('blood_group_req')));
@@ -127,13 +127,13 @@ class User extends REST_Controller
             // 'profile_image' =>isset($data['profile_image'])?$data['profile_image']:'',
             'address'=>$data['address'],
             'phone_no'=>$data['phone_no'],
-            'agency_id'=>$data['agency_id']
+            'franchise_id'=>$data['franchise_id']
         );
 
         if(isset($data['user_role_id']) && $data['user_role_id']==4){
             $student_data=array(
                 'school_id'=>isset($data['school'])?$data['school'] :0,
-                'agency_id'=>isset($data['agency_id'])?$data['agency_id'] :0,
+                'franchise_id'=>isset($data['franchise_id'])?$data['franchise_id'] :0,
                 'nationality'=>isset($data['nationality'])?$data['nationality'] :null,
                 'place_of_birth'=>isset($data['place_of_birth'])?$data['place_of_birth'] :null,
                 'date_of_birth'=>isset($data['date_of_birth'])?$data['date_of_birth'] :null,
@@ -144,7 +144,7 @@ class User extends REST_Controller
                 'mobile_phone2'=>isset($data['mobile_phone2'])?$data['mobile_phone2'] : '',
                 'blood_group'=>isset($data['blood_group'])?$data['blood_group'] : '',
                 'history_of_illness'=>isset($data['history_of_illness'])?$data['history_of_illness'] : '',
-                'agency_fee_id'=>isset($data['agency_fee_id'])?$data['agency_fee_id'] : '',
+                'franchise_fee_id'=>isset($data['franchise_fee_id'])?$data['franchise_fee_id'] : '',
                 'status'=>isset($data['status'])?$data['status'] :'1',
                 'relation_with_student'=>isset($data['relation_with_student'])?$data['relation_with_student'] :'',
                 'occupation'=>isset($data['occupation'])?$data['occupation'] :''
@@ -198,13 +198,13 @@ class User extends REST_Controller
         foreach($result['data'] as $k=>$v){
             if(!empty($data['user_id'])){
                 $result['data'][$k]['status']=getStatusObj($v['status']);
-                $result['data'][$k]['agency_name']=getObjOnId($v['agency_name'],true);
+                $result['data'][$k]['franchise_name']=getObjOnId($v['franchise_name'],true);
                 $result['data'][$k]['user_role']=getObjOnId($v['user_role'],true);
 
             }
             else{
                 $result['data'][$k]['status']=getStatusText($v['status']);
-                $result['data'][$k]['agency_name']=getObjOnId($v['agency_name'],false);
+                $result['data'][$k]['franchise_name']=getObjOnId($v['franchise_name'],false);
                 $result['data'][$k]['user_role']=getObjOnId($v['user_role'],false);
 
             }
@@ -382,7 +382,7 @@ class User extends REST_Controller
         $data = $this->input->get();
         $data['user_id'] =$this->session_user_id;
         $data['user_role_id'] =$this->session_user_info->user_role_id;
-        $data['agency_id'] =$this->session_user_info->agency_id;
+        $data['franchise_id'] =$this->session_user_info->franchise_id;
         $validated = $this->form_validator->validate($data);
         if($validated != 1)
         {

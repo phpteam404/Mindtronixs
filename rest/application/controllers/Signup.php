@@ -108,14 +108,14 @@ class Signup extends CI_Controller
                 $sub_menus=$this->User_model->menuList(array('user_role_id'=>$result->user_role_id,'parent_module_id'=>$v['app_module_id'],'type'=>'menu','is_menu'=>2));
                 $menu[$k]['sub_menus']=$sub_menus;
         }
-        $check_agency=$this->User_model->check_record('agency',array('id'=>$result->agency_id));
-        if($check_agency[0]['status']==1){
+        $check_franchise=$this->User_model->check_record('franchise',array('id'=>$result->franchise_id));
+        if($check_franchise[0]['status']==1){
             $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>array('data' => $result), 'access_token' => $access_token,'menu'=>$menu);
             header('Content-Type: application/json');
             echo json_encode($result);exit;
         }
         else{
-            $result = array('status'=>FALSE,'error'=>array('message'=>$this->lang->line('agency_status_inactive')),'data'=>'');
+            $result = array('status'=>FALSE,'error'=>array('message'=>$this->lang->line('franchise_status_inactive')),'data'=>'');
             echo json_encode($result);exit;
         }
 

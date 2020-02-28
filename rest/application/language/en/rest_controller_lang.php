@@ -383,7 +383,7 @@ $lang['activate_in_next_review_req'] = "Activation status is required.";
 
 
 /* Mindtroix */
-$lang['agency_id_req'] = 'Agency id required';
+$lang['franchise_id_req'] = 'franchise id required';
 $lang['success'] = 'Success';
 $lang['ticket_desc'] = 'Ticket description required';
 $lang['upload_document'] = 'upload image type documents only';
@@ -398,20 +398,20 @@ $lang['master_add'] = 'Master added successfully';
 $lang['child_name_duplicate'] = 'Child name already exists';
 $lang['master_update'] = 'Master updated successfully';
 $lang['master_key_req'] = 'Master key is required';
-$lang['agency_name_req'] ='Agency Name required';
-$lang['agency_add_req'] ='Agency Address required';
+$lang['franchise_name_req'] ='Franchise Name required';
+$lang['franchise_add_req'] ='Franchise Address required';
 $lang['created_by_req'] ='Created By required';
-$lang['agency_create'] ='Agency Created Successfully';
+$lang['franchise_create'] ='Franchise Created Successfully';
 $lang['updated_by_req'] ='Updated By Required';
-$lang['agency_update'] ='Agency Updated Successfully';
-$lang['agency_manager'] ='Agency Manager Required';
-$lang['agency_email'] ='Email is required';
-$lang['agency_phone_primary'] ='Phone Number is required';
-$lang['agency_phone_alternative'] ='Alternative Phone Number is required';
-$lang['agency_recheck'] ='Already You Have Selected This Plan';
+$lang['franchise_update'] ='Franchise Updated Successfully';
+$lang['franchise_manager'] ='Franchise Manager Required';
+$lang['franchise_email'] ='Email is required';
+$lang['franchise_phone_primary'] ='Phone Number is required';
+$lang['franchise_phone_alternative'] ='Alternative Phone Number is required';
+$lang['franchise_recheck'] ='Already You Have Selected This Plan';
 
 
-$lang['agency_fee_id_req'] ='Agency Fee id required';
+$lang['franchise_fee_id_req'] ='Franchise Fee id required';
 $lang['id_relationship_category_req'] = 'Category required';
 $lang['fee_name'] ='Fee title required';
 $lang['fee_added'] ='Fee Details Added Successfully';
@@ -436,7 +436,7 @@ $lang['title_req_desc'] = 'Ticket title is required';
 $lang['assigned_req'] = 'Assigned user is required';
 $lang['ticket_assign'] = 'Ticket assigned Successfully';
 $lang['ticket_close'] = 'Ticket closed Successfully';
-$lang['agency_status_inactive'] = 'Your agency is disabled. Please contact your administrator';
+$lang['franchise_status_inactive'] = 'Your franchise is disabled. Please contact your administrator';
 $lang['franchisecode_req'] = 'Franchise code  required';
 $lang['owner_name_req'] = 'Owner name is required';
 $lang['country_req'] = 'Country is required';
@@ -447,5 +447,6 @@ $lang['date_of_birth_req'] = 'Date of birth is required';
 $lang['home_phone_no_req'] = 'Home phoneno is required';
 $lang['blood_group_req'] = 'Blood group is required';
 $lang['term_req'] = 'Fee term is required';
+$lang['school_code_req'] = 'School code is required';
 
 

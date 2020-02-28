@@ -2,52 +2,52 @@
 
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Agency_model extends CI_Model
+class Franchise_model extends CI_Model
 {
     public function __construct(){
         parent::__construct();
         // $this->load->model('Mcommon');
     }
 
-    public function addAgency($data)
+    public function addFranchise($data)
     {
-        $this->db->insert('agency', $data);
+        $this->db->insert('franchise', $data);
         return $this->db->insert_id();
     }
     
-    public function updateAgency($data)
+    public function updateFranchise($data)
     {
-        $this->db->where('agency_id', $data['agency_id']);
-        $this->db->update('agency', $data);
+        $this->db->where('franchise_id', $data['franchise_id']);
+        $this->db->update('franchise', $data);
         return 1;
     }
 
     public function listfranchise($data)
     {
-        $this->db->select('a.id as agency_id,a.name as agency_name, a.email,a.primary_contact as contact_number,a.franchise_code,
-        CONCAT(mc.child_name,"-",mc.id) as city,a.status,DATE_FORMAT(a.created_on, "%d-%m-%Y") as created_on');
+        $this->db->select('f.id as franchise_id,f.name as franchise_name, f.email,f.primary_contact as contact_number,f.franchise_code,
+        CONCAT(mc.child_name,"-",mc.id) as city,f.status,DATE_FORMAT(f.created_on, "%d-%m-%Y") as created_on');
         // $this->db->select('*');
-        $this->db->from('agency a');
-        $this->db->join('master_child mc','a.city=mc.id AND mc.master_id=14','left');
-        $this->db->join('master_child mc1','a.state=mc1.id AND mc1.master_id=13','left');
-        $this->db->join('master_child mc2','a.country=mc2.id AND mc2.master_id=12','left');
-        if(isset($data['agency_id']) && $data['agency_id'] > 0){
-            $this->db->select('a.agency_contacts,a.website_address,a.owner_name,a.address,CONCAT(mc1.child_name,"-",mc1.id) as state,CONCAT(mc2.child_name,"-",mc2.id) as country');
-            // $this->db->join('agency_fee af','a.id = af.agency_id','');
+        $this->db->from('franchise f');
+        $this->db->join('master_child mc','f.city=mc.id AND mc.master_id=14','left');
+        $this->db->join('master_child mc1','f.state=mc1.id AND mc1.master_id=13','left');
+        $this->db->join('master_child mc2','f.country=mc2.id AND mc2.master_id=12','left');
+        if(isset($data['franchise_id']) && $data['franchise_id'] > 0){
+            $this->db->select('f.franchise_contacts,f.website_address,f.owner_name,f.address,CONCAT(mc1.child_name,"-",mc1.id) as state,CONCAT(mc2.child_name,"-",mc2.id) as country');
+            // $this->db->join('franchise_fee af','a.id = af.franchise_id','');
             // $this->db->join('fee_master fm','fm.id = af.fee_master_id','');
-            $this->db->where('a.id',$data['agency_id']);
+            $this->db->where('f.id',$data['franchise_id']);
             // $this->db->where('af.status',1);
             //$this->db->where('fm.status',1);
         }
         // print_r($data);exit;
-        $this->db->where_in('a.status',array(0,1));
+        $this->db->where_in('f.status',array(0,1));
         if(isset($data['search'])){
             $this->db->group_start();
-            $this->db->like('a.name', $data['search'], 'both');
-            $this->db->or_like('a.franchise_code', $data['search'], 'both');
-            $this->db->or_like('a.email', $data['search'], 'both');
-            $this->db->or_like('a.city', $data['search'], 'both');
-            $this->db->or_like('a.primary_contact',$data['search'],'both');
+            $this->db->like('f.name', $data['search'], 'both');
+            $this->db->or_like('f.franchise_code', $data['search'], 'both');
+            $this->db->or_like('f.email', $data['search'], 'both');
+            $this->db->or_like('f.city', $data['search'], 'both');
+            $this->db->or_like('f.primary_contact',$data['search'],'both');
             $this->db->group_end();
         }
         $all_clients_count_db=clone $this->db;
@@ -57,7 +57,7 @@ class Agency_model extends CI_Model
         if(isset($data['sort']))
             $this->db->order_by($data['sort'],$data['order']);
         else
-        $this->db->order_by('a.id','desc');
+        $this->db->order_by('f.id','desc');
         
         $query = $this->db->get();//echo $this->db->last_query();exit;
         return array('total_records' => $all_clients_count,'data' => $query->result_array());
@@ -110,27 +110,27 @@ class Agency_model extends CI_Model
         return array('total_records' => $all_clients_count,'data' => $query->result_array());
     }
   
-    public function addAgencyFee($data)
+    public function addFranchiseFee($data)
     {
-        $this->db->insert('agency_fee', $data);
+        $this->db->insert('franchise_fee', $data);
         return $this->db->insert_id();
     }
-    public function getAgencyInfo($data)//this function is used for get agency information
+    public function getFranchiseInfo($data)//this function is used for get franchise information
     {
-        $this->db->select('a.id as agency_id,a.name as agency_name, a.franchise_code,a.website_address,mc.child_name as country,mc1.child_name as stage,mc2.child_name as state,a.landmark,a.email,a.pincode,a.primary_contact as contact_number,a.owner_name,GROUP_CONCAT(fee_master_id) as fee_master_id,a.agency_contacts,if(a.status=1,"active","inactive") as status');
-        $this->db->from('agency a');
-        $this->db->join('master_child mc','a.country=mc.id and mc.master_id=12','left');
-        $this->db->join('master_child mc1','a.state=mc1.id and mc1.master_id=13','left');
-        $this->db->join('master_child mc2','a.city=mc2.id and mc2.master_id=14','left');
-        $this->db->join('agency_fee af','a.id=af.agency_id','left');
-        if(!empty($data['agency_id'])){
-            $this->db->where('a.id',$data['agency_id']);
+        $this->db->select('f.id as franchise_id,f.name as franchise_name, f.franchise_code,f.website_address,mc.child_name as country,mc1.child_name as stage,mc2.child_name as state,f.landmark,f.email,f.pincode,f.primary_contact as contact_number,f.owner_name,GROUP_CONCAT(fee_master_id) as fee_master_id,f.franchise_contacts,if(f.status=1,"active","inactive") as status');
+        $this->db->from('franchise f');
+        $this->db->join('master_child mc','f.country=mc.id and mc.master_id=12','left');
+        $this->db->join('master_child mc1','f.state=mc1.id and mc1.master_id=13','left');
+        $this->db->join('master_child mc2','f.city=mc2.id and mc2.master_id=14','left');
+        $this->db->join('franchise_fee af','f.id=af.franchise_id','left');
+        if(!empty($data['franchise_id'])){
+            $this->db->where('f.id',$data['franchise_id']);
         }
-        $this->db->group_by('a.id');
+        $this->db->group_by('f.id');
         $query = $this->db->get();//echo $this->db->last_query();exit;
         return $query->result_array();
     }
-    public function getFeeData($data)//this function is used for get fee data in for agency
+    public function getFeeData($data)//this function is used for get fee data in for franchise
     {
         $this->db->select('CASE WHEN mc.id=19 THEN "1 One Month)" WHEN mc.id=20 THEN "3 (Three Months)" WHEN mc.id=21 THEN "6 (Six Months)" WHEN mc.id=22 THEN "12 (Twelve Months)"
         ELSE "" END as fee_title,fm.amount,mc.child_name as term,fm.discount');
@@ -140,5 +140,6 @@ class Agency_model extends CI_Model
         $query = $this->db->get();
         return $query->result_array();
     }
+    
 
 }

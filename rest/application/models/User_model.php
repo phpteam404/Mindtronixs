@@ -176,6 +176,20 @@ class User_model extends CI_Model
         return $query->result_array();
     }
 
+    public function getUserRoles($data)
+    {
+        if(isset($data['dropdown'])){
+            $this->db->select('user_role_name as label, id as value')->from('user_role');
+            $this->db->where('role_level != 1');
+        }
+        else{
+            $this->db->select('*')->from('user_role');
+        }
+        $this->db->order_by('role_level','ASC');
+        $query = $this->db->get();
+        return $query->result_array();
+    }
+
     public function getUserInfo($data)
     {
         $this->db->select('*,u.id as user_id');
@@ -231,10 +245,7 @@ class User_model extends CI_Model
     }
 
     public function check_record($table,$where=null,$orderby=null){
-        if($orderby['dropdown'])
-            $this->db->select('user_role_name as label, id as value');
-        else
-            $this->db->select('*');
+        $this->db->select('*');
         $this->db->from($table);
         if(!empty($where))
             $this->db->where($where);

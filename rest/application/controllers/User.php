@@ -219,7 +219,7 @@ class User extends REST_Controller
         $modules=array();
         if(!isset($data['dropdown']))
             $modules= $this->User_model->menuList(array('user_role_id'=>!empty($data['user_role_id'])?$data['user_role_id']:1));
-        $user_roles= $this->User_model->check_record('user_role','',array('column_name'=>'role_level','order_type'=>'ASC','dropdown'=>isset($data['dropdown'])?true:false));//echo $this->db->last_query();exit;
+        $user_roles= $this->User_model->getUserRoles(array('dropdown'=>isset($data['dropdown'])?true:false));//echo $this->db->last_query();exit;
         $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>array('modules' => $modules,'user_roles'=>$user_roles));
         $this->response($result, REST_Controller::HTTP_OK);
     }

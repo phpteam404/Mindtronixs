@@ -192,7 +192,7 @@ class User_model extends CI_Model
 
     public function getUserInfo($data)
     {
-        $this->db->select('*,u.id as user_id');
+        $this->db->select('*,u.id as user_id, concat(u.first_name," ",u.last_name) as username');
         $this->db->from('user u');
         $this->db->join('user_role ur','u.user_role_id=ur.id and ur.role_status=1','left');
         //$this->db->join('business_unit_user buu','u.id_user = buu.user_id','left');

@@ -448,7 +448,7 @@ $lang['home_phone_no_req'] = 'Home phoneno is required';
 $lang['blood_group_req'] = 'Blood group is required';
 $lang['term_req'] = 'Fee term is required';
 $lang['school_code_req'] = 'School code is required';
-$lang['ticke_issue_req'] = 'Ticket issue is required';
+$lang['ticket_issue_req'] = 'Ticket issue is required';
 $lang['ticket_status_req'] = 'Ticket status is required';
 
 

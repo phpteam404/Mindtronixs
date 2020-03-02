@@ -146,13 +146,14 @@ class Franchise extends REST_Controller
                 }              
             }    
             if(!empty($data['franchise_id'])){
-                $franchise_list[$f]['city']=getObjOnId($l['city'],true);
-                $franchise_list[$f]['state']=getObjOnId($l['state'],true);
-                $franchise_list[$f]['country']=getObjOnId($l['country'],true);
+                $franchise_list[$f]['city']=getObjOnId($l['city'],!empty($l['city'])?true:false);
+                $franchise_list[$f]['state']=getObjOnId($l['state'],!empty($l['state'])?true:false);
+                $franchise_list[$f]['country']=getObjOnId($l['country'],!empty($l['country'])?true:false);
                 $franchise_list[$f]['status']=getStatusObj($l['status']);//Getting Objects for dropdown When One record is needed.
             }
             else{
-                $franchise_list[$f]['city']=getObjOnId($l['city'],false);
+                // print_r($l['city']);exit;
+                $franchise_list[$f]['city']=getObjOnId($l['city'],!empty($l['city'])?true:false);
                 $franchise_list[$f]['status']=getStatusText($l['status']);//Getting Lable for List when List is needed.
 
             } 
@@ -179,7 +180,7 @@ class Franchise extends REST_Controller
     public function addSchool_post() 
     {//this function is used to add/update schools information
         $data = $this->input->post();
-        // print_r($data);exit;
+        //  print_r($data);exit;
         if(empty($data)){
             $result = array('status'=>FALSE,'error'=>$this->lang->line('invalid_data'),'data'=>'1');
             $this->response($result, REST_Controller::HTTP_OK);
@@ -325,8 +326,8 @@ class Franchise extends REST_Controller
         $schoolInfo=$this->Franchise_model->getSchoolInfo($data);//this model is get the school information for edit service in schoool
         foreach($schoolInfo as $k=>$v){
             // $schoolInfo[$k]['status']=getStatusObj($v['status']);
-            $schoolInfo[$k]['city']=getObjOnId($v['city'],true);
-            $schoolInfo[$k]['state']=getObjOnId($v['state'],true);
+            $schoolInfo[$k]['city']=getObjOnId($v['city'],!empty($v['city'])?true:false);
+            $schoolInfo[$k]['state']=getObjOnId($v['state'],!empty($v['state'])?true:false);
         }
         $result = array('status'=>TRUE, 'message' => $this->lang->line('success'),'data'=>array('data' =>$schoolInfo));
         $this->response($result, REST_Controller::HTTP_OK);

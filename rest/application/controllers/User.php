@@ -198,14 +198,14 @@ class User extends REST_Controller
         foreach($result['data'] as $k=>$v){
             if(!empty($data['user_id'])){
                 $result['data'][$k]['status']=getStatusObj($v['status']);
-                $result['data'][$k]['franchise_name']=getObjOnId($v['franchise_name'],true);
-                $result['data'][$k]['user_role']=getObjOnId($v['user_role'],true);
+                $result['data'][$k]['franchise_name']=getObjOnId($v['franchise_name'],!empty($v['franchise_name'])?true:false);
+                $result['data'][$k]['user_role']=getObjOnId($v['user_role'],!empty($v['user_role'])?true:false);
 
             }
             else{
                 $result['data'][$k]['status']=getStatusText($v['status']);
-                $result['data'][$k]['franchise_name']=getObjOnId($v['franchise_name'],false);
-                $result['data'][$k]['user_role']=getObjOnId($v['user_role'],false);
+                $result['data'][$k]['franchise_name']=getObjOnId($v['franchise_name'],!empty($v['franchise_name'])?false:true);
+                $result['data'][$k]['user_role']=getObjOnId($v['user_role'],!empty($v['user_role'])?false:true);
 
             }
         }
@@ -401,17 +401,17 @@ class User extends REST_Controller
         $student_list=$this->User_model->getStudentList($data);
         foreach($student_list['data'] as $k=>$v){
             if(!empty($data['user_id'])){
-                $student_list['data'][$k]['blood_group']=getObjOnId($v['blood_group'],true);//getting the bloodgroup dropdown object values 
-                $student_list['data'][$k]['relation']=getObjOnId($v['relation'],true);
-                $student_list['data'][$k]['grade']=getObjOnId($v['grade'],true);//getting object  of  dropdown grade field
-                $student_list['data'][$k]['nationality']=getObjOnId($v['nationality'],true);
-                $student_list['data'][$k]['mother_tongue']=getObjOnId($v['mother_tongue'],true);
-                $student_list['data'][$k]['fee_structure']=getObjOnId($v['fee_structure'],true);
-                $student_list['data'][$k]['status']=getStatusObj($v['status']);
+                $student_list['data'][$k]['blood_group']=getObjOnId($v['blood_group'],!empty($v['blood_group'])?true:false);//getting the bloodgroup dropdown object values 
+                $student_list['data'][$k]['relation']=getObjOnId($v['relation'],!empty($v['relation'])?true:false);
+                $student_list['data'][$k]['grade']=getObjOnId($v['grade'],!empty($v['grade'])?true:false);//getting object  of  dropdown grade field
+                $student_list['data'][$k]['nationality']=getObjOnId($v['nationality'],!empty($v['nationality'])?true:false);
+                $student_list['data'][$k]['mother_tongue']=getObjOnId($v['mother_tongue'],!empty($v['mother_tongue'])?true:false);
+                $student_list['data'][$k]['fee_structure']=getObjOnId($v['fee_structure'],!empty($v['fee_structure'])?true:false);
+                $student_list['data'][$k]['status']=getObjOnId($v['status'],!empty($v['status'])?true:false);
 
             }
             else{
-                $student_list['data'][$k]['grade']=getObjOnId($v['grade'],false);//getting the garde value for list service
+                $student_list['data'][$k]['grade']=getObjOnId($v['grade'],!empty($v['grade'])?false:true);//getting the garde value for list service
                 $student_list['data'][$k]['status']=getStatusText($v['status']);
 
             }

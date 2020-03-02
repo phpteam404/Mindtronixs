@@ -98,11 +98,11 @@ class Fee extends REST_Controller
             if(isset($data['fee_master_id']) && $data['fee_master_id'] > 0){
                 //Getting Objects for dropdown When One record is needed.
                 $result['data'][$k]['status']=getStatusObj($v['status']);
-                $result['data'][$k]['term']=getObjOnId($v['term'],true);
+                $result['data'][$k]['term']=getObjOnId($v['term'],!empty($v['term'])?true:false);
             }else{
                 //Getting Lable for List when List is needed.
                 $result['data'][$k]['status']=getStatusText($v['status']);
-                $result['data'][$k]['term']=getObjOnId($v['term'],false);
+                $result['data'][$k]['term']=getObjOnId($v['term'],!empty($v['term'])?false:true);
             }
         }
         $result = array('status'=>TRUE, 'message' => $this->lang->line('success'),'data' =>array('data'=>$result['data'],'total_records' =>$result['total_records'],'table_headers'=>getTableHeads('fee_structure_list')));

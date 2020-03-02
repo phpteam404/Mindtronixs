@@ -759,7 +759,7 @@ if (!function_exists('getTableHeads')) {
                     array('field' => 'franchise_name', 'header' => 'Franchise Name', 'alias' => 'franchise_name'),
                     array('field' => 'email', 'header' => 'Contact Email', 'alias' => 'email'),
                     array('field' => 'contact_number', 'header' => 'Contact Number', 'alias' => 'contact_number'),
-                    array('field' => 'city_new', 'header' => 'City', 'alias' => 'city_new'),
+                    array('field' => 'city', 'header' => 'City', 'alias' => 'city'),
                     array('field' => 'created_on', 'header' =>'Created On', 'alias' => 'created_on'),
                     array('field' => 'status', 'header' =>'Status', 'alias' => 'status'),
                     array('field' => 'actions', 'header' => 'Actions', 'alias' => 'actions'),

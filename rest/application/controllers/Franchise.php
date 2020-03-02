@@ -146,9 +146,9 @@ class Franchise extends REST_Controller
                 }              
             }    
             if(!empty($data['franchise_id'])){
-                $franchise_list[$f]['city']=getObjOnId($l['city'],true);
-                $franchise_list[$f]['state']=getObjOnId($l['state'],true);
-                $franchise_list[$f]['country']=getObjOnId($l['country'],true);
+                $franchise_list[$f]['city']=getObjOnId($l['city'],!empty($l['city'])?true:false);
+                $franchise_list[$f]['state']=getObjOnId($l['state'],!empty($l['state'])?true:false);
+                $franchise_list[$f]['country']=getObjOnId($l['country'],!empty($l['country'])?true:false);
                 $franchise_list[$f]['status']=getStatusObj($l['status']);//Getting Objects for dropdown When One record is needed.
             }
             else{

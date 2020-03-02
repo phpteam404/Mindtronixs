@@ -589,6 +589,23 @@ abstract class REST_Controller extends CI_Controller {
 
 
         //$this->checkUploadFileType();
+        // echo '<pre>'.print_r($_SERVER);
+        // echo '==='.$_SERVER['HTTP_USER'];exit;
+
+        //The Following is to ensure that the User have access to the requested API or not.?
+        $except_urls = array('/User/access','login');
+        if(!in_array($_SERVER['PATH_INFO'],$except_urls)){
+            $qery = $this->rest->db->query('SELECT ma.* FROM module_access ma LEFT JOIN app_api_module apm ON ma.app_module_id = apm.app_module_id LEFT JOIN user u on  ma.user_role_id = u.user_role_id WHERE  apm.status = 1 AND apm.api_url ="'.$_SERVER['PATH_INFO'].'" AND u.id = '.$_SERVER['HTTP_USER'])->result_array();
+            // echo '<pre>'.print_r($qery);exit;
+            // echo '<pre>'.$this->db->last_query();exit;
+            if(empty($qery)){
+                $this->response([
+                    $this->config->item('rest_status_field_name') => FALSE,
+                    $this->config->item('rest_message_field_name') => $this->lang->line('text_rest_invalid_credentials')
+                ], self::HTTP_UNAUTHORIZED);
+            }
+        }
+        // echo '<pre>'.print_r($qery);exit;
     }
 
     /**

@@ -94,9 +94,13 @@ class Master extends REST_Controller
         }
         // $data = tableOptions($data);
         $result = $this->Master_model->getMaster($data);
+        if(isset($data['dropdown']) && $data['dropdown']!=''){
+            foreach($result['data'] as $k => $v)
+                $result['data'][$k]['value'] = (int)$v['value'];
+        }
         // print_r($result);exit;
         if(isset($data['dropdown']) && $data['dropdown']!=''){
-        $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>array('data'=>$result['data']));
+            $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>array('data'=>$result['data']));
         }
         else{
 

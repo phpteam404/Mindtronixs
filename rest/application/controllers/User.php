@@ -151,7 +151,7 @@ class User extends REST_Controller
 
             );
         }
-// print_r($student_data);exit;
+        // print_r($student_data);exit;
         if(isset($data['user_id']) && $data['user_id']>0){
             $user_data['updated_by'] = !empty($this->session_user_id)?$this->session_user_id:'0';
             $user_data['updated_on'] = currentDate();

@@ -777,11 +777,11 @@ if (!function_exists('getTableHeads')) {
                 break;
             case 'ticket_list':
                 return array(
-                    array('field' => 'date', 'header'=> 'Date' ,'alias'=>'date' ),
-                    array('field'=>'title', 'header'=> 'Issue' ,'alias' =>'title' ),
+                    array('field' => 'issue_id', 'header'=> 'Issue id' ,'alias'=>'issue_id' ),
+                    array('field'=>'issue_title', 'header'=> 'Issue id' ,'alias' =>'issue_title' ),
                     array('field'=> 'created_by', 'header'=> 'Created By' ,'alias'=>'created_by'),
-                    array('field'=> 'type', 'header'=>'Type','alias'=>'type' ),
-                    array('field'=> 'last_update', 'header'=> 'Last Update','alais'=>'last_update' ),
+                    array('field'=> 'issue_type', 'header'=>'IssueType','alias'=>'issue_type' ),
+                    array('field'=> 'created_data', 'header'=> 'Created date','alais'=>'last_update' ),
                     array('field'=> 'status', 'header'=> 'Status','alais'=>'status' ),
                     array('field'=>'actions', 'header'=> 'Actions','alias'=>'actions')
                 );

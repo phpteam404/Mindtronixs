@@ -2,7 +2,7 @@
 error_reporting(E_ALL ^ E_DEPRECATED);
 ini_set('display_errors','1');
 ini_set('memory_limit','256M');
-define('ENV','NARESH');
+define('ENV','PROD');
 $base_host = "http://192.168.0.19/Mindtronixs/";
 define('WEB_BASE_URL', $base_host);
 define('REST_API_URL', $base_host.'rest/');
@@ -31,10 +31,10 @@ switch(ENV)
     break;
 
     case 'PROD':
-        define('DB_HOST', '');//Here you need to mention your ip address  
-        define('DB_USERNAME', '');//UserName
-        define('DB_PASSWORD', '');//Password
-        define('DB_NAME', ''); // Here  you need to give your database name
+        define('DB_HOST', '139.59.59.231');//Here you need to mention your ip address  
+        define('DB_USERNAME', 'admin');//UserName
+        define('DB_PASSWORD', 'the@123');//Password
+        define('DB_NAME', 'mindtronics_13th'); // Here  you need to give your database name
         define('LOG_DB_NAME', '');
     break;
 

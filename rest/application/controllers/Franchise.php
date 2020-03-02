@@ -308,24 +308,30 @@ class Franchise extends REST_Controller
         $result = array('status'=>TRUE, 'message' => $this->lang->line('success'),'data'=>array('data' =>$franchise_info,'no_of_student'=>!empty($no_of_students[0]['no_of_students'])?$no_of_students[0]['no_of_students']:'0','no_of_schools'=>!empty($no_of_schools[0]['no_of_schools'])?$no_of_schools[0]['no_of_schools']:'0','no_of_trainers'=>!empty(count($no_of_trainers))?count($no_of_trainers):'0','student_invoice_amount'=>$student_invoice_amount,'student_collected_amount'=>$student_collected_amount,'mindtronix_invoice_amount'=>$mindtronix_invoice_amount,'mindtronix_collected_amount'=>$mindtronix_collected_amount,'statistics_graph'=>array()));
         $this->response($result, REST_Controller::HTTP_OK);
     }
-    // public function schoolInfo();//this function used to get school information  for prepopulated data when edit the school
-    
-    // {
-    //     $data=$this->input->get();
-    //     if(empty($data)){
-    //         $result = array('status'=>FALSE,'error'=>$this->lang->line('invalid_data'),'data'=>'1');
-    //         $this->response($result, REST_Controller::HTTP_OK);
-    //     }
-    //     $this->form_validator->add_rules('school_id',array('required' =>$this->lang->line('school_req')));
-    //     $validated = $this->form_validator->validate($data);
-    //     if($validated != 1)
-    //     {
-    //         $result = array('status'=>FALSE,'error'=>$validated,'data'=>'');
-    //         $this->response($result, REST_Controller::HTTP_OK);
-    //     }
-    //     $schoolInfo=$this->User_model->getSchoolInfo()
+    public function schoolInfo_get()//this function used to get school information  for prepopulated data when edit the school
+    {
+        $data=$this->input->get();
+        if(empty($data)){
+            $result = array('status'=>FALSE,'error'=>$this->lang->line('invalid_data'),'data'=>'1');
+            $this->response($result, REST_Controller::HTTP_OK);
+        }
+        $this->form_validator->add_rules('school_id',array('required' =>$this->lang->line('school_req')));
+        $validated = $this->form_validator->validate($data);
+        if($validated != 1)
+        {
+            $result = array('status'=>FALSE,'error'=>$validated,'data'=>'');
+            $this->response($result, REST_Controller::HTTP_OK);
+        }
+        $schoolInfo=$this->Franchise_model->getSchoolInfo($data);//this model is get the school information for edit service in schoool
+        foreach($schoolInfo as $k=>$v){
+            // $schoolInfo[$k]['status']=getStatusObj($v['status']);
+            $schoolInfo[$k]['city']=getObjOnId($v['city'],true);
+            $schoolInfo[$k]['state']=getObjOnId($v['state'],true);
+        }
+        $result = array('status'=>TRUE, 'message' => $this->lang->line('success'),'data'=>array('data' =>$schoolInfo));
+        $this->response($result, REST_Controller::HTTP_OK);
 
-    // }
+    }
 
 }
 

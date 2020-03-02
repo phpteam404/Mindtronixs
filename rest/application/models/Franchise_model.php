@@ -140,6 +140,19 @@ class Franchise_model extends CI_Model
         $query = $this->db->get();
         return $query->result_array();
     }
+    public function getSchoolInfo($data)
+    {
+        $this->db->select('sm.id as school_id, sm.name,sm.address,sm.phone,sm.school_code as code,sm.contact_person,sm.email,sm.franchise_id,CONCAT(mc.child_name,"-",mc.id) as city,
+        CONCAT(mc1.child_name,"-",mc1.id) as state,sm.pincode');
+        $this->db->from('school_master sm');
+        $this->db->join('master_child mc','sm.city =mc.id AND mc.master_id=14','left');
+        $this->db->join('master_child mc1','sm.state =mc1.id AND mc1.master_id=13','left');
+        if(isset($data['school_id']) && $data['school_id']>0){
+            $this->db->where('sm.id',$data['school_id']);
+        }
+        $query = $this->db->get();
+        return $query->result_array();
+    }
     
 
 }

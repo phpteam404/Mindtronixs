@@ -2,6 +2,7 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 require APPPATH . '/libraries/REST_Controller.php';
+require 'ImageFactory.php';
 
 class Ticket extends REST_Controller
 {
@@ -28,7 +29,6 @@ class Ticket extends REST_Controller
     public function addTicket_post()
     {
         $data=$this->input->post();
-        // print_r($_FILES);exit;
         if(!empty($_FILES)){
             $no_of_files=count($_FILES['document']['name']);
             for ($i=0; $i <$no_of_files ; $i++) { 
@@ -44,6 +44,14 @@ class Ticket extends REST_Controller
                         'upload_path' => $path,''
                         ));
                         // $imageName='ticket/'.$imageName;
+                            $ImageMaker =   new ImageFactory();
+                            // Here is just a test landscape sized image
+                            $image_target   =   "uploads/ticket/".$imageName;
+                            // This will save the file to disk. $destination is where the file will save and with what name
+                            $small_images_destination    =   "uploads/ticket/small_images/".$imageName ;
+                            $ImageMaker->Thumbnailer($image_target,65,65,$small_images_destination);//this is used to resize image with 65X65 resolution
+                            $medium_images_destination    =   "uploads/ticket/medium_images/".$imageName ;
+                            $ImageMaker->Thumbnailer($image_target,150,150,$medium_images_destination);//this is used to resize image with 150X150 resolution
                         $document_id[]=$this->User_model->insertdata('documents',array('document_name'=>!empty($imageName)?$imageName:'','created_by'=>!empty($this->session_user_id)?$this->session_user_id:'0','created_on'=>currentDate(),'module_type'=>'1'));
                 }
                 else
@@ -165,7 +173,14 @@ class Ticket extends REST_Controller
                         'image' => $_FILES['document']['name'][$i],
                         'upload_path' => $path,''
                         ));
-                        
+                        $ImageMaker =   new ImageFactory();
+                        // Here is just a test landscape sized image
+                        $image_target   =   "uploads/ticket/".$imageName;
+                        // This will save the file to disk. $destination is where the file will save and with what name
+                        $small_images_destination    =   "uploads/ticket/small_images/".$imageName ;
+                        $ImageMaker->Thumbnailer($image_target,65,65,$small_images_destination);//this is used to resize image with 65X65resolution
+                        $medium_images_destination    =   "uploads/ticket/medium_images/".$imageName ;
+                        $ImageMaker->Thumbnailer($image_target,150,150,$medium_images_destination);//this is used to resize image with 150X150 resolution
                         // $imageName='ticket/'.$imageName;
                         $document_id[]=$this->User_model->insertdata('documents',array('document_name'=>!empty($imageName)?$imageName:'','created_by'=>!empty($this->session_user_id)?$this->session_user_id:'0','created_on'=>currentDate(),'module_type'=>'2'));
                 }
@@ -218,7 +233,7 @@ class Ticket extends REST_Controller
             $ticket_documents=explode(",",$ticket_data[0]['document_name']);
             foreach($ticket_documents as $k=>$v){
                 $ticket_data[0]['documents'][$k]['document_name']=$v;
-                $ticket_data[0]['documents'][$k]['document_url']=DOCUMENT_PATH.'ticket/'.$v;
+                $ticket_data[0]['documents'][$k]['document_url']=DOCUMENT_PATH.'ticket/small_images/'.$v;
 
             }
 
@@ -234,7 +249,7 @@ class Ticket extends REST_Controller
                         if(!empty($documents)){
                             foreach($documents as $c=>$d){
                                 $chatdata[$k1]['document'][$c]['document_name']=$d['document_name'];
-                                $chatdata[$k1]['document'][$c]['document_url']=DOCUMENT_PATH.'ticket/'.$d['document_name'];
+                                $chatdata[$k1]['document'][$c]['document_url']=DOCUMENT_PATH.'ticket/small_images/'.$d['document_name'];
                             }
                         }
                 }   

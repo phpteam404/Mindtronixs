@@ -93,7 +93,7 @@ class Fee extends REST_Controller
         }
         // $data = tableOptions($data);//print_r($data);exit
         $result = $this->Fee_model->listFeeMasterInfo($data);
-
+// print_r($result);exit;
         foreach($result['data'] as $k => $v){
             if(isset($data['fee_master_id']) && $data['fee_master_id'] > 0){
                 //Getting Objects for dropdown When One record is needed.
@@ -105,9 +105,22 @@ class Fee extends REST_Controller
                 $result['data'][$k]['term']=getObjOnId($v['term'],!empty($v['term'])?false:true);
             }
         }
+        
         $result = array('status'=>TRUE, 'message' => $this->lang->line('success'),'data' =>array('data'=>$result['data'],'total_records' =>$result['total_records'],'table_headers'=>getTableHeads('fee_structure_list')));
         $this->response($result, REST_Controller::HTTP_OK);
 
     }
-    
+    public function feeStructureDropdown_get()
+    {   
+        if(!empty($this->session_user_info->franchise_id)){
+            $fee_structure=$this->Fee_model->getfeeStructureDropdown(array('franchise_id'=>$this->session_user_info->franchise_id));//echo $this->db->last_query();exit;
+            foreach($fee_structure as $k=>$v){
+                $drop_down_data[$k]=getObjOnId($v['fee_master'],!empty($v['fee_master'])?true:false);
+            }
+            $result = array('status'=>TRUE, 'message' => $this->lang->line('success'),'data'=>array('data' =>$drop_down_data));
+            $this->response($result, REST_Controller::HTTP_OK);
+        }
+    }
 }
+
+

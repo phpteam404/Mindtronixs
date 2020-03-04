@@ -81,6 +81,7 @@ class Franchise_model extends CI_Model
         $this->db->select('sm.id as school_id,sm.school_code code,sm.name,COUNT(DISTINCT s.id ) as no_of_students,sm.phone,sm.email');
         $this->db->from('school_master sm');
         $this->db->join('student s','sm.id=s.school_id','left');
+        $this->db->where('sm.status','1');
         if(isset($data['search']))
         {
             $this->db->group_start();
@@ -92,6 +93,9 @@ class Franchise_model extends CI_Model
         }
         if(isset($data['school_id']) && $data['school_id']>0){
             $this->db->where('sm.id',$data['school_id']);
+        }
+        if(isset($data['franchise_id']) && $data['franchise_id']>0){
+            $this->db->where('sm.franchise_id',$data['franchise_id']);
         }
         $this->db->group_by('sm.id');
         if(isset($data['sort']) && isset($data['order']))
@@ -145,16 +149,30 @@ class Franchise_model extends CI_Model
     public function getSchoolInfo($data)
     {
         $this->db->select('sm.id as school_id, sm.name,sm.address,sm.phone,sm.school_code as code,sm.contact_person,sm.email,sm.franchise_id,CONCAT(mc.child_name,"-",mc.id) as city,
-        CONCAT(mc1.child_name,"-",mc1.id) as state,sm.pincode');
+        CONCAT(mc1.child_name,"-",mc1.id) as state,sm.pincode,CONCAT(f.name, "-", f.id) as franchise_id');
         $this->db->from('school_master sm');
         $this->db->join('master_child mc','sm.city =mc.id AND mc.master_id=14','left');
         $this->db->join('master_child mc1','sm.state =mc1.id AND mc1.master_id=13','left');
+        $this->db->join('franchise f','sm.franchise_id=f.id','left');
         if(isset($data['school_id']) && $data['school_id']>0){
             $this->db->where('sm.id',$data['school_id']);
         }
-        $query = $this->db->get();
+        $query = $this->db->get();//echo $this->db->last_query();exit;
         return $query->result_array();
     }
-    
+    public function getFranchiseDropdown(){
+        $this->db->select('CONCAT(f.name, "-", f.id) as franchise_id');
+        $this->db->from('franchise f');
+        $this->db->where('f.status','1');
+        $query = $this->db->get();//echo $this->db->last_query();exit;
+        return $query->result_array();
+    }
+    public function getschoolDropdown(){
+        $this->db->select('CONCAT(sm.name, "-", sm.id) as schools');
+        $this->db->from('school_master sm');
+        $this->db->where('sm.status','1');
+        $query = $this->db->get();//echo $this->db->last_query();exit;
+        return $query->result_array();
+    }
 
 }

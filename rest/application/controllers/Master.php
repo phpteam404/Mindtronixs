@@ -84,7 +84,7 @@ class Master extends REST_Controller
 
     public function getMsaterData_get()
     {
-        $data=$this->input->get();
+        $data=$this->input->get();//sprint_r($data);exit;
         $this->form_validator->add_rules('master_key', array('required'=> $this->lang->line('master_key_req')));
         $validated = $this->form_validator->validate($data);
         if($validated != 1)

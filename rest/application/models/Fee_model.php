@@ -50,6 +50,17 @@ class Fee_model extends CI_Model
         return array('total_records' => $all_clients_count,'data' => $query->result_array());
     }
 
+    public function getfeeStructureDropdown($data){
+        $this->db->select('CONCAT(fm.name,"-",fm.id) as fee_master');
+        $this->db->from('fee_master fm');
+        $this->db->join('franchise_fee ff','fm.id=ff.fee_master_id','left');
+        $this->db->where('ff.franchise_id',$data['franchise_id']);
+        $this->db->where('fm.status','1');
+        $this->db->group_by('fm.id');
+        $query = $this->db->get();
+        return $query->result_array();
+    }
+
   
     
 }

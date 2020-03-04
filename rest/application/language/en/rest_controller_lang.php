@@ -409,8 +409,6 @@ $lang['franchise_email'] ='Email is required';
 $lang['franchise_phone_primary'] ='Phone Number is required';
 $lang['franchise_phone_alternative'] ='Alternative Phone Number is required';
 $lang['franchise_recheck'] ='Already You Have Selected This Plan';
-
-
 $lang['franchise_fee_id_req'] ='Franchise Fee id required';
 $lang['id_relationship_category_req'] = 'Category required';
 $lang['fee_name'] ='Fee title required';
@@ -450,5 +448,12 @@ $lang['term_req'] = 'Fee term is required';
 $lang['school_code_req'] = 'School code is required';
 $lang['ticket_issue_req'] = 'Ticket issue is required';
 $lang['ticket_status_req'] = 'Ticket status is required';
+$lang['trainer_schedule_id_req'] = 'Trainer Schedule id is required';
+$lang['date_req'] = 'Date  is required';
+$lang['from_time_req'] = 'From time is required';
+$lang['to_time_req'] = 'To time is required';
+$lang['trainerschedule_add'] = 'Trainer Schedule Added Successfully';
+$lang['trainerschedule_update'] = 'Trainer Schedule Updated Successfully';
+$lang['delete_sc'] = 'Deleted Successfully';
 
 

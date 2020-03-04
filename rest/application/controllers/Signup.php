@@ -37,7 +37,7 @@ class Signup extends CI_Controller
             $_POST = $data;
         }
 
-        $data = $this->input->post(); 
+        $data = $this->input->post(); //print_r($data);exit;
         if(empty($data)){
             $result = array('status'=>FALSE,'message'=>$this->lang->line('login_error'),'data'=>'');
             echo json_encode($result); exit;
@@ -55,11 +55,11 @@ class Signup extends CI_Controller
             echo json_encode($result);exit;
         }
         
-
-        $data['password'] = base64_decode($data['password']);
+        
+        $data['password'] = base64_decode($data['password']);//print_r($data['password']);exit;
         $mailCheck = $this->User_model->check_email(array('email_id'=>$data['username']));
 
-        $result = $this->User_model->login($data);
+        $result = $this->User_model->login($data);//echo $this->db->last_query();exit;
         if(count($result)==0){
             $result = array('status'=>FALSE,'error'=>array('message'=>$this->lang->line('text_rest_invalid_credentials')),'data'=>'');
             echo json_encode($result);exit;

@@ -726,18 +726,19 @@ class User_model extends CI_Model
     }
     public function getStudentList($data=null){
         if(isset($data['type']) && $data['type']=='edit'){//this condition for prepopulate the student details and list the student details
-            $this->db->select('u.id as user_id,s.id as student_id,u.franchise_id,concat(u.first_name," ",u.last_name) as student_name,u.email as contact_email,u.phone_no,u.last_login,u.user_status as status,a.name as franchise_name,CONCAT(mc2.child_name,"-",mc2.id) as grade');
+            $this->db->select('u.id as user_id,s.id as student_id,u.franchise_id,u.first_name as student_name,u.email as contact_email,u.phone_no,u.last_login,u.user_status as status,f.name as franchise_name,CONCAT(mc2.child_name,"-",mc2.id) as grade,sm.`name` as school_name');
             if(!empty($data['user_id'])){
-                $this->db->select('s.place_of_birth,u.address,s.date_of_birth,CONCAT(mc.child_name,"-",mc.id) as blood_group,CONCAT(mc1.child_name,"-",mc1.id) as relation,CONCAT(mc3.child_name,"-",mc3.id) as nationality,CONCAT(mc4.child_name,"-",mc4.id) as mother_tongue,CONCAT(fm.`name`,"-",fm.id) as fee_structure,s.parent as name_of_parent,u.phone_no as home_phone_no,s.mobile_phone1 as mobile_phone,s.mobile_phone2,s.occupation,sm.`name` as school_name,s.history_of_illness');
+                $this->db->select('s.place_of_birth,u.address,s.date_of_birth,CONCAT(mc.child_name,"-",mc.id) as blood_group,CONCAT(mc1.child_name,"-",mc1.id) as relation,CONCAT(mc3.child_name,"-",mc3.id) as nationality,CONCAT(mc4.child_name,"-",mc4.id) as mother_tongue,CONCAT(fm.`name`,"-",fm.id) as fee_structure,s.parent as parent_name,u.phone_no as home_phone_no,s.mobile_phone1 as mobile_phone,s.mobile_phone2,s.occupation,sm.`name` as school_name,s.history_of_illness, CONCAT(sm.name, "-", sm.id) as school_id');
             }
         }
         if(isset($data['type']) && $data['type']=='view'){//this condition for get the data for student info service
-            $this->db->select('u.id as user_id,concat(u.first_name," ",u.last_name) as student_name,u.email as contact_email,u.phone_no as ome_phone,u.last_login as last_login,
-            ,s.place_of_birth,u.address,s.date_of_birth,mc.child_name as blood_group,mc1.child_name as relation,mc2.child_name as grade,mc3.child_name as nationality,mc4.child_name as mother_tongue,fm.`name` as fee_structure,s.parent as name_of_parent,u.phone_no as home_phone_no,s.mobile_phone1 as mobile_phone,s.mobile_phone2,s.occupation,sm.`name` as school_name,s.history_of_illness,IF(u.user_status=1,"active","inactive") as status');
+            $this->db->select('u.id as user_id,u.first_name as student_name,u.email as contact_email,u.phone_no as home_phone,u.last_login as last_login,
+            ,s.place_of_birth,u.address,s.date_of_birth,mc.child_name as blood_group,mc1.child_name as relation,mc2.child_name as grade,mc3.child_name as nationality,mc4.child_name as mother_tongue,fm.`name` as fee_structure,s.parent as name_of_parent,s.mobile_phone1 as mobile_phone,s.mobile_phone2,s.occupation,sm.`name` as school_name,s.history_of_illness,IF(u.user_status=1,"active","inactive") as status');
         }
-        $this->db->from('user u');
-        $this->db->join('student s','u.id =s.user_id','left');
-        $this->db->join('franchise a','u.franchise_id =a.id','left');
+        $this->db->from('student s');
+        $this->db->join('user u','s.user_id=u.id','left');
+
+        $this->db->join('franchise f','s.franchise_id =f.id','left');
         $this->db->join('master_child mc','s.blood_group=mc.id AND master_id=9','left');
         $this->db->join('master_child mc1','s.relation_with_student=mc1.id AND mc1.master_id=10','left');
         $this->db->join('master_child mc2','s.grade=mc2.id AND mc2.master_id=5','left');
@@ -746,8 +747,9 @@ class User_model extends CI_Model
         $this->db->join('fee_master fm','s.franchise_fee_id=fm.id','left');
         $this->db->join('school_master sm','s.school_id=sm.id','left');
         $this->db->where('u.user_role_id','4');
-        if(isset($data['franchise_id']) && $data['franchise_id']!=''){
-            $this->db->where('u.franchise_id',$data['franchise_id']);
+        $this->db->where('u.user_status','1');
+        if(isset($data['franchise_id']) && $data['franchise_id']>0){
+            $this->db->where('s.franchise_id',$data['franchise_id']);
         }
         if(isset($data['school_id']) && $data['school_id']>0){
             $this->db->where('sm.id',$data['school_id']);
@@ -755,18 +757,18 @@ class User_model extends CI_Model
         if(isset($data['user_id']) && $data['user_id']>0){
             $this->db->where('u.id',$data['user_id']);
         }
-        if(isset($data['search_key']) && $data['search_key']!==''){
+        if(isset($data['search']) && $data['search']!==''){
             $this->db->group_start();
-            $this->db->where('u.first_name like "%'.$data['search_key'].'%" or u.last_name like "%'.$data['search_key'].'%" or CONCAT(u.first_name,\' \',u.last_name) like "%'.$data['search_key'].'%" or u.email like "%'.$data['search_key'].'%"  or u.phone_no like "%'.$data['search_key'].'%"or sm.name like "%'.$data['search_key'].'%"or a.name like "%'.$data['search_key'].'%"');
+            $this->db->where('u.first_name like "%'.$data['search'].'%" or u.last_name like "%'.$data['search'].'%" or CONCAT(u.first_name,\' \',u.last_name) like "%'.$data['search'].'%" or u.email like "%'.$data['search'].'%"  or u.phone_no like "%'.$data['search'].'%"or sm.name like "%'.$data['search'].'%"or f.name like "%'.$data['search'].'%"');
             $this->db->group_end();
         }
         // print_r($data);exit;
-        if(!empty($data['sort']) && !empty($data['reverse']))
+        if(!empty($data['sort']) && !empty($data['order']))
         { 
-            $this->db->order_by($data['sort'],$data['reverse']);
+            $this->db->order_by($data['sort'],$data['order']);
         }
         else{
-            $this->db->order_by('u.id','desc');
+            $this->db->order_by('s.id','desc');
         }
         $count_result_db = clone $this->db;  
         $count_result = $count_result_db->get();
@@ -775,6 +777,38 @@ class User_model extends CI_Model
            $this->db->limit($data['number'],$data['start']);
         $query = $this->db->get();//echo $this->db->last_query();exit;
         return array('total_records'=>$count_result,'data'=>$query->result_array());
+    }
+    public function getTrainerScheduleList($data=null){
+        if(isset($data['type']) && $data['type']=='edit'){
+            $this->db->select('ts.id as trainer_schedule_id,ts.topic,ts.date,ts.description,TIME_FORMAT(ts.from_time, "%h:%i %p") from_time,TIME_FORMAT(ts.to_time, "%h:%i %p") to_time');
+        }else{
+            $this->db->select('ts.id as trainer_schedule_id,ts.topic,ts.date,ts.description,TIME_FORMAT(ts.from_time, "%h:%i %p") from_time,TIME_FORMAT(ts.to_time, "%h:%i %p") to_time');
+        }
+       $this->db->from('trainer_schedule ts');
+       $this->db->group_by('ts.id');
+       if(isset($data['search']) && $data['search']!==''){
+            $this->db->group_start();
+            $this->db->where('ts.topic like "%'.$data['search'].'%"');
+            $this->db->group_end();
+        }
+        if(!empty($data['trainer_schedule_id'])){
+            $this->db->where('ts.id',$data['trainer_schedule_id']);
+        }
+        if(!empty($data['sort']) && !empty($data['order']))
+        { 
+            $this->db->order_by($data['sort'],$data['order']);
+        }
+        else{
+            $this->db->order_by('ts.id','desc');
+        }
+        $count_result_db = clone $this->db;  
+        $count_result = $count_result_db->get();
+        $count_result = $count_result->num_rows();
+        if(isset($data['number']) && isset($data['start']))
+           $this->db->limit($data['number'],$data['start']);
+        $query = $this->db->get();//echo $this->db->last_query();exit;
+        return array('total_records'=>$count_result,'data'=>$query->result_array());
+
     }
 
 

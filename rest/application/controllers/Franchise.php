@@ -326,13 +326,38 @@ class Franchise extends REST_Controller
         $schoolInfo=$this->Franchise_model->getSchoolInfo($data);//this model is get the school information for edit service in schoool
         foreach($schoolInfo as $k=>$v){
             // $schoolInfo[$k]['status']=getStatusObj($v['status']);
+            // print_r($v);exit;
             $schoolInfo[$k]['city']=getObjOnId($v['city'],!empty($v['city'])?true:false);
             $schoolInfo[$k]['state']=getObjOnId($v['state'],!empty($v['state'])?true:false);
+            $schoolInfo[$k]['franchise_id']=getObjOnId($v['franchise_id'],!empty($v['franchise_id'])?true:false);
         }
         $result = array('status'=>TRUE, 'message' => $this->lang->line('success'),'data'=>array('data' =>$schoolInfo));
         $this->response($result, REST_Controller::HTTP_OK);
 
     }
+    
+    public function franchiseListForDropDown_get(){
+       $franchise= $this->Franchise_model->getFranchiseDropdown();
+       foreach($franchise as $k=>$v){
+        $franchise[$k]=getObjOnId($v['franchise_id'],!empty($v['franchise_id'])?true:false);  
+        }
+        // $header[0]=array('label'=>'All Franchise','value'=>0);
+        // $franchise=array_merge($header,$franchise);
+        // print_r($header);exit;
+        $result = array('status'=>TRUE, 'message' => $this->lang->line('success'),'data'=>array('data' =>$franchise));
+        
+        $this->response($result, REST_Controller::HTTP_OK);
+    }
+    public function schoolListForDropDown_get(){
+        $schools= $this->Franchise_model->getschoolDropdown();
+        foreach($schools as $k=>$v){
+         $schools[$k]=getObjOnId($v['schools'],!empty($v['schools'])?true:false);  
+         }
+        //  $header[0]=array('label'=>'All Schools','value'=>0);
+        //  $schools_data=array_merge($header,$franchise);
+         $result = array('status'=>TRUE, 'message' => $this->lang->line('success'),'data'=>array('data' =>$schools));
+         $this->response($result, REST_Controller::HTTP_OK);
+     }
 
 }
 

@@ -19,7 +19,7 @@ class User extends REST_Controller
     {
         parent::__construct();
         //$this->load->model('Validation_model');
-        $getLoggedUserId=$this->User_model->getLoggedUserId();
+        $getLoggedUserId=$this->User_model->getLoggedUserId();//echo $this->db->last_query();exit;
         $this->session_user_id=$getLoggedUserId[0]['id'];
         $this->session_user_parent_id=$getLoggedUserId[0]['parent_user_id'];
         $this->session_user_id_acting=$getLoggedUserId[0]['child_user_id'];
@@ -28,6 +28,7 @@ class User extends REST_Controller
     public function addUser_post() //this function is to add user data to the user table
     {
         $data = $this->input->post();
+        // print_r($data);exit;
         if(empty($data)){
             $result = array('status'=>FALSE,'error'=>$this->lang->line('invalid_data'),'data'=>'');
             $this->response($result, REST_Controller::HTTP_OK);
@@ -68,28 +69,36 @@ class User extends REST_Controller
             'max_len-10' => $this->lang->line('std1_phone_num_max_len'),
         );
 
-        $this->form_validator->add_rules('password', array('required' => $this->lang->line('password_req')));
-        $this->form_validator->add_rules('franchise_id', array('required' => $this->lang->line('franchise_id_req')));
+        // $this->form_validator->add_rules('password', array('required' => $this->lang->line('password_req')));
+        // $this->form_validator->add_rules('franchise_id', array('required' => $this->lang->line('franchise_id_req')));
         $this->form_validator->add_rules('user_role_id', array('required' => $this->lang->line('user_role_id_req')));
-        // $this->form_validator->add_rules('first_name', $firstNameRules);
-        $this->form_validator->add_rules('last_name', $lastNameRules);
         $this->form_validator->add_rules('email', $emailRules);
         $this->form_validator->add_rules('phone_no', $phonennodRules);
-        $this->form_validator->add_rules('password', $passwordRules);
+        if(empty($data['user_id'])){
+
+            $this->form_validator->add_rules('password', $passwordRules);
+        }
 
         if(isset($data['user_role_id']) && $data['user_role_id']==4){
             $this->form_validator->add_rules('mobile_phone1', $stdentphonennodRules); 
             $this->form_validator->add_rules('mobile_phone2', $mobile2); 
             $this->form_validator->add_rules('school_id', array('required' => $this->lang->line('school_req')));
             $this->form_validator->add_rules('grade', array('required' => $this->lang->line('grade_req')));
-            $this->form_validator->add_rules('parent', array('required' => $this->lang->line('parent_req')));
-            $this->form_validator->add_rules('franchise_fee_id', array('required' => $this->lang->line('franchise_fee_id_req')));
+            $this->form_validator->add_rules('parent_name', array('required' => $this->lang->line('parent_req')));
+            $this->form_validator->add_rules('fee_structure', array('required' => $this->lang->line('franchise_fee_id_req')));
             $this->form_validator->add_rules('date_of_birth', array('required' => $this->lang->line('date_of_birth_req')));
             // $this->form_validator->add_rules('home_phone_no', array('required' => $this->lang->line('home_phone_no_req')));
             $this->form_validator->add_rules('blood_group', array('required' => $this->lang->line('blood_group_req')));
             $this->form_validator->add_rules('nationality', array('required' => $this->lang->line('nationality_req')));
         }
-
+        if(isset($data['user_role_id']) && $data['user_role_id']!=4)
+        {
+            $this->form_validator->add_rules('first_name', $firstNameRules);
+            $this->form_validator->add_rules('last_name', $lastNameRules);
+        }
+        if($this->session_user_info->user_role_id==2){
+            $data['franchise_id']=$this->session_user_info->franchise_id;
+        }
 
         $validated = $this->form_validator->validate($data);
         if($validated != 1){
@@ -118,35 +127,35 @@ class User extends REST_Controller
 
         $user_data = array(
             'user_role_id' => isset($data['user_role_id'])?$data['user_role_id']:5,
-            'first_name' => !empty($data['first_name'])? $data['first_name']:'',
+            'first_name' => !empty($data['student_name'])? $data['student_name']:$data['first_name'],
             'last_name' => !empty($data['last_name'])?$data['last_name']:'',
             'email' => !empty($data['email'])?$data['email']:'',
             'password' => !empty($data['password'])?md5($data['password']):'',
             //'gender' => isset($data['gender']) ? $data['gender'] : '',
             'user_status' => isset($data['user_status'])?$data['user_status']:'1',
             // 'profile_image' =>isset($data['profile_image'])?$data['profile_image']:'',
-            'address'=>$data['address'],
-            'phone_no'=>$data['phone_no'],
+            'address'=>isset($data['address'])?$data['address']:'',
+            'phone_no'=>isset($data['phone_no'])?$data['phone_no']:'',
             'franchise_id'=>$data['franchise_id']
         );
-
+        // print_r($user_data);exit;
         if(isset($data['user_role_id']) && $data['user_role_id']==4){
             $student_data=array(
-                'school_id'=>isset($data['school'])?$data['school'] :0,
-                'franchise_id'=>isset($data['franchise_id'])?$data['franchise_id'] :0,
+                'school_id'=>isset($data['school_id'])?$data['school_id'] :0,
+                'franchise_id'=>isset($data['franchise_id'])?$data['franchise_id'] :2,
                 'nationality'=>isset($data['nationality'])?$data['nationality'] :null,
                 'place_of_birth'=>isset($data['place_of_birth'])?$data['place_of_birth'] :null,
                 'date_of_birth'=>isset($data['date_of_birth'])?$data['date_of_birth'] :null,
                 'grade'=>isset($data['grade'])?$data['grade'] :'',
                 'mother_tongue'=>isset($data['mother_tongue'])?$data['mother_tongue'] : '',
-                'parent'=>isset($data['parent'])?$data['parent'] : '',
+                'parent'=>isset($data['parent_name'])?$data['parent_name'] : '',
                 'mobile_phone1'=>isset($data['mobile_phone1'])?$data['mobile_phone1'] : '',
                 'mobile_phone2'=>isset($data['mobile_phone2'])?$data['mobile_phone2'] : '',
                 'blood_group'=>isset($data['blood_group'])?$data['blood_group'] : '',
                 'history_of_illness'=>isset($data['history_of_illness'])?$data['history_of_illness'] : '',
-                'franchise_fee_id'=>isset($data['franchise_fee_id'])?$data['franchise_fee_id'] : '',
+                'franchise_fee_id'=>isset($data['fee_structure'])?$data['fee_structure'] : '',
                 'status'=>isset($data['status'])?$data['status'] :'1',
-                'relation_with_student'=>isset($data['relation_with_student'])?$data['relation_with_student'] :'',
+                'relation_with_student'=>isset($data['relation'])?$data['relation'] :'',
                 'occupation'=>isset($data['occupation'])?$data['occupation'] :''
 
             );
@@ -296,13 +305,26 @@ class User extends REST_Controller
     //     echo 'access module tables data inserted';
     // }
     
-    public function Delete_delete($table,$id){
-        if($this->User_model->update_data($table,array('status'=>2),array('id'=>$id))){
-            $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>'');
+    public function Delete_delete(){
+        $data=$this->input->get();//print_r($data);exit;
+        $table=$data['tablename'];
+        $id=$data['id'];
+        if($table=='user'){
+            $this->User_model->update_data($table,array('user_status'=>2),array('id'=>$id));
+            $result = array('status'=>TRUE, 'message' => $this->lang->line('delete_sc'), 'data'=>'');
             $this->response($result, REST_Controller::HTTP_OK);
-        }else{
-            $result = array('status'=>FALSE, 'message' => $this->lang->line('invalid_data'), 'data'=>'');
-            $this->response($result, REST_Controller::HTTP_OK);
+
+        }
+        else{
+            // echo 'da';exit;
+        //    $k=$this->User_model->update_data($table,array('status'=>2),array('id'=>$id));echo $this->db->last_query();exit;
+            if($this->User_model->update_data($table,array('status'=>2),array('id'=>$id))){ 
+                $result = array('status'=>TRUE, 'message' => $this->lang->line('delete_sc'), 'data'=>'');
+                $this->response($result, REST_Controller::HTTP_OK);
+            }else{
+                $result = array('status'=>FALSE, 'message' => $this->lang->line('invalid_data'), 'data'=>'');
+                $this->response($result, REST_Controller::HTTP_OK);
+            }
         }
     }
     public function addTraineSchedule_post()
@@ -398,7 +420,7 @@ class User extends REST_Controller
         $data = $this->input->get();
         // $data = tableOptions($data);
         $data['type']='edit';//this key used for filter the select statement
-        $student_list=$this->User_model->getStudentList($data);
+        $student_list=$this->User_model->getStudentList($data);//echo $this->db->last_query();exit;
         foreach($student_list['data'] as $k=>$v){
             if(!empty($data['user_id'])){
                 $student_list['data'][$k]['blood_group']=getObjOnId($v['blood_group'],!empty($v['blood_group'])?true:false);//getting the bloodgroup dropdown object values 
@@ -407,7 +429,11 @@ class User extends REST_Controller
                 $student_list['data'][$k]['nationality']=getObjOnId($v['nationality'],!empty($v['nationality'])?true:false);
                 $student_list['data'][$k]['mother_tongue']=getObjOnId($v['mother_tongue'],!empty($v['mother_tongue'])?true:false);
                 $student_list['data'][$k]['fee_structure']=getObjOnId($v['fee_structure'],!empty($v['fee_structure'])?true:false);
-                $student_list['data'][$k]['status']=getObjOnId($v['status'],!empty($v['status'])?true:false);
+                $student_list['data'][$k]['status']=getStatusObj($v['status'],!empty($v['status'])?true:false);
+                $student_list['data'][$k]['date_of_birth']=date('Y-m-d', strtotime($v['date_of_birth']));
+                $student_list['data'][$k]['school_id']=getObjOnId($v['school_id'],!empty($v['school_id'])?true:false);
+
+
 
             }
             else{
@@ -416,10 +442,12 @@ class User extends REST_Controller
 
             }
         }
-        $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>array('data'=>$student_list['data'],'total_records'=>$student_list['total_records'],'table_headers'=>getTableHeads('students_list')));
+        $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>array('data'=>$student_list['data'],'total_records'=>$student_list['total_records'],'table_headers'=>getTableHeads('students_list'),'table_name'=>'user'));
         $this->response($result, REST_Controller::HTTP_OK);
     }
-    public function studentInfo_get(){//this function is used to get the student information
+    public function studentInfo_get()
+    {
+        //this function is used to get the student information
        $data=$this->input->get();
        if(empty($data)){
             $result = array('status'=>FALSE,'error'=>$this->lang->line('invalid_data'),'data'=>'1');
@@ -433,10 +461,75 @@ class User extends REST_Controller
             $this->response($result, REST_Controller::HTTP_OK);
         }   
        $data['type']='view';//this key used for filter the select statement
-       $student_info=$this->User_model->getStudentList($data);//this model is used to get the student data
+       $student_info=$this->User_model->getStudentList($data);//echo $this->db->last_query();exit;//this model is used to get the student data
         
        $result = array('status'=>TRUE, 'message' =>$this->lang->line('success'), 'data'=>array('data'=>$student_info['data']));
        $this->response($result, REST_Controller::HTTP_OK);
+    }
+     
+    public function addTrainerSchedule_post(){
+        $data=$this->input->post();
+       if(empty($data)){
+            $result = array('status'=>FALSE,'error'=>$this->lang->line('invalid_data'),'data'=>'1');
+            $this->response($result, REST_Controller::HTTP_OK);
+        }
+        $this->form_validator->add_rules('topic', array('required'=>$this->lang->line('trainer_schedule_id_req')));
+        $this->form_validator->add_rules('date', array('required'=>$this->lang->line('date_req')));
+        $this->form_validator->add_rules('from_time', array('required'=>$this->lang->line('from_time_req')));
+        $this->form_validator->add_rules('to_time', array('required'=>$this->lang->line('to_time_req')));
+        $validated = $this->form_validator->validate($data);
+        if($validated != 1)
+        {
+            $result = array('status'=>FALSE,'error'=>$validated,'data'=>'');
+            $this->response($result, REST_Controller::HTTP_OK);
+        }
+        $trainerschedule=array(
+            'topic'=>$data['topic'],
+            'date'=>$data['date'],
+            'description'=>$data['description'],
+            'from_time'=>$data['from_time'],
+            'to_time'=>$data['to_time'],
+            'status'=>isset($data['status'])?$data['status']:1
+        );
+        if(isset($data['trainer_schedule_id']) && $data['trainer_schedule_id']){
+            $trainerschedule['updated_on']=currentDate();
+            $trainerschedule['updated_by']=$this->session_user_id;
+            $is_update=$this->User_model->update_data('trainer_schedule',$trainerschedule,array('id'=>$data['trainer_schedule_id']));
+            if(isset($is_update)){
+                $result = array('status'=>TRUE, 'message' =>$this->lang->line('trainerschedule_update'), 'data'=>array('data'=>$data['trainer_schedule_id']));
+                $this->response($result, REST_Controller::HTTP_OK);
+            }
+
+        }
+        else{
+            $trainerschedule['created_on']=currentDate();
+            $trainerschedule['created_by']=$this->session_user_id;
+            $inserted_id=$this->User_model->insert_data('trainer_schedule',$trainerschedule);
+            if($inserted_id>0){
+                $result = array('status'=>TRUE, 'message' =>$this->lang->line('trainerschedule_add'), 'data'=>array('data'=>$inserted_id));
+                $this->response($result, REST_Controller::HTTP_OK);
+            }
+            else{
+                $result = array('status'=>FALSE,'error'=>$this->lang->line('invalid_data'),'data'=>'1');
+                $this->response($result, REST_Controller::HTTP_OK);   
+            }
+        }
+    }
+    public function trainerScheduleList_get(){//this function is used to get the sudent 
+       $data=$this->input->get();
+       if(!empty($data['trainer_schedule_id'])){
+            $data['type']='edit'; 
+            $trainerschedulelist= $this->User_model->getTrainerScheduleList($data);
+            // print_r($trainerschedulelist);exit;
+            $result = array('status'=>TRUE, 'message' =>$this->lang->line('success'), 'data'=>array('data'=>$trainerschedulelist['data']));
+
+        }
+        else{
+            $trainerschedulelist= $this->User_model->getTrainerScheduleList($data); 
+            $result = array('status'=>TRUE, 'message' =>$this->lang->line('success'), 'data'=>array('data'=>$trainerschedulelist['data'],'total_records'=>$trainerschedulelist['total_records'],'table_headers'=>getTableHeads('students_list')));
+        }
+        // echo $this->db->last_query();exit;
+        $this->response($result, REST_Controller::HTTP_OK);
     }
     
 }

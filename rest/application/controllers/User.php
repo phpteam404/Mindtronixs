@@ -218,7 +218,7 @@ class User extends REST_Controller
 
             }
         }
-        $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>array('data' => $result['data'],'total_records'=>$result['total_records']));
+        $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>array('data' => $result['data'],'total_records'=>$result['total_records'],'table_headers'=>getTableHeads('all_users_list')));
          $this->response($result, REST_Controller::HTTP_OK); 
     }
 
@@ -442,7 +442,7 @@ class User extends REST_Controller
 
             }
         }
-        $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>array('data'=>$student_list['data'],'total_records'=>$student_list['total_records'],'table_headers'=>getTableHeads('students_list'),'table_name'=>'user'));
+        $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>array('data'=>$student_list['data'],'total_records'=>$student_list['total_records'],'table_headers'=>getTableHeads('students_list')));
         $this->response($result, REST_Controller::HTTP_OK);
     }
     public function studentInfo_get()

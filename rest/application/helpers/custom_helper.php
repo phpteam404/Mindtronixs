@@ -778,12 +778,11 @@ if (!function_exists('getTableHeads')) {
             case 'ticket_list':
                 return array(
                     array('field' => 'issue_id', 'header'=> 'Issue id' ,'alias'=>'issue_id' ),
-                    array('field'=>'issue_title', 'header'=> 'Issue id' ,'alias' =>'issue_title' ),
-                    array('field'=> 'created_by', 'header'=> 'Created By' ,'alias'=>'created_by'),
+                    array('field'=>'issue_title', 'header'=> 'Issue Title' ,'alias' =>'issue_title' ),
                     array('field'=> 'issue_type', 'header'=>'IssueType','alias'=>'issue_type' ),
-                    array('field'=> 'created_data', 'header'=> 'Created date','alais'=>'last_update' ),
-                    array('field'=> 'status', 'header'=> 'Status','alais'=>'status' ),
-                    array('field'=>'actions', 'header'=> 'Actions','alias'=>'actions')
+                    array('field'=> 'created_by', 'header'=> 'Created By' ,'alias'=>'created_by'),
+                    array('field'=> 'created_date', 'header'=> 'Created date','alais'=>'created_date' ),
+                    array('field'=> 'status', 'header'=> 'Status','alais'=>'status' )
                 );
                 break;
             case  'students_invoice_list':
@@ -847,12 +846,12 @@ if (!function_exists('getTableHeads')) {
                   array('field'=> 'action', 'header'=> 'Actions' ,'alias'=>'action' )
                 );
                 break;
-            case 'all_users_list':
+        case 'all_users_list':
                 return array(
-                   array('field' => 'name', 'header' => 'Name', 'alias' => 'name'),
-                   array('field' => 'email', 'header' => 'Email', 'alias' => 'email'),
-                   array('field' => 'phone', 'header' => 'Phone', 'alias' => 'phone'),
-                   array('field' => 'role', 'header' => 'Role', 'alias' => 'role'),
+                   array('field' => 'user_name', 'header' => 'Name', 'alias' => 'user_name'),
+                   array('field' => 'email', 'header' => 'Contact Email', 'alias' => 'email'),
+                   array('field' => 'phone_no', 'header' => 'Contact Phone', 'alias' => 'phone_no'),
+                   array('field' => 'user_role', 'header' => 'Role', 'alias' => 'user_role'),
                    array('field' => 'manager', 'header' => 'Franchise', 'alias' => 'manager'),
                    array('field' => 'status', 'header' => 'Status', 'alias' => 'status'),
                    array('field' => 'actions', 'header' => 'Actions', 'alias' => 'actions')
@@ -860,12 +859,12 @@ if (!function_exists('getTableHeads')) {
                break;
             case 'students_list':
                 return array(
-                    array('field'=> 'name', 'header'=> 'Student Name','alias'=>'name'),
+                    array('field'=> 'student_name', 'header'=> 'Student Name','alias'=>'student_name'),
                     array('field'=> 'grade', 'header'=>'Grade' ,'alias' =>'grade'),
-                    array('field'=> 'school', 'header'=> 'School','alias'=>'school' ),
-                    array('field'=> 'franchise', 'header'=> 'Franchise','alias'=>'franchise' ),
-                    array('field'=> 'email', 'header'=> 'Email','alias'=>'email' ),
-                    array('field'=> 'phone', 'header'=> 'Phone','alias'=>'phone' ),
+                    array('field'=> 'school_name', 'header'=> 'School','alias'=>'school' ),
+                    array('field'=> 'franchise_name', 'header'=> 'Franchise','alias'=>'franchise' ),
+                    array('field'=> 'contact_email', 'header'=> 'Contact Email','alias'=>'contact_email' ),
+                    array('field'=> 'phone_no', 'header'=> 'Contact Number','alias'=>'phone_no' ),
                     array('field'=>'last_login', 'header'=> 'Last Login','alias' =>'last_login' ),
                     array('field'=> 'status', 'header'=> 'Status','alias'=>'status' ),
                     array( 'field'=> 'actions', 'header'=> 'Actions' ,'alias'=>'actions')

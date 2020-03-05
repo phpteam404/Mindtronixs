@@ -108,16 +108,72 @@ class Signup extends CI_Controller
                 $sub_menus=$this->User_model->menuList(array('user_role_id'=>$result->user_role_id,'parent_module_id'=>$v['app_module_id'],'type'=>'menu','is_menu'=>2));
                 $menu[$k]['sub_menus']=$sub_menus;
         }
-        $check_franchise=$this->User_model->check_record('franchise',array('id'=>$result->franchise_id));
-        if($check_franchise[0]['status']==1){
+        if($result->user_role_id==1 || $result->user_role_id==5){
             $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>array('data' => $result), 'access_token' => $access_token,'menu'=>$menu);
-            header('Content-Type: application/json');
-            echo json_encode($result);exit;
+                    header('Content-Type: application/json');
+                    echo json_encode($result);exit;  
         }
-        else{
-            $result = array('status'=>FALSE,'error'=>array('message'=>$this->lang->line('franchise_status_inactive')),'data'=>'');
-            echo json_encode($result);exit;
+        if($result->user_role_id==4){
+            if($result->franchise_id==0){
+                $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>array('data' => $result), 'access_token' => $access_token,'menu'=>$menu);
+                        header('Content-Type: application/json');
+                        echo json_encode($result);exit;
+            }
+            if($result->franchise_id>0){
+                $check_franchise=$this->User_model->check_record('franchise',array('id'=>$result->franchise_id));
+                if($check_franchise[0]['status']==1){
+                    $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>array('data' => $result), 'access_token' => $access_token,'menu'=>$menu);
+                    header('Content-Type: application/json');
+                    echo json_encode($result);exit;
+                }
+                else{
+                    $result = array('status'=>FALSE,'error'=>array('message'=>$this->lang->line('franchise_status_inactive')),'data'=>'');
+                    echo json_encode($result);exit;
+                } 
+            }
         }
+        if($result->user_role_id==3 || $result->user_role_id==2){
+            if($result->franchise_id==0){
+                $result = array('status'=>FALSE,'error'=>array('message'=>$this->lang->line('franchise_status_inactive')),'data'=>'');
+                echo json_encode($result);exit;  
+            }
+            else{
+                $check_franchise=$this->User_model->check_record('franchise',array('id'=>$result->franchise_id));
+                if($check_franchise[0]['status']==1){
+                    $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>array('data' => $result), 'access_token' => $access_token,'menu'=>$menu);
+                    header('Content-Type: application/json');
+                    echo json_encode($result);exit;
+                }
+                else{
+                    $result = array('status'=>FALSE,'error'=>array('message'=>$this->lang->line('franchise_status_inactive')),'data'=>'');
+                    echo json_encode($result);exit;
+                }   
+            }
+        }
+     
+        // $allowred_roles=array('1','5','4');
+        // if(in_array($result->user_role_id,$allowred_roles)){
+        //     if($result->user_role_id==4){
+
+        //     }
+        //     else{  
+        //         $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>array('data' => $result), 'access_token' => $access_token,'menu'=>$menu);
+        //         header('Content-Type: application/json');
+        //         echo json_encode($result);exit;
+        //     }
+        // }
+        // else{
+        //     $check_franchise=$this->User_model->check_record('franchise',array('id'=>$result->franchise_id));
+        //     if($check_franchise[0]['status']==1){
+        //         $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>array('data' => $result), 'access_token' => $access_token,'menu'=>$menu);
+        //         header('Content-Type: application/json');
+        //         echo json_encode($result);exit;
+        //     }
+        //     else{
+        //         $result = array('status'=>FALSE,'error'=>array('message'=>$this->lang->line('franchise_status_inactive')),'data'=>'');
+        //         echo json_encode($result);exit;
+        //     }
+        // }
 
     }
 

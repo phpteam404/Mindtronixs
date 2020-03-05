@@ -862,7 +862,7 @@ if (!function_exists('getTableHeads')) {
                    array('field' => 'email', 'header' => 'Contact Email', 'alias' => 'email'),
                    array('field' => 'phone_no', 'header' => 'Contact Phone', 'alias' => 'phone_no'),
                    array('field' => 'user_role', 'header' => 'Role', 'alias' => 'user_role'),
-                   array('field' => 'manager', 'header' => 'Franchise', 'alias' => 'manager'),
+                   array('field' => 'franchise_name', 'header' => 'Franchise', 'alias' => 'franchise_name'),
                    array('field' => 'status', 'header' => 'Status', 'alias' => 'status'),
                    array('field' => 'actions', 'header' => 'Actions', 'alias' => 'actions')
                );
@@ -901,6 +901,7 @@ if (!function_exists('getTableHeads')) {
                         array('field'=> 'actions', 'header'=> 'Actions','alias'=>'actions' )
                     );
                     break;
+
         }
 
     }

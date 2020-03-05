@@ -300,6 +300,16 @@ if (!function_exists('getObjOnId')) {
         }
     }
 }
+if (!function_exists('getObjOnIdOfBloodGroup')) {
+    function getObjOnIdOfBloodGroup($v,$bool){
+        $v = explode(',',$v);
+        if($bool){
+            return array('label'=>$v[0],'value'=>(int)$v[1]);
+        }else{
+            return $v[0];
+        }
+    }
+}
 
 if (!function_exists('getStatusObj')) {
     function getStatusObj($status){

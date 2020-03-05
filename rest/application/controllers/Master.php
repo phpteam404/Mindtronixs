@@ -93,7 +93,7 @@ class Master extends REST_Controller
             $this->response($result, REST_Controller::HTTP_OK);
         }
         // $data = tableOptions($data);
-        $result = $this->Master_model->getMaster($data);
+        $result = $this->Master_model->getMaster($data);//echo $this->db->last_query();exit;
         if(isset($data['dropdown']) && $data['dropdown']!=''){
             foreach($result['data'] as $k => $v)
                 $result['data'][$k]['value'] = (int)$v['value'];

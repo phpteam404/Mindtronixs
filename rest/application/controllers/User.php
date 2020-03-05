@@ -80,8 +80,8 @@ class User extends REST_Controller
         }
 
         if(isset($data['user_role_id']) && $data['user_role_id']==4){
-            $this->form_validator->add_rules('mobile_phone1', $stdentphonennodRules); 
-            $this->form_validator->add_rules('mobile_phone2', $mobile2); 
+            //$this->form_validator->add_rules('mobile_phone1', $stdentphonennodRules); 
+            //$this->form_validator->add_rules('mobile_phone2', $mobile2); 
             $this->form_validator->add_rules('school_id', array('required' => $this->lang->line('school_req')));
             $this->form_validator->add_rules('grade', array('required' => $this->lang->line('grade_req')));
             $this->form_validator->add_rules('parent_name', array('required' => $this->lang->line('parent_req')));
@@ -421,9 +421,10 @@ class User extends REST_Controller
         // $data = tableOptions($data);
         $data['type']='edit';//this key used for filter the select statement
         $student_list=$this->User_model->getStudentList($data);//echo $this->db->last_query();exit;
+        // print_r($student_list);exit;
         foreach($student_list['data'] as $k=>$v){
             if(!empty($data['user_id'])){
-                $student_list['data'][$k]['blood_group']=getObjOnId($v['blood_group'],!empty($v['blood_group'])?true:false);//getting the bloodgroup dropdown object values 
+                $student_list['data'][$k]['blood_group']=getObjOnIdOfBloodGroup($v['blood_group'],!empty($v['blood_group'])?true:false);//getting the bloodgroup dropdown object values 
                 $student_list['data'][$k]['relation']=getObjOnId($v['relation'],!empty($v['relation'])?true:false);
                 $student_list['data'][$k]['grade']=getObjOnId($v['grade'],!empty($v['grade'])?true:false);//getting object  of  dropdown grade field
                 $student_list['data'][$k]['nationality']=getObjOnId($v['nationality'],!empty($v['nationality'])?true:false);

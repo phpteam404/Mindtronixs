@@ -862,7 +862,7 @@ if (!function_exists('getTableHeads')) {
                    array('field' => 'email', 'header' => 'Contact Email', 'alias' => 'email'),
                    array('field' => 'phone_no', 'header' => 'Contact Phone', 'alias' => 'phone_no'),
                    array('field' => 'user_role', 'header' => 'Role', 'alias' => 'user_role'),
-                   array('field' => 'franchise_name', 'header' => 'Franchise', 'alias' => 'manager'),
+                   array('field' => 'franchise_name', 'header' => 'Franchise', 'alias' => 'franchise_name'),
                    array('field' => 'status', 'header' => 'Status', 'alias' => 'status'),
                    array('field' => 'actions', 'header' => 'Actions', 'alias' => 'actions')
                );
@@ -892,15 +892,16 @@ if (!function_exists('getTableHeads')) {
                     array('field'=> 'actions', 'header'=> 'Actions','alias'=>'actions' )
                 );
                 break;
-                case 'trainer_schedule_list':
-                    return array(
-                        array('field'=> 'topic', 'header'=> 'Topic','alias'=>'topic'),
-                        array('field'=>'date', 'header'=> 'Date','alias'=>'date' ),
-                        array('field'=> 'from_time', 'header'=> 'From Time','alias'=>'from_time' ),
-                        array('field'=> 'to_time', 'header'=> 'To Time','alias'=>'to_time' ),
-                        array('field'=> 'actions', 'header'=> 'Actions','alias'=>'actions' )
-                    );
-                    break;
+            case 'trainer_schedule_list':
+                return array(
+                    array('field'=> 'topic', 'header'=> 'Topic','alias'=>'topic'),
+                    array('field'=>'date', 'header'=> 'Date','alias'=>'date' ),
+                    array('field'=> 'from_time', 'header'=> 'From Time','alias'=>'from_time' ),
+                    array('field'=> 'to_time', 'header'=> 'To Time','alias'=>'to_time' ),
+                    array('field'=> 'actions', 'header'=> 'Actions','alias'=>'actions' )
+                );
+                break;
+
         }
 
     }

@@ -306,18 +306,15 @@ class User extends REST_Controller
     // }
     
     public function Delete_delete(){
-        $data=$this->input->get();//print_r($data);exit;
+        $data=$this->input->get();
         $table=$data['tablename'];
         $id=$data['id'];
         if($table=='user'){
             $this->User_model->update_data($table,array('user_status'=>2),array('id'=>$id));
             $result = array('status'=>TRUE, 'message' => $this->lang->line('delete_sc'), 'data'=>'');
             $this->response($result, REST_Controller::HTTP_OK);
-
         }
         else{
-            // echo 'da';exit;
-        //    $k=$this->User_model->update_data($table,array('status'=>2),array('id'=>$id));echo $this->db->last_query();exit;
             if($this->User_model->update_data($table,array('status'=>2),array('id'=>$id))){ 
                 $result = array('status'=>TRUE, 'message' => $this->lang->line('delete_sc'), 'data'=>'');
                 $this->response($result, REST_Controller::HTTP_OK);
@@ -464,7 +461,7 @@ class User extends REST_Controller
        $data['type']='view';//this key used for filter the select statement
        $student_info=$this->User_model->getStudentList($data);//echo $this->db->last_query();exit;//this model is used to get the student data
         
-       $result = array('status'=>TRUE, 'message' =>$this->lang->line('success'), 'data'=>array('data'=>$student_info['data']));
+       $result = array('status'=>TRUE, 'message' =>$this->lang->line('success'), 'data'=>array('data'=>$student_info['data'],'last_invoice_amount'=>'10,000','student_history'=>'student_history'));
        $this->response($result, REST_Controller::HTTP_OK);
     }
      

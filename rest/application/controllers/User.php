@@ -203,22 +203,40 @@ class User extends REST_Controller
     public function getUserList_get(){
         $data = $this->input->get();
         $data = tableOptions($data);
-        $result=$this->User_model->getuserlist($data);
+        $result=$this->User_model->getuserlist($data);//echo $this->db->last_query();exit;
         foreach($result['data'] as $k=>$v){
             if(!empty($data['user_id'])){
                 $result['data'][$k]['status']=getStatusObj($v['status']);
-                $result['data'][$k]['franchise_name']=getObjOnId($v['franchise_name'],!empty($v['franchise_name'])?true:false);
+                if($v['user_role_id']==5){
+                    $result['data'][$k]['franchise_name']='--';
+                }
+                else{
+                    $result['data'][$k]['franchise_name']=getObjOnId($v['franchise_name'],!empty($v['franchise_name'])?true:false);
+                }
                 $result['data'][$k]['user_role']=getObjOnId($v['user_role'],!empty($v['user_role'])?true:false);
-
+                
             }
             else{
                 $result['data'][$k]['status']=getStatusText($v['status']);
-                $result['data'][$k]['franchise_name']=getObjOnId($v['franchise_name'],!empty($v['franchise_name'])?false:true);
+                // if()
+                // print_r($v);exit;
+                if($v['user_role_id']==5){
+                    $result['data'][$k]['franchise_name']='--';
+                }
+                else{
+                    $result['data'][$k]['franchise_name']=getObjOnId($v['franchise_name'],!empty($v['franchise_name'])?false:true);
+                }
                 $result['data'][$k]['user_role']=getObjOnId($v['user_role'],!empty($v['user_role'])?false:true);
-
+                
             }
         }
-        $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>array('data' => $result['data'],'total_records'=>$result['total_records'],'table_headers'=>getTableHeads('all_users_list')));
+        if(!empty($data['user_id'])){
+            $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>array('data' => $result['data']));
+        }
+        else{
+            $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>array('data' => $result['data'],'total_records'=>$result['total_records'],'table_headers'=>getTableHeads('all_users_list')));
+            
+        }
          $this->response($result, REST_Controller::HTTP_OK); 
     }
 
@@ -227,15 +245,19 @@ class User extends REST_Controller
         $data = $this->input->get();
         $modules=array();
         if(!isset($data['dropdown']))
-            $modules= $this->User_model->menuList(array('user_role_id'=>!empty($data['user_role_id'])?$data['user_role_id']:1));
-        $user_roles= $this->User_model->getUserRoles(array('dropdown'=>isset($data['dropdown'])?true:false));//echo $this->db->last_query();exit;
+            $modules= $this->User_model->menuList(array('user_role_id'=>!empty($data['user_role_id'])?$data['user_role_id']:1));//echo $this->db->last_query();exit;
+        $user_roles= $this->User_model->getUserRoles(array('dropdown'=>isset($data['dropdown'])?true:false));
+        //echo $this->db->last_query();exit;
+        foreach($user_role as $k=>$v){
+            $user_roles[$k]['value']=(int)$v['value'];
+        }
         $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>array('modules' => $modules,'user_roles'=>$user_roles));
         $this->response($result, REST_Controller::HTTP_OK);
     }
     
     public function updateRolesManagement_post(){
         $data=$this->input->post();
-        // print_r($data);exit;
+            // print_r($data);exit;
         if(empty($data)){
             $result = array('status'=>FALSE,'error'=>$this->lang->line('invalid_data'),'data'=>'');
             $this->response($result, REST_Controller::HTTP_OK);
@@ -246,7 +268,7 @@ class User extends REST_Controller
             $update_data[$m]['id']=$module['module_access_id'];
             $update_data[$m]['is_access_status']=$module['is_access_status'];    
         }
-        $is_update=$this->User_model->update_data_batch('module_access',$update_data,'id');
+        $is_update=$this->User_model->update_data_batch('module_access',$update_data,'id');//echo $this->db->last_query();exit;
         if(isset($is_update)){
             $result = array('status'=>TRUE, 'message' => $this->lang->line('roles_updated'), 'data'=>array());
             $this->response($result, REST_Controller::HTTP_OK); 
@@ -315,6 +337,7 @@ class User extends REST_Controller
             $this->response($result, REST_Controller::HTTP_OK);
         }
         else{
+            // $this->User_model->update_data($table,array('status'=>2),array('id'=>$id));echo $this->db->last_query();exit;
             if($this->User_model->update_data($table,array('status'=>2),array('id'=>$id))){ 
                 $result = array('status'=>TRUE, 'message' => $this->lang->line('delete_sc'), 'data'=>'');
                 $this->response($result, REST_Controller::HTTP_OK);
@@ -517,14 +540,23 @@ class User extends REST_Controller
        $data=$this->input->get();
        if(!empty($data['trainer_schedule_id'])){
             $data['type']='edit'; 
-            $trainerschedulelist= $this->User_model->getTrainerScheduleList($data);
+            // for
+            $trainerschedulelist= $this->User_model->getTrainerScheduleList($data);//echo $this->db->last_query();exit;
             // print_r($trainerschedulelist);exit;
+            // print_r($trainerschedulelist['data']);exit;
+            // print_r($trainerschedulelist['data'][0]['from_time']);exit;
+            // $trainerschedulelist['data'][0]['from_time']=date("h:i A", strtotime($trainerschedulelist['data'][0]['from_time']));
+            // $trainerschedulelist['data'][0]['to_time']=date("h:i A", strtotime($trainerschedulelist['data'][0]['to_time']));
             $result = array('status'=>TRUE, 'message' =>$this->lang->line('success'), 'data'=>array('data'=>$trainerschedulelist['data']));
 
         }
         else{
             $trainerschedulelist= $this->User_model->getTrainerScheduleList($data); 
-            $result = array('status'=>TRUE, 'message' =>$this->lang->line('success'), 'data'=>array('data'=>$trainerschedulelist['data'],'total_records'=>$trainerschedulelist['total_records'],'table_headers'=>getTableHeads('students_list')));
+            foreach($trainerschedulelist['data'] as $k=>$v){
+               $trainerschedulelist['data'][$k]['from_time']=date("h:i A", strtotime($v['from_time']));
+                $trainerschedulelist['data'][$k]['to_time']=date("h:i A", strtotime($v['to_time']));
+            }
+            $result = array('status'=>TRUE, 'message' =>$this->lang->line('success'), 'data'=>array('data'=>$trainerschedulelist['data'],'total_records'=>$trainerschedulelist['total_records'],'table_headers'=>getTableHeads('trainer_schedule_list')));
         }
         // echo $this->db->last_query();exit;
         $this->response($result, REST_Controller::HTTP_OK);

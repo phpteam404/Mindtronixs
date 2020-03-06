@@ -19,6 +19,7 @@ class Fee_model extends CI_Model
         $this->db->select('fm.id as fee_master_id,fm.name,fm.amount,fm.term,discount,fm.discount_details,fm.status,CONCAT(mc.child_name,"-",mc.id) term');
         $this->db->from('fee_master fm');
         $this->db->join('master_child mc','fm.term = mc.id AND mc.master_id = 11','left');
+        $this->db->where('fm.status','1');
         if(isset($data['search']))
         {
             $this->db->group_start();
@@ -31,6 +32,9 @@ class Fee_model extends CI_Model
         if(isset($data['status']) && $data['status']!=''){
             $this->db->where('fm.status',$data['status']);
         }
+        // else{
+        //     $this->db->where_in('fm.status',array('0','1'); 
+        // }
         if(isset($data['fee_master_id']) && $data['fee_master_id'] > 0){
             $this->db->where('fm.id',$data['fee_master_id']);
         }

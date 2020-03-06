@@ -179,8 +179,10 @@ class User_model extends CI_Model
     public function getUserRoles($data)
     {
         if(isset($data['dropdown'])){
-            $this->db->select('user_role_name as label, id as value')->from('user_role');
-            $this->db->where('role_level != 1');
+            $this->db->select('user_role_name as label, CAST(id AS SIGNED) as value')->from('user_role');
+            // $this->db->where('role_level != 1');
+            $this->db->where_not_in('role_level', array('1','5'));
+
         }
         else{
             $this->db->select('*')->from('user_role');
@@ -534,14 +536,29 @@ class User_model extends CI_Model
         }    
     }
     public function getuserlist($data=null)
-    {
-        $this->db->select('u.id as user_id,u.user_role_id,u.franchise_id,concat(u.first_name," ",u.last_name) as user_name,u.email,u.phone_no,a.name as franchise_name,u.user_status as status,CONCAT(ur.user_role_name,"-",ur.id)  as user_role,CONCAT(a.name,"-",a.id) franchise_name');
-        $this->db->from('user u');
-        $this->db->join('franchise a','u.franchise_id=a.id','left');
-        $this->db->join('user_role ur','u.user_role_id=ur.id','left');
-        if(isset($data['user_role_id']) && $data['user_role_id']>0){
-            $this->db->where('u.user_role_id',$data['user_role_id']);
+    {   
+        if(isset($data['user_id']) && $data['user_id']>0){
+            $this->db->select('u.first_name,u.last_name');
         }
+        else{
+            $this->db->select('concat(u.first_name," ",u.last_name) as user_name,');
+        }
+        $this->db->select('u.id as user_id,u.user_role_id,u.email,u.phone_no,f.name as franchise_name,u.user_status as status,CONCAT(ur.user_role_name,"-",ur.id)  as user_role,CONCAT(f.name,"-",f.id) franchise_name');
+        if(isset($data['user_role_id']) && $data['user_role_id']==5){
+            $this->db->select('-- as franchise_name');
+        }
+        if(isset($data['user_role_id']) && in_array($data['user_role_id'],array('2','3'))){
+            $this->db->select('f.name as franchise_name');
+        }
+        if(empty($data['user_role_id'])){
+            $this->db->where_in('u.user_role_id',array('2','3','5'));
+        }
+        $this->db->from('user u');
+        $this->db->join('franchise f','u.franchise_id=f.id','left');
+        $this->db->join('user_role ur','u.user_role_id=ur.id','left');
+        // if(isset($data['user_role_id']) && $data['user_role_id']>0){
+        //     $this->db->where('u.user_role_id',$data['user_role_id']);
+        // }  
         if(isset($data['franchise_id']) && $data['franchise_id']>0){
             $this->db->where('u.franchise_id',$data['franchise_id']);
         }
@@ -787,15 +804,18 @@ class User_model extends CI_Model
     }
     public function getTrainerScheduleList($data=null){
         if(isset($data['type']) && $data['type']=='edit'){
-            $this->db->select('ts.id as trainer_schedule_id,ts.topic,ts.date,ts.description,TIME_FORMAT(ts.from_time, "%h:%i %p") from_time,TIME_FORMAT(ts.to_time, "%h:%i %p") to_time');
+            $this->db->select("ts.id as trainer_schedule_id,ts.topic,ts.date,ts.description,CONCAT(DATE_FORMAT(ts.date, '%a %b %d %Y '),ts.from_time,' GMT+0530 (India Standard Time)') as from_time,
+            CONCAT(DATE_FORMAT(ts.date, '%a %b %d %Y '),ts.to_time,' GMT+0530 (India Standard Time)') as to_time");
         }else{
-            $this->db->select('ts.id as trainer_schedule_id,ts.topic,ts.date,TIME_FORMAT(ts.from_time, "%h:%i %p") from_time,TIME_FORMAT(ts.to_time, "%h:%i %p") to_time');
+            //$this->db->select("ts.id as trainer_schedule_id,ts.topic, DATE_FORMAT(ts.date, '%b %d, %Y') as date,TIME_FORMAT(ts.from_time, '%h:%i %p') as from_time,TIME_FORMAT(ts.to_time, '%h:%i %p') as to_time");
+            $this->db->select("ts.id as trainer_schedule_id,ts.topic, DATE_FORMAT(ts.date, '%b %d, %Y') as date,ts.from_time,ts.to_time");
+
         }
        $this->db->from('trainer_schedule ts');
        $this->db->group_by('ts.id');
-       if(isset($data['search']) && $data['search']!==''){
+       if(isset($data['search_key']) && $data['search_key']!==''){
             $this->db->group_start();
-            $this->db->where('ts.topic like "%'.$data['search'].'%"');
+            $this->db->where('ts.topic like "%'.$data['search_key'].'%"');
             $this->db->group_end();
         }
         if(!empty($data['trainer_schedule_id'])){
@@ -808,6 +828,7 @@ class User_model extends CI_Model
         else{
             $this->db->order_by('ts.id','desc');
         }
+        $this->db->where('ts.status','1');
         $count_result_db = clone $this->db;  
         $count_result = $count_result_db->get();
         $count_result = $count_result->num_rows();

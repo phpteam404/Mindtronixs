@@ -43,7 +43,7 @@ class Master extends REST_Controller
             'status'=>isset($data['status'])?$data['status']:'1'   
         );
         if(isset($data['child_id']) && $data['child_id']){
-            $check_existance=$this->Master_model->check_not_in('master_child',array('child_name'=>$data['child_name']),array('id'=>array($data['child_id'])));
+            $check_existance=$this->Master_model->check_not_in('master_child',array('child_name'=>ltrim(rtrim($data['child_name']))),array('id'=>array($data['child_id'])));
             if(count($check_existance)>0){
                 $result = array('status'=>FALSE,'error'=>$this->lang->line('child_name_duplicate'),'data'=>'');
                 $this->response($result, REST_Controller::HTTP_OK);

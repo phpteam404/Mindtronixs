@@ -769,7 +769,7 @@ if (!function_exists('getTableHeads')) {
                     array('field' => 'franchise_name', 'header' => 'Franchise Name', 'alias' => 'franchise_name'),
                     array('field' => 'email', 'header' => 'Contact Email', 'alias' => 'email'),
                     array('field' => 'contact_number', 'header' => 'Contact Number', 'alias' => 'contact_number'),
-                    array('field' => 'city', 'header' => 'City', 'alias' => 'city'),
+                    array('field' => 'city', 'header' => 'City', 'alias' => 'mc.child_name'),
                     array('field' => 'created_on', 'header' =>'Created On', 'alias' => 'created_on'),
                     array('field' => 'status', 'header' =>'Status', 'alias' => 'status'),
                     array('field' => 'actions', 'header' => 'Actions', 'alias' => 'actions'),
@@ -875,9 +875,9 @@ if (!function_exists('getTableHeads')) {
                     array('field'=> 'franchise_name', 'header'=> 'Franchise','alias'=>'franchise' ),
                     array('field'=> 'contact_email', 'header'=> 'Contact Email','alias'=>'contact_email' ),
                     array('field'=> 'phone_no', 'header'=> 'Contact Number','alias'=>'phone_no' ),
-                    array('field'=>'last_login', 'header'=> 'Last Login','alias' =>'last_login' ),
+                    array('field'=> 'last_login', 'header'=> 'Last Login','alias' =>'last_login' ),
                     array('field'=> 'status', 'header'=> 'Status','alias'=>'status' ),
-                    array( 'field'=> 'actions', 'header'=> 'Actions' ,'alias'=>'actions')
+                    array('field'=> 'actions', 'header'=> 'Actions' ,'alias'=>'actions')
                );
                break;
             case 'online_users_list':
@@ -892,15 +892,15 @@ if (!function_exists('getTableHeads')) {
                     array('field'=> 'actions', 'header'=> 'Actions','alias'=>'actions' )
                 );
                 break;
-                case 'trainer_schedule_list':
-                    return array(
-                        array('field'=> 'topic', 'header'=> 'Topic','alias'=>'topic'),
-                        array('field'=>'date', 'header'=> 'Date','alias'=>'date' ),
-                        array('field'=> 'from_time', 'header'=> 'From Time','alias'=>'from_time' ),
-                        array('field'=> 'to_time', 'header'=> 'To Time','alias'=>'to_time' ),
-                        array('field'=> 'actions', 'header'=> 'Actions','alias'=>'actions' )
-                    );
-                    break;
+            case 'trainer_schedule_list':
+                return array(
+                    array('field'=> 'topic', 'header'=> 'Topic','alias'=>'topic'),
+                    array('field'=>'date', 'header'=> 'Date','alias'=>'date' ),
+                    array('field'=> 'from_time', 'header'=> 'From Time','alias'=>'from_time' ),
+                    array('field'=> 'to_time', 'header'=> 'To Time','alias'=>'to_time' ),
+                    array('field'=> 'actions', 'header'=> 'Actions','alias'=>'actions' )
+                );
+                break;
 
         }
 

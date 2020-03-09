@@ -569,7 +569,7 @@ class User_model extends CI_Model
             $this->db->where('u.user_status',$data['user_status']);
         }
         else{
-            $this->db->where('u.user_status','1');
+            $this->db->where_in('u.user_status',array(0,1));
         }
         
         if(isset($data['search_key']) && $data['search_key']!==''){
@@ -771,7 +771,7 @@ class User_model extends CI_Model
         $this->db->join('fee_master fm','s.franchise_fee_id=fm.id','left');
         $this->db->join('school_master sm','s.school_id=sm.id','left');
         $this->db->where('u.user_role_id','4');
-        $this->db->where('u.user_status','1');
+        $this->db->where_in('u.user_status',array(0,1));
         if(isset($data['franchise_id']) && $data['franchise_id']>0){
             $this->db->where('s.franchise_id',$data['franchise_id']);
         }

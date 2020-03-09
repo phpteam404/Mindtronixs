@@ -44,13 +44,13 @@ class Franchise_model extends CI_Model
         }
         // print_r($data);exit;
         $this->db->where_in('f.status',array(0,1));
-        if(isset($data['search'])){
+        if(isset($data['search_key'])){
             $this->db->group_start();
-            $this->db->like('f.name', $data['search'], 'both');
-            $this->db->or_like('f.franchise_code', $data['search'], 'both');
-            $this->db->or_like('f.email', $data['search'], 'both');
-            $this->db->or_like('f.city', $data['search'], 'both');
-            $this->db->or_like('f.primary_contact',$data['search'],'both');
+            $this->db->like('f.name', $data['search_key'], 'both');
+            $this->db->or_like('f.franchise_code', $data['search_key'], 'both');
+            $this->db->or_like('f.email', $data['search_key'], 'both');
+            $this->db->or_like('f.city', $data['search_key'], 'both');
+            $this->db->or_like('f.primary_contact',$data['search_key'],'both');
             $this->db->group_end();
         }
         $all_clients_count_db=clone $this->db;
@@ -183,7 +183,7 @@ class Franchise_model extends CI_Model
         return $query->result_array();
     }
     public function getFranchiseContacts($data=null){
-        $this->db->select('fc.id as franchise_contact_id,franchise_id,fc.contact_name,fc.contact_email,fc.contact_number,mc.child_name as contact_title');
+        $this->db->select('fc.id as franchise_contact_id,franchise_id,fc.contact_name,fc.contact_email,fc.contact_number,mc.child_name as contact_title_display,concat(mc.child_name,"-",mc.id) as contact_title');
         $this->db->from('franchise_contacts fc');
         $this->db->join('master_child mc','fc.contact_title=mc.id AND mc.master_id=19','left');
         if(isset($data['status']) && $data['status']!==''){

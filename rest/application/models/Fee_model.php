@@ -33,9 +33,9 @@ class Fee_model extends CI_Model
         if(isset($data['status']) && $data['status']!=''){
             $this->db->where('fm.status',$data['status']);
         }
-        else{
-            $this->db->where_in('fm.status',array('0','1')); 
-        }
+        // else{
+        //     $this->db->where_in('fm.status',array('0','1')); 
+        // }
         if(isset($data['fee_master_id']) && $data['fee_master_id'] > 0){
             $this->db->where('fm.id',$data['fee_master_id']);
         }

@@ -25,6 +25,7 @@ class Fee extends REST_Controller
 
     public function addFeeUpdate_post()
     {
+
         $data = $this->input->post();
         if(empty($data)){
             $result = array('status'=>FALSE,'error'=>$this->lang->line('invalid_data'),'data'=>'');
@@ -52,6 +53,8 @@ class Fee extends REST_Controller
         );
         if(isset($data['fee_master_id']) && $data['fee_master_id']>0){
             // print_r($data);exit;
+            // $check_fee_name_exits=$this->User_model->check_record('fee_master', array('name'=>ltrim(rtrim($data['name'])),'id'=>$data['fee_master_id']));
+            // echo $this->db->last_query();exit;
             $add['updated_by'] =  $this->session_user_id;
             $add['updated_on'] = currentDate();
             $update = $this->User_model->update_data('fee_master',$add,array('id'=>$data['fee_master_id']));
@@ -67,6 +70,8 @@ class Fee extends REST_Controller
         else{
             $add['created_by'] = $this->session_user_id;
             $add['created_on'] = currentDate();
+            // $check_fee_name_exits=$this->User_model->check_record('fee_master', array('name'=>ltrim(rtrim($data['name']))));
+            // echo $this->db->last_query();exit;
             $addFeeData = $this->Fee_model->addFee($add);
             //echo ''.$this->db->last_query(); exit;
             if($addFeeData >0){

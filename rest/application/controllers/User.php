@@ -94,9 +94,9 @@ class User extends REST_Controller
         if(isset($data['user_role_id']) && $data['user_role_id']!=4)
         {
             $this->form_validator->add_rules('first_name', $firstNameRules);
-            $this->form_validator->add_rules('last_name', $lastNameRules);
+           // $this->form_validator->add_rules('last_name', $lastNameRules);
         }
-        if($this->session_user_info->user_role_id==2){
+        if($this->session_user_info->user_role_id==2 && $data['user_role_id']==4){
             $data['franchise_id']=$this->session_user_info->franchise_id;
         }
 
@@ -132,7 +132,7 @@ class User extends REST_Controller
             'email' => !empty($data['email'])?$data['email']:'',
             'password' => !empty($data['password'])?md5($data['password']):'',
             //'gender' => isset($data['gender']) ? $data['gender'] : '',
-            'user_status' => isset($data['user_status'])?$data['user_status']:'1',
+            'user_status' => isset($data['status'])?$data['status']:'1',
             // 'profile_image' =>isset($data['profile_image'])?$data['profile_image']:'',
             'address'=>isset($data['address'])?$data['address']:'',
             'phone_no'=>isset($data['phone_no'])?$data['phone_no']:'',
@@ -169,6 +169,9 @@ class User extends REST_Controller
                 $student_data['updated_by']=!empty($this->session_user_id)?$this->session_user_id:'0';
                 $student_data['updated_on']=currentDate();
                 $this->User_model->update_data('student',$student_data,array('user_id'=>$data['user_id']));
+                $this->User_model->update_data('user',array('user_status'=>$data['status']),array('id'=>$data['user_id']));
+
+
             }
             if($is_update>0){
                 $result = array('status'=>TRUE, 'message' => $this->lang->line('user_update'), 'data'=>array('data' => $data['user_id']));

@@ -395,7 +395,7 @@ $lang['password_req'] = 'Password is required';
 $lang['master_id_req'] = 'Master id required';
 $lang['child_name_req'] = 'Child name  required';
 $lang['master_add'] = 'Master added successfully';
-$lang['child_name_duplicate'] = 'Child name already exists';
+$lang['child_name_duplicate'] = 'Master name already exists';
 $lang['master_update'] = 'Master updated successfully';
 $lang['master_key_req'] = 'Master key is required';
 $lang['franchise_name_req'] ='Franchise Name required';
@@ -455,5 +455,11 @@ $lang['to_time_req'] = 'To time is required';
 $lang['trainerschedule_add'] = 'Trainer Schedule Added Successfully';
 $lang['trainerschedule_update'] = 'Trainer Schedule Updated Successfully';
 $lang['delete_sc'] = 'Deleted Successfully';
+$lang['content_name_req'] = 'Digital Content Name required';
+$lang['sub_category_req'] = 'Sub Category required';
+$lang['tags_req'] = 'Tags required';
+$lang['grade_req'] = 'Grade required';
+$lang['content_level_req'] = 'Content Level required';
+$lang['franchise_contacts_update'] = 'Franchise contacts updated Successfully';
 
 

@@ -3,6 +3,7 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 require APPPATH . '/libraries/REST_Controller.php';
+require 'ImageFactory.php';
 
 class Digitalcontent extends REST_Controller
 {
@@ -38,7 +39,12 @@ class Digitalcontent extends REST_Controller
             $this->response($result, REST_Controller::HTTP_OK);
         }
         
-        $this->form_validator->add_rules('category_id', array('required' => $this->lang->line('category_req')));
+        $this->form_validator->add_rules('name', array('required' => $this->lang->line('content_name_req')));
+        $this->form_validator->add_rules('category', array('required' => $this->lang->line('category_req')));
+        $this->form_validator->add_rules('sub_category', array('required' => $this->lang->line('sub_category_req')));
+        $this->form_validator->add_rules('tags', array('required' => $this->lang->line('tags_req')));
+        $this->form_validator->add_rules('grade', array('required' => $this->lang->line('grade_req')));
+        $this->form_validator->add_rules('content_level', array('required' => $this->lang->line('content_level_req')));
         $validated = $this->form_validator->validate($data);    
         if($validated != 1)
         {
@@ -46,28 +52,48 @@ class Digitalcontent extends REST_Controller
             $this->response($result, REST_Controller::HTTP_OK);
         }
         $content_data=array(
-            'category'=>!empty($data['category_id'])?$data['category_id']:'',
-            'sub_category'=>!empty($data['sub_category_id'])?$data['sub_category_id']:'',
+            'content_name'=>!empty($data['name'])?$data['name']:'',
+            'content_description'=>!empty($data['description'])?$data['description']:'',
+            'category'=>!empty($data['category'])?$data['category']:'',
+            'sub_category'=>!empty($data['sub_category'])?$data['sub_category']:'',
             'tags'=>!empty($data['tags'])?$data['tags']:'',
-            'grade'=>!empty($data['grade_id'])?$data['grade_id']:'',
+            'exparity_date'=>!empty($data['expiry_date'])?$data['expiry_date']:'', 
+            'grade'=>!empty($data['grade'])?$data['grade']:'',
+            'content_level'=>!empty($data['content_level'])?$data['content_level']:'',
             'status'=>!empty($data['status'])?$data['status']:'1'
+            
         );
         if(!empty($_FILES)){
-            $allowed_types=array('gif','jpg','jpeg','png','pdf','mp4','xlsx','xls');   
-            $no_of_files=count($_FILES['document']['name']);
+            $allowed_types=array('gif','jpg','jpeg','png','pdf','mp4','xlsx','xls'); 
+            $no_of_files=count($_FILES['files']['name']);
             for ($i=0; $i <$no_of_files ; $i++) {
-                $extensions[] = pathinfo($_FILES['document']['name'][$i], PATHINFO_EXTENSION);
+                $extensions[] = pathinfo($_FILES['files']['name'][$i], PATHINFO_EXTENSION);
             }
             $intersect_data=array_intersect($extensions,$allowed_types);
             for($i=0; $i <$no_of_files ; $i++) { 
                 if($extensions==$intersect_data)
                 {
+                    // print_r(pathinfo($_FILES['files']['name'][$i],PATHINFO_EXTENSION));exit;
                     $path='uploads/digitalcontent/';
                     $imageName = doUpload(array(
-                        'temp_name' => $_FILES['document']['tmp_name'][$i],
-                        'image' => $_FILES['document']['name'][$i],
+                        'temp_name' => $_FILES['files']['tmp_name'][$i],
+                        'image' => $_FILES['files']['name'][$i],
                         'upload_path' => $path,''
-                        )); 
+                    )); 
+                    $image_extensions=array('gif','jpg','jpeg','png');
+                    if(in_array(pathinfo($_FILES['files']['name'][$i],PATHINFO_EXTENSION),$image_extensions)){
+                        print_r(!is_dir('uploads/digitalcontent/small_images/'));exit;
+                        $ImageMaker =   new ImageFactory();
+                        // Here is just a test landscape sized image
+                        $image_target   =   "uploads/digitalcontent/".$imageName;
+                        if(!is_dir($small_images_destination)){ mkdir($small_images_destination); }
+                            // This will save the file to disk. $destination is where the file will save and with what name
+                            $small_images_destination    =   "uploads/digitalcontent/small_images/".$imageName ;
+                            $ImageMaker->Thumbnailer($image_target,65,65,$small_images_destination);//this is used to resize image with 65X65 resolution
+                        if(!is_dir($medium_images_destination)){ mkdir($medium_images_destination); }
+                            $medium_images_destination    =   "uploads/digitalcontent/medium_images/".$imageName ;
+                            $ImageMaker->Thumbnailer($image_target,150,150,$medium_images_destination);//this is used to resize image with 150X150 resolution
+                    }
                         // $imageName='digitalcontent/'.$imageName;
                         // print_r($imageName);exit;
                         $document_id[]=$this->User_model->insertdata('documents',array('document_name'=>!empty($imageName)?$imageName:'','created_by'=>!empty($this->session_user_id)?$this->session_user_id:'0','created_on'=>currentDate(),'module_type'=>'digital_content'));

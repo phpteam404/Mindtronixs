@@ -92,7 +92,7 @@ class Fee extends REST_Controller
             $this->response($result, REST_Controller::HTTP_OK);
         }
         // $data = tableOptions($data);//print_r($data);exit
-        $result = $this->Fee_model->listFeeMasterInfo($data);
+        $result = $this->Fee_model->listFeeMasterInfo($data);//echo $this->db->last_query();exit;
 // print_r($result);exit;
         foreach($result['data'] as $k => $v){
             if(isset($data['fee_master_id']) && $data['fee_master_id'] > 0){

@@ -248,7 +248,7 @@ class User extends REST_Controller
             $modules= $this->User_model->menuList(array('user_role_id'=>!empty($data['user_role_id'])?$data['user_role_id']:1));//echo $this->db->last_query();exit;
         $user_roles= $this->User_model->getUserRoles(array('dropdown'=>isset($data['dropdown'])?true:false));
         //echo $this->db->last_query();exit;
-        foreach($user_role as $k=>$v){
+        foreach($user_roles as $k=>$v){
             $user_roles[$k]['value']=(int)$v['value'];
         }
         $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>array('modules' => $modules,'user_roles'=>$user_roles));

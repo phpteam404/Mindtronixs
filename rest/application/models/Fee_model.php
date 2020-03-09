@@ -16,25 +16,26 @@ class Fee_model extends CI_Model
     }
     public function listFeeMasterInfo($data)
     {
+        // print_r($data);exit;
         $this->db->select('fm.id as fee_master_id,fm.name,fm.amount,fm.term,discount,fm.discount_details,fm.status,CONCAT(mc.child_name,"-",mc.id) term');
         $this->db->from('fee_master fm');
         $this->db->join('master_child mc','fm.term = mc.id AND mc.master_id = 11','left');
-        $this->db->where('fm.status','1');
-        if(isset($data['search']))
+        // $this->db->where('fm.status','1');
+        if(isset($data['search_key']))
         {
             $this->db->group_start();
-            $this->db->like('fm.name', $data['search'], 'both');
-            $this->db->or_like('fm.amount', $data['search'], 'both');
-            $this->db->or_like('fm.term', $data['search'], 'both');
-            $this->db->or_like('fm.discount', $data['search'], 'both');
+            $this->db->like('fm.name', $data['search_key'], 'both');
+            $this->db->or_like('fm.amount', $data['search_key'], 'both');
+            $this->db->or_like('mc.child_name', $data['search_key'], 'both');
+            $this->db->or_like('fm.discount', $data['search_key'], 'both');
             $this->db->group_end();
         }
         if(isset($data['status']) && $data['status']!=''){
             $this->db->where('fm.status',$data['status']);
         }
-        // else{
-        //     $this->db->where_in('fm.status',array('0','1'); 
-        // }
+        else{
+            $this->db->where_in('fm.status',array('0','1')); 
+        }
         if(isset($data['fee_master_id']) && $data['fee_master_id'] > 0){
             $this->db->where('fm.id',$data['fee_master_id']);
         }

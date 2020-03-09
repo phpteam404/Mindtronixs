@@ -39,6 +39,9 @@ class Franchise_model extends CI_Model
             // $this->db->where('af.status',1);
             //$this->db->where('fm.status',1);
         }
+        else{
+            $this->db->select('mc.child_name as city');
+        }
         // print_r($data);exit;
         $this->db->where_in('f.status',array(0,1));
         if(isset($data['search'])){
@@ -78,17 +81,22 @@ class Franchise_model extends CI_Model
         //     $this->db->where('sm.status',$data['status']);
         // }
 
-        $this->db->select('sm.id as school_id,sm.school_code code,sm.name,COUNT(DISTINCT s.id ) as no_of_students,sm.phone,sm.email,sm.franchise_id');
+        // $this->db->select('sm.id as school_id,sm.school_code code,sm.name,COUNT(DISTINCT s.id ) as no_of_students,sm.phone,sm.email,sm.franchise_id');
+        $this->db->select('(SELECT count(*) as no_of_studnets FROM student s1 LEFT JOIN  user u1  ON s1.user_id=u1.id WHERE u1.user_role_id=4 and	u1.user_status=1 and s1.status=1 AND s1.school_id=s.school_id) as no_of_students,`sm`.`id` as `school_id`, `sm`.`school_code` `code`, `sm`.`name`,  `sm`.`phone`, `sm`.`email`, `sm`.`franchise_id`');
         $this->db->from('school_master sm');
         $this->db->join('student s','sm.id=s.school_id','left');
+        // $this->db->join(' user u','s.user_id=u.id AND u.user_role_id=4','left');
         $this->db->where('sm.status','1');
-        if(isset($data['search']))
+        // $this->db->where('u.user_status','1');
+
+        if(isset($data['search_key']))
         {
             $this->db->group_start();
-            $this->db->like('sm.name', $data['search'], 'both');
-            $this->db->or_like('sm.address', $data['search'], 'both');
-            $this->db->or_like('sm.email', $data['search'], 'both');
-            $this->db->or_like('sm.phone',$data['search'],'both');
+            $this->db->like('sm.name', $data['search_key'], 'both');
+            $this->db->or_like('sm.address', $data['search_key'], 'both');
+            $this->db->or_like('sm.email', $data['search_key'], 'both');
+            $this->db->or_like('sm.phone',$data['search_key'],'both');
+            $this->db->or_like('sm.school_code',$data['search_key'],'both');
             $this->db->group_end();
         }
         if(isset($data['school_id']) && $data['school_id']>0){
@@ -139,7 +147,7 @@ class Franchise_model extends CI_Model
     public function getFeeData($data)//this function is used for get fee data in for franchise
     {
         $this->db->select('CASE WHEN mc.id=19 THEN "1 One Month)" WHEN mc.id=20 THEN "3 (Three Months)" WHEN mc.id=21 THEN "6 (Six Months)" WHEN mc.id=22 THEN "12 (Twelve Months)"
-        ELSE "" END as fee_title,fm.amount,mc.child_name as term,fm.discount');
+        ELSE "" END as fee_title,fm.amount,mc.child_name as term,fm.discount,fm.id as fee_master_id');
         $this->db->from('fee_master fm');
         $this->db->join('master_child mc','fm.term=mc.id AND mc.master_id=11','left');
         $this->db->where('fm.id',$data['fee_master_id']);
@@ -171,6 +179,23 @@ class Franchise_model extends CI_Model
         $this->db->select('CONCAT(sm.name, "-", sm.id) as schools');
         $this->db->from('school_master sm');
         $this->db->where('sm.status','1');
+        $query = $this->db->get();//echo $this->db->last_query();exit;
+        return $query->result_array();
+    }
+    public function getFranchiseContacts($data=null){
+        $this->db->select('fc.id as franchise_contact_id,franchise_id,fc.contact_name,fc.contact_email,fc.contact_number,mc.child_name as contact_title');
+        $this->db->from('franchise_contacts fc');
+        $this->db->join('master_child mc','fc.contact_title=mc.id AND mc.master_id=19','left');
+        if(isset($data['status']) && $data['status']!==''){
+            $this->db->where('fc.status',$data['status']);
+        }
+        else{
+            $this->db->where('fc.status','1');
+        }
+        if(!empty($data['franchise_id'])){
+            $this->db->where('fc.franchise_id',$data['franchise_id']);
+
+        }
         $query = $this->db->get();//echo $this->db->last_query();exit;
         return $query->result_array();
     }

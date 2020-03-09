@@ -66,7 +66,7 @@ class Franchise extends REST_Controller
             'state'=>!empty($data['state'])?$data['state']:'',
             'landmark'=>!empty($data['landmark'])?$data['landmark']:'',
             'status'=>isset($data['status'])?$data['status']:1,
-            // 'city'=>isset($data['city'])?$data['city']:'',
+            'city'=>isset($data['city'])?$data['city']:'',
             // 'franchise_contacts'=>isset($data['franchise_contacts'])?$data['franchise_contacts']:''
         );
 
@@ -92,12 +92,23 @@ class Franchise extends REST_Controller
         }
         else{
 
-            $data['franchise_contacts']=json_encode($data['franchise_contacts']);
+            // $data['franchise_contacts']=json_encode($data['franchise_contacts']);
             $add['created_on'] = currentDate();
             $add['created_by'] = $this->session_user_id;
-            $add['franchise_contacts'] = isset($data['franchise_contacts'])?$data['franchise_contacts']:'';
-
+            // $add['franchise_contacts'] = isset($data['franchise_contacts'])?$data['franchise_contacts']:'';
+            
             $addData = $this->User_model->insertdata('franchise',$add);
+            foreach($data['franchise_contacts'] as $k=>$v){
+                $franchise_contacts[$k]['contact_name']=$v['contact_name'];
+                $franchise_contacts[$k]['contact_title']=$v['contact_title'];
+                $franchise_contacts[$k]['contact_email']=$v['contact_email'];
+                $franchise_contacts[$k]['contact_number']=$v['contact_number'];
+                $franchise_contacts[$k]['created_by']=$this->session_user_id;
+                $franchise_contacts[$k]['franchise_id']=$addData;
+                $franchise_contacts[$k]['crated_on']=currentDate();
+                $franchise_contacts[$k]['status']=1;
+            }
+            $this->User_model->insertbatch('franchise_contacts',$franchise_contacts);
             $Insert = true;
             if($addData){
                 $data['franchise_id'] = $addData;
@@ -149,23 +160,26 @@ class Franchise extends REST_Controller
         $result = $this->Franchise_model->listfranchise($data);//echo $this->db->last_query();exit;
         $franchise_list=$result['data'];
         foreach($franchise_list as $f=>$l){ 
-            if(!empty($l['franchise_contacts']) && !empty($data['franchise_id'])){
-                $franchise_list[$f]['franchise_contacts']=json_decode($l['franchise_contacts']);
-            }
-            if(!empty($franchise_list[$f]['franchise_contacts'])){
-                foreach($franchise_list[$f]['franchise_contacts'] as $k=>$v){
-                    $franchise_list[$f]['franchise_contact_list'][$k]['contact_name']=$v->contact_name;
-                    $franchise_list[$f]['franchise_contact_list'][$k]['contact_phone']=$v->contact_phone;
-                    $franchise_list[$f]['franchise_contact_list'][$k]['contact_title']=$v->contact_title;
-                    $franchise_list[$f]['franchise_contact_list'][$k]['contact_email']=$v->contact_email;
-                }              
-            }    
+            // if(!empty($l['franchise_contacts']) && !empty($data['franchise_id'])){
+            //     $franchise_list[$f]['franchise_contacts']=json_decode($l['franchise_contacts']);
+            // }
+            // if(!empty($franchise_list[$f]['franchise_contacts'])){
+            //     foreach($franchise_list[$f]['franchise_contacts'] as $k=>$v){
+            //         $franchise_list[$f]['franchise_contact_list'][$k]['contact_name']=$v->contact_name;
+            //         $franchise_list[$f]['franchise_contact_list'][$k]['contact_phone']=$v->contact_phone;
+            //         $franchise_list[$f]['franchise_contact_list'][$k]['contact_title']=$v->contact_title;
+            //         $franchise_list[$f]['franchise_contact_list'][$k]['contact_email']=$v->contact_email;
+            //     }              
+            // }   
+
             if(!empty($data['franchise_id'])){
                 // print_r($l);exit;
                 $franchise_list[$f]['city']=getObjOnId($l['city'],!empty($l['city'])?true:false);
                 $franchise_list[$f]['state']=getObjOnId($l['state'],!empty($l['state'])?true:false);
                 $franchise_list[$f]['country']=getObjOnId($l['country'],!empty($l['country'])?true:false);
                 $franchise_list[$f]['status']=getStatusObj($l['status']);//Getting Objects for dropdown When One record is needed.
+                $frachise_contacts=$this->Franchise_model->getFranchiseContacts(array('franchise_id'=>$data['franchise_id']));
+                $franchise_list[$f]['franchise_contact_list']= $frachise_contacts;
             }
             else{
                 // print_r($l['city']);exit;
@@ -293,7 +307,7 @@ class Franchise extends REST_Controller
             $result = array('status'=>FALSE,'error'=>$validated,'data'=>'');
             $this->response($result, REST_Controller::HTTP_OK);
         }
-        $franchise_info=$this->Franchise_model->getfranchiseInfo($data);//this model used for get the franchise information
+        $franchise_info=$this->Franchise_model->getfranchiseInfo($data);//echo $this->db->last_query();exit;//this model used for get the franchise information
         foreach($franchise_info as $k=>$v){
             $franchise_info[$k]['franchise_contacts']=json_decode($v['franchise_contacts']);
             if(!empty($franchise_info[$k]['franchise_contacts'])){
@@ -382,32 +396,78 @@ class Franchise extends REST_Controller
          $result = array('status'=>TRUE, 'message' => $this->lang->line('success'),'data'=>array('data' =>$schools));
          $this->response($result, REST_Controller::HTTP_OK);
      }
-     public function updateFranchiseContacts_post(){
-         $data=$this->input->post();
+    
+     public function addFranchiseFeeMaster_post(){
+        $data=$this->input->post();
         if(empty($data)){
                 $result = array('status'=>FALSE,'error'=>$this->lang->line('invalid_data'),'data'=>'1');
                 $this->response($result, REST_Controller::HTTP_OK);
         }
         $this->form_validator->add_rules('franchise_id',array('required' =>$this->lang->line('franchise_id_req')));
+        $this->form_validator->add_rules('fee_master_id',array('required' =>$this->lang->line('fee_master_id_req')));
         $validated = $this->form_validator->validate($data);
         if($validated != 1)
         {
             $result = array('status'=>FALSE,'error'=>$validated,'data'=>'');
             $this->response($result, REST_Controller::HTTP_OK);
         }
-        $data['franchise_contacts']=json_encode($data['franchise_contacts']);
-        // print_r($data);exit;
-        $update=$this->User_model->update_data('franchise',array('franchise_contacts'=>$data['franchise_contacts']),array('id'=>$data['franchise_id']));
-        if(isset($update)){
-            $result = array('status'=>TRUE, 'message' => $this->lang->line('franchise_contacts_update'),'data'=>array('data' =>$data['franchise_id']));
+        $fee_master_id_exp=explode(',',$data['fee_master_id']);
+        foreach($fee_master_id_exp as $k=>$v){
+            $fee_data=array(
+                'franchise_id'=>!empty($data['franchise_id'])?$data['franchise_id']:'',
+                'fee_master_id'=>!empty($v)?$v:'',
+                'status'=>!empty($data['status'])?$data['status']:'1',
+                'created_by'=>$this->session_user_id,
+                'creted_on'=>currntDate()
+            );
+
+        }
+        $insert_id=$this->User_model->insertbatch('franchise_fee',$insert_batch_array);
+        if($insert_id>0){
+            $result = array('status'=>TRUE, 'message' => $this->lang->line('franchise_feemaster_add'),'data'=>array('data' =>$insert_id));
+            $this->response($result, REST_Controller::HTTP_OK);
+        }
+        else{
+            $result = array('status'=>FALSE,'error'=>$this->lang->line('invalid_data'),'data'=>'1');
+            $this->response($result, REST_Controller::HTTP_OK);   
+        }
+     }
+
+    public function updateFranchiseContacts_post(){
+        $data=$this->input->post();
+        if(empty($data)){
+                $result = array('status'=>FALSE,'error'=>$this->lang->line('invalid_data'),'data'=>'1');
+                $this->response($result, REST_Controller::HTTP_OK);
+        }
+        $this->form_validator->add_rules('franchise_contact_id',array('required' =>$this->lang->line('franchise_id_req')));
+        // $this->form_validator->add_rules('fee_master_id',array('required' =>$this->lang->line('fee_master_id_req')));
+        $validated = $this->form_validator->validate($data);
+        if($validated != 1)
+        {
+            $result = array('status'=>FALSE,'error'=>$validated,'data'=>'');
+            $this->response($result, REST_Controller::HTTP_OK);
+        }
+        $upadate_data=array(
+            'contact_title'=>$data['contact_title'],
+            'contact_name'=>$data['contact_name'],
+            'contact_number'=>$data['contact_number'],
+            'contact_email'=>$data['contact_email'],
+            'contact_email'=>$data['contact_email'],
+            'updated_by'=>$this->session_user_id,
+            'updated_on'=>currentDate()
+        );
+        // $update_data['updated_by']=$this->session_user_id;
+        $update_data['updated_on']=currentDate();
+        $is_update=$this->User_model->update_data('franchise_contacts',$upadate_data,array('id'=>$data['franchise_contact_id']));
+        if(isset($is_update)){
+            $result = array('status'=>TRUE, 'message' => $this->lang->line('franchise_contacts_update'),'data'=>array('data' =>$data['franchise_contact_id']));
             $this->response($result, REST_Controller::HTTP_OK);
         }
         else{
             $result = array('status'=>FALSE,'error'=>$this->lang->line('invalid_data'),'data'=>'1');
             $this->response($result, REST_Controller::HTTP_OK);
         }
-
-     }
+    }
 
 }
 

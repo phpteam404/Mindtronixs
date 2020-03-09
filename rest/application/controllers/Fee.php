@@ -111,7 +111,8 @@ class Fee extends REST_Controller
 
     }
     public function feeStructureDropdown_get()
-    {   $data=$this->input->get();
+    {   
+        $data=$this->input->get();
         $drop_down_data=array();
         if(isset($data['dropdown']) && $data['dropdown']!==''){
             $fee_dropdown_data=$this->User_model->check_record_selected('concat(fm.name,"-",fm.id) as fee_master','fee_master fm',array('status'=>1));//echo $this->db->last_query();exit;

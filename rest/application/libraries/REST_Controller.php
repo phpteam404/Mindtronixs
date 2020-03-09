@@ -600,7 +600,7 @@ abstract class REST_Controller extends CI_Controller {
             // echo '<pre>'.$this->db->last_query();exit;
             if(empty($qery)){
                 $this->response([
-                    $this->config->item('rest_status_field_name') => FALSE,
+                    $this->config->item('rest_status_field_name') => FALSE, 'Authentication'=> False,
                     $this->config->item('rest_message_field_name') => $this->lang->line('text_rest_invalid_credentials')
                 ], self::HTTP_UNAUTHORIZED);
             }
@@ -2105,7 +2105,7 @@ abstract class REST_Controller extends CI_Controller {
         {
             // Display an error response
             $this->response([
-                $this->config->item('rest_status_field_name') => FALSE,
+                $this->config->item('rest_status_field_name') => FALSE,'Authentication'=> False,
                 $this->config->item('rest_message_field_name') => $this->lang->line('text_rest_invalid_credentials')
             ], self::HTTP_UNAUTHORIZED);
         }
@@ -2282,9 +2282,9 @@ abstract class REST_Controller extends CI_Controller {
         if(!$isRequestValid)
         {
             $this->response([
-                $this->config->item('rest_status_field_name') => FALSE,
+                $this->config->item('rest_status_field_name') => FALSE,'Authentication'=> False,
                 $this->config->item('rest_message_field_name') => $this->lang->line('text_rest_invalid_credentials')
-            ], self::HTTP_UNAUTHORIZED);
+            ], self::HTTP_OK);
         }
 
         //checking uploaded file formats

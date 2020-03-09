@@ -111,7 +111,7 @@ class Fee extends REST_Controller
 
     }
     public function feeStructureDropdown_get()
-    {   
+    {
         if(!empty($this->session_user_info->franchise_id)){
             $fee_structure=$this->Fee_model->getfeeStructureDropdown(array('franchise_id'=>$this->session_user_info->franchise_id));//echo $this->db->last_query();exit;
             foreach($fee_structure as $k=>$v){

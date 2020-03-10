@@ -759,7 +759,15 @@ if(!function_exists('validateDate')){
         return $d && $d->format($format) === $date;
     }
 }
-
+if(!function_exists('print_query')){
+    function print_query($msg,$qry){
+        $myfile = fopen("newfile.txt", "a") or die("Unable to open file!");
+        $txt = PHP_EOL.$_SERVER['REMOTE_ADDR'].'='.$msg.PHP_EOL.$qry;
+        fwrite($myfile, $txt);
+        fclose($myfile);
+        return true;
+    }
+}
 if (!function_exists('getTableHeads')) {
     function getTableHeads($table){
         switch($table){

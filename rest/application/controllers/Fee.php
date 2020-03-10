@@ -132,20 +132,21 @@ class Fee extends REST_Controller
 
         }
         else{
-            if(!empty($this->session_user_info->franchise_id)){
+            
                 if($this->session_user_info->user_role_id==2){
 
                     $fee_structure=$this->Fee_model->getfeeStructureDropdown(array('franchise_id'=>$this->session_user_info->franchise_id));//print_query('fee',$this->db->last_query());//echo $this->db->last_query();exit;
                 }
                 else{
-                    $fee_structure=$this->Fee_model->getfeeStructureDropdown(array());
+                   
+                    $fee_structure=$this->Fee_model->getfeeStructureDropdown(array());//echo $this->db->last_query();exit;
 
                 }
                 foreach($fee_structure as $k=>$v){
                     $drop_down_data[$k]=getObjOnId($v['fee_master'],!empty($v['fee_master'])?true:false);
                 }
                 $result = array('status'=>TRUE, 'message' => $this->lang->line('success'),'data'=>array('data' =>$drop_down_data));
-            }
+            
         }
         $this->response($result, REST_Controller::HTTP_OK);
     }

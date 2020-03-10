@@ -99,6 +99,7 @@ class Fee extends REST_Controller
             $this->response($result, REST_Controller::HTTP_OK);
         }
         // $data = tableOptions($data);//print_r($data);exit
+        // $this->User_model->check_record_selected('fee_master_id','franchise_fee',array('status'=>1));
         $result = $this->Fee_model->listFeeMasterInfo($data);//echo $this->db->last_query();exit;
 // print_r($result);exit;
         foreach($result['data'] as $k => $v){
@@ -122,7 +123,8 @@ class Fee extends REST_Controller
         $data=$this->input->get();
         $drop_down_data=array();
         if(isset($data['dropdown']) && $data['dropdown']!==''){
-            $fee_dropdown_data=$this->User_model->check_record_selected('concat(fm.name,"-",fm.id) as fee_master','fee_master fm',array('status'=>1));//echo $this->db->last_query();exit;
+            $fee_dropdown_data=$this->User_model->check_record_selected('concat(fm.name,"-",fm.id) as fee_master','fee_master fm',array('status'=>1));
+            print_query('fee',$this->db->last_query());
             foreach($fee_dropdown_data as $k=>$v){
                 $fee_dropdown_data[$k]=getObjOnId($v['fee_master'],!empty($v['fee_master'])?true:false);
             }
@@ -131,7 +133,14 @@ class Fee extends REST_Controller
         }
         else{
             if(!empty($this->session_user_info->franchise_id)){
-                $fee_structure=$this->Fee_model->getfeeStructureDropdown(array('franchise_id'=>$this->session_user_info->franchise_id));//echo $this->db->last_query();exit;
+                if($this->session_user_info->user_role_id==2){
+
+                    $fee_structure=$this->Fee_model->getfeeStructureDropdown(array('franchise_id'=>$this->session_user_info->franchise_id));//print_query('fee',$this->db->last_query());//echo $this->db->last_query();exit;
+                }
+                else{
+                    $fee_structure=$this->Fee_model->getfeeStructureDropdown(array());
+
+                }
                 foreach($fee_structure as $k=>$v){
                     $drop_down_data[$k]=getObjOnId($v['fee_master'],!empty($v['fee_master'])?true:false);
                 }

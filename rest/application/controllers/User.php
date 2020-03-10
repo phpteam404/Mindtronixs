@@ -55,7 +55,7 @@ class User extends REST_Controller
             'max_len-20' => $this->lang->line('password_num_max_len'),
         );
         $phonennodRules   = array(
-            'required'=> $this->lang->line('phone_num_req'),
+            'required'=> $this->lang->line('phone_num_req'),    
             'min_len-10' => $this->lang->line('phone_num_min_len'),
         );
         $stdentphonennodRules   = array(

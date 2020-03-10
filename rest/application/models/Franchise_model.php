@@ -168,16 +168,22 @@ class Franchise_model extends CI_Model
         $query = $this->db->get();//echo $this->db->last_query();exit;
         return $query->result_array();
     }
-    public function getFranchiseDropdown(){
+    public function getFranchiseDropdown($data=null){
         $this->db->select('CONCAT(f.name, "-", f.id) as franchise_id');
         $this->db->from('franchise f');
         $this->db->where('f.status','1');
+        if(!empty($data['franchise_id'])){
+            $this->db->where('f.id',$data['franchise_id']);
+        }        
         $query = $this->db->get();//echo $this->db->last_query();exit;
         return $query->result_array();
     }
-    public function getschoolDropdown(){
+    public function getschoolDropdown($data=null){
         $this->db->select('CONCAT(sm.name, "-", sm.id) as schools');
         $this->db->from('school_master sm');
+        if(!empty($data['franchise_id'])){
+        $this->db->where('sm.franchise_id',$data['franchise_id']);
+        }
         $this->db->where('sm.status','1');
         $query = $this->db->get();//echo $this->db->last_query();exit;
         return $query->result_array();

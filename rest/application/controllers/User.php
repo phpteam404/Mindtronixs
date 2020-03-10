@@ -80,14 +80,11 @@ class User extends REST_Controller
         }
 
         if(isset($data['user_role_id']) && $data['user_role_id']==4){
-            //$this->form_validator->add_rules('mobile_phone1', $stdentphonennodRules); 
-            //$this->form_validator->add_rules('mobile_phone2', $mobile2); 
             $this->form_validator->add_rules('school_id', array('required' => $this->lang->line('school_req')));
             $this->form_validator->add_rules('grade', array('required' => $this->lang->line('grade_req')));
             $this->form_validator->add_rules('parent_name', array('required' => $this->lang->line('parent_req')));
             $this->form_validator->add_rules('fee_structure', array('required' => $this->lang->line('franchise_fee_id_req')));
             $this->form_validator->add_rules('date_of_birth', array('required' => $this->lang->line('date_of_birth_req')));
-            // $this->form_validator->add_rules('home_phone_no', array('required' => $this->lang->line('home_phone_no_req')));
             $this->form_validator->add_rules('blood_group', array('required' => $this->lang->line('blood_group_req')));
             $this->form_validator->add_rules('nationality', array('required' => $this->lang->line('nationality_req')));
         }
@@ -443,6 +440,12 @@ class User extends REST_Controller
         $data = $this->input->get();
         // $data = tableOptions($data);
         $data['type']='edit';//this key used for filter the select statement
+        if($this->session_user_info->user_role_id==2){
+            $data['franchise_id']=$this->session_user_info->franchise_id;
+        }
+        else{
+            $data=null;
+        }
         $student_list=$this->User_model->getStudentList($data);//echo $this->db->last_query();exit;
         // print_r($student_list);exit;
         foreach($student_list['data'] as $k=>$v){

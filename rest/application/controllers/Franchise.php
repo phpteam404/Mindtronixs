@@ -41,8 +41,11 @@ class Franchise extends REST_Controller
         $this->form_validator->add_rules('country',array('required'=>$this->lang->line('country_req')));
         $this->form_validator->add_rules('state',array('required'=>$this->lang->line('state_req')));
         $this->form_validator->add_rules('city',array('required'=>$this->lang->line('city_req')));
+
         if(empty($data['franchise_id'])){
             $this->form_validator->add_rules('fee_master_id',array('required'=>$this->lang->line('fee_master_id_req')));
+            $this->form_validator->add_rules('franchise_contacts',array('required'=>$this->lang->line('franchise_contacts_req')));
+
         }
         $validated = $this->form_validator->validate($data);
         if($validated != 1){
@@ -232,13 +235,17 @@ class Franchise extends REST_Controller
         $this->form_validator->add_rules('state',array('required' =>$this->lang->line('state_req')));
         $this->form_validator->add_rules('city',array('required' =>$this->lang->line('city_req')));
         $this->form_validator->add_rules('code',array('required' =>$this->lang->line('school_code_req')));
-        $this->form_validator->add_rules('franchise_id',array('required' =>$this->lang->line('franchise_id_req')));
+        // $this->form_validator->add_rules('franchise_id',array('required' =>$this->lang->line('franchise_id_req')));
         $validated = $this->form_validator->validate($data);
         // print_r($validated);exit;
         if($validated != 1)
         {
             $result = array('status'=>FALSE,'error'=>$validated,'data'=>'10');
             $this->response($result, REST_Controller::HTTP_OK);
+        }
+
+        if($this->session_user_info->user_role_id==2){
+            $data['franchise_id']=$this->session_user_info->franchise_id;
         }
         $add = array(
             'name' => $data['name'],
@@ -289,6 +296,12 @@ class Franchise extends REST_Controller
         //this function is used to get schools list information
         $data = $this->input->get();
         // $data = tableOptions($data);
+        if($this->session_user_info->user_role_id==2){
+            $data['franchise_id']=$this->session_user_info->franchise_id;
+        }
+        else{
+            $data=null;
+        }
         $result = $this->Franchise_model->listSchools($data);//echo $this->db->last_query();exit;
         $result = array('status'=>TRUE, 'message' => $this->lang->line('success'),'data'=>array('data' =>$result['data'],'total_records' =>$result['total_records'],'table_headers'=>getTableHeads('school_mngmt_list')));
         $this->response($result, REST_Controller::HTTP_OK);
@@ -381,7 +394,13 @@ class Franchise extends REST_Controller
     }
     
     public function franchiseListForDropDown_get(){
-       $franchise= $this->Franchise_model->getFranchiseDropdown();
+        if($this->session_user_info->user_role_id==2){
+            $data['franchise_id']=$this->session_user_info->franchise_id;
+        }
+        else{
+            $data=null;
+        }
+       $franchise= $this->Franchise_model->getFranchiseDropdown($data);//echo $this->db->last_query();exit;
        foreach($franchise as $k=>$v){
         $franchise[$k]=getObjOnId($v['franchise_id'],!empty($v['franchise_id'])?true:false);  
         }
@@ -393,7 +412,14 @@ class Franchise extends REST_Controller
         $this->response($result, REST_Controller::HTTP_OK);
     }
     public function schoolListForDropDown_get(){
-        $schools= $this->Franchise_model->getschoolDropdown();
+        //print_r($this->session_user_info);exit;
+        if($this->session_user_info->user_role_id==2){
+            $data['franchise_id']=$this->session_user_info->franchise_id;
+        }
+        else{
+            $data=null;
+        }
+        $schools= $this->Franchise_model->getschoolDropdown($data);//echo $this->db->last_query();exit;
         foreach($schools as $k=>$v){
          $schools[$k]=getObjOnId($v['schools'],!empty($v['schools'])?true:false);  
          }

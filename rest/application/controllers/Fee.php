@@ -68,11 +68,11 @@ class Fee extends REST_Controller
         else{
             $add['created_by'] = $this->session_user_id;
             $add['created_on'] = currentDate();
-            $check_fee_name_exits=$this->User_model->check_record('fee_master', array('name'=>ltrim(rtrim($data['name']))));
-            if(count($check_fee_name_exits)>0){
-                $result = array('status'=>FALSE,'error'=>array('message'=>$this->lang->line('duplicate_fee_name')),'data'=>'4');
-                $this->response($result, REST_Controller::HTTP_OK);
-            }
+            // $check_fee_name_exits=$this->User_model->check_record('fee_master', array('name'=>ltrim(rtrim($data['name']))));
+            // if(count($check_fee_name_exits)>0){
+            //     $result = array('status'=>FALSE,'error'=>array('message'=>$this->lang->line('duplicate_fee_name')),'data'=>'4');
+            //     $this->response($result, REST_Controller::HTTP_OK);
+            // }
             // echo $this->db->last_query();exit;
             $addFeeData = $this->Fee_model->addFee($add);
             //echo ''.$this->db->last_query(); exit;

@@ -64,7 +64,7 @@ class Master extends REST_Controller
        else{
             $check_existance=$this->User_model->check_record('master_child',array('child_name'=>$data['child_name'],'master_id'=>$data['master_id']),array());
             if(count($check_existance)>0){
-                $result = array('status'=>FALSE,'error'=>$this->lang->line('child_name_duplicate'),'data'=>'');
+                $result = array('status'=>FALSE,'error'=>$this->lang->line('child_name_duplicate'),'data'=>'1');
                 $this->response($result, REST_Controller::HTTP_OK);
             }
             $master_child_data['created_by']=!empty($this->session_user_id)?$this->session_user_id:'0';

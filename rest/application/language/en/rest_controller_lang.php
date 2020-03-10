@@ -409,7 +409,7 @@ $lang['franchise_email'] ='Email is required';
 $lang['franchise_phone_primary'] ='Phone Number is required';
 $lang['franchise_phone_alternative'] ='Alternative Phone Number is required';
 $lang['franchise_recheck'] ='Already You Have Selected This Plan';
-$lang['franchise_fee_id_req'] ='Franchise Fee id required';
+$lang['franchise_fee_id_req'] ='Fee structure is  required';
 $lang['id_relationship_category_req'] = 'Category required';
 $lang['fee_name'] ='Fee title required';
 $lang['fee_added'] ='Fee Details Added Successfully';
@@ -440,7 +440,7 @@ $lang['owner_name_req'] = 'Owner name is required';
 $lang['country_req'] = 'Country is required';
 $lang['state_req'] = 'State is required';
 $lang['city_req'] = 'City is required';
-$lang['fee_master_id_req'] = 'Fee master id is required';
+$lang['fee_master_id_req'] = 'Fee Structure is required';
 $lang['date_of_birth_req'] = 'Date of birth is required';
 $lang['home_phone_no_req'] = 'Home phoneno is required';
 $lang['blood_group_req'] = 'Blood group is required';
@@ -466,5 +466,6 @@ $lang['franchise_contacts_created'] = 'Franchise contacts created Successfully';
 $lang['franchise_feemaster_add'] = 'Fee master added Successfully';
 $lang['account_inactive'] = 'Account is in inactvie ';
 $lang['duplicate_fee_name'] = 'Fee title already exists ';
+$lang['franchise_contacts_req'] = 'Franchise contact is required  ';
 
 

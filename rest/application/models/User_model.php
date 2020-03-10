@@ -765,7 +765,6 @@ class User_model extends CI_Model
         $this->db->from('student s');
         $this->db->join('user u','s.user_id=u.id','left');
 
-        $this->db->join('franchise f','s.franchise_id =f.id','left');
         $this->db->join('master_child mc','s.blood_group=mc.id AND master_id=9','left');
         $this->db->join('master_child mc1','s.relation_with_student=mc1.id AND mc1.master_id=10','left');
         $this->db->join('master_child mc2','s.grade=mc2.id AND mc2.master_id=5','left');
@@ -773,10 +772,13 @@ class User_model extends CI_Model
         $this->db->join('master_child mc4','s.mother_tongue=mc4.id AND mc4.master_id=8','left');
         $this->db->join('fee_master fm','s.franchise_fee_id=fm.id','left');
         $this->db->join('school_master sm','s.school_id=sm.id','left');
+        $this->db->join('franchise f','sm.franchise_id =f.id','left');
         $this->db->where('u.user_role_id','4');
         $this->db->where_in('u.user_status',array(0,1));
+        $this->db->where_in('sm.status',array(0,1));
+
         if(isset($data['franchise_id']) && $data['franchise_id']>0){
-            $this->db->where('s.franchise_id',$data['franchise_id']);
+            $this->db->where('sm.franchise_id',$data['franchise_id']);
         }
         if(isset($data['school_id']) && $data['school_id']>0){
             $this->db->where('sm.id',$data['school_id']);

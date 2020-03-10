@@ -57,8 +57,18 @@ class Signup extends CI_Controller
         
         
         $data['password'] = base64_decode($data['password']);//print_r($data['password']);exit;
-        $mailCheck = $this->User_model->check_email(array('email_id'=>$data['username']));
+        // $mailCheck = $this->User_model->check_email(array('email'=>$data['username']));echo  
+        $check_status=$this->User_model->check_record('user',array('email'=>$data['username']));
 
+        // print_r($check_status[0]['user_status']);exit;
+        if($check_status[0]['user_status']==0){
+            $result = array('status'=>FALSE,'error'=>array('message'=>$this->lang->line('login_inactive_error')),'data'=>'');
+            echo json_encode($result);exit;
+        }
+        if($check_status[0]['user_status']==2){
+            $result = array('status'=>FALSE,'error'=>array('message'=>$this->lang->line('text_rest_invalid_credentials')),'data'=>'');
+            echo json_encode($result);exit;
+        }
         $result = $this->User_model->login($data);//echo $this->db->last_query();exit;
         if(count($result)==0){
             $result = array('status'=>FALSE,'error'=>array('message'=>$this->lang->line('text_rest_invalid_credentials')),'data'=>'');

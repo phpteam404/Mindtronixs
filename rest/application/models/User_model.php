@@ -103,6 +103,7 @@ class User_model extends CI_Model
         $this->db->from('user u');        
         $this->db->join('user_role ur','u.user_role_id=ur.id and ur.role_status=1','left');        
         $this->db->where(array('u.email' => $data['username'], 'u.password' => md5($data['password'])));
+        $this->db->where('u.user_status','1');
         $query = $this->db->get();
         //echo $this->db->last_query(); exit;
         //'u.user_status' => 1
@@ -144,6 +145,7 @@ class User_model extends CI_Model
         if(isset($data['id']) && $data['id']!=0 && $data['id']!='')
             $this->db->where('u.id!=',$data['id']);
         $this->db->where('u.email',addslashes($data['email']));
+        $this->db->where_in('user_status',array(0,1));
         $query = $this->db->get();
         return $query->row();
     }
@@ -577,6 +579,7 @@ class User_model extends CI_Model
             $this->db->where('u.first_name like "%'.$data['search_key'].'%" or u.last_name like "%'.$data['search_key'].'%" or CONCAT(u.first_name,\' \',u.last_name) like "%'.$data['search_key'].'%" or u.email like "%'.$data['search_key'].'%"  or u.phone_no like "%'.$data['search_key'].'%"');
             $this->db->group_end();
         }
+        // print_r($data);exit;
         if(isset($data['sort']) && isset($data['order']))
         $this->db->order_by($data['sort'],$data['order']);
         else

@@ -464,5 +464,7 @@ $lang['franchise_contacts_update'] = 'Franchise contacts updated Successfully';
 $lang['franchise_contact_id'] = 'Franchise contacts id required.';
 $lang['franchise_contacts_created'] = 'Franchise contacts created Successfully';
 $lang['franchise_feemaster_add'] = 'Fee master added Successfully';
+$lang['account_inactive'] = 'Account is in inactvie ';
+$lang['duplicate_fee_name'] = 'Fee title already exists ';
 
 

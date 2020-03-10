@@ -130,13 +130,12 @@ class User extends REST_Controller
             'first_name' => !empty($data['student_name'])? $data['student_name']:$data['first_name'],
             'last_name' => !empty($data['last_name'])?$data['last_name']:'',
             'email' => !empty($data['email'])?$data['email']:'',
-            'password' => !empty($data['password'])?md5($data['password']):'',
             //'gender' => isset($data['gender']) ? $data['gender'] : '',
             'user_status' => isset($data['status'])?$data['status']:'1',
             // 'profile_image' =>isset($data['profile_image'])?$data['profile_image']:'',
             'address'=>isset($data['address'])?$data['address']:'',
             'phone_no'=>isset($data['phone_no'])?$data['phone_no']:'',
-            'franchise_id'=>$data['franchise_id']
+            'franchise_id'=>!empty($data['franchise_id'])?$data['franchise_id']:'0'
         );
         // print_r($user_data);exit;
         if(isset($data['user_role_id']) && $data['user_role_id']==4){
@@ -186,6 +185,7 @@ class User extends REST_Controller
         else{
             $user_data['created_on'] = currentDate();
             $user_data['created_by'] = !empty($this->session_user_id)?$this->session_user_id:'0';
+            $user_data['password'] = !empty($data['password'])?md5($data['password']):'';
             $is_insert = $this->User_model->insertdata('user',$user_data);
             if(isset($data['user_role_id']) && $data['user_role_id']==4){
                 $student_data['created_by']=!empty($this->session_user_id)?$this->session_user_id:'0';
@@ -205,7 +205,7 @@ class User extends REST_Controller
     
     public function getUserList_get(){
         $data = $this->input->get();
-        $data = tableOptions($data);
+        // $data = tableOptions($data);
         $result=$this->User_model->getuserlist($data);//echo $this->db->last_query();exit;
         foreach($result['data'] as $k=>$v){
             if(!empty($data['user_id'])){

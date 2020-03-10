@@ -57,12 +57,10 @@ class User extends REST_Controller
         $phonennodRules   = array(
             'required'=> $this->lang->line('phone_num_req'),
             'min_len-10' => $this->lang->line('phone_num_min_len'),
-            'max_len-10' => $this->lang->line('phone_num_max_len'),
         );
         $stdentphonennodRules   = array(
             'required'=> $this->lang->line('std_phone_num_req'),
             'min_len-10' => $this->lang->line('std_phone_num_min_len'),
-            'max_len-10' => $this->lang->line('std_phone_num_max_len'),
         );
         $mobile2   = array(
             'min_len-10' => $this->lang->line('std1_phone_num_min_len'),
@@ -203,6 +201,10 @@ class User extends REST_Controller
     public function getUserList_get(){
         $data = $this->input->get();
         // $data = tableOptions($data);
+        // print_r($this->session_user_info);exit;
+        if($this->session_user_info->user_role_id==2){
+            $data['franchise_id']=$this->session_user_info->franchise_id;
+        }
         $result=$this->User_model->getuserlist($data);//echo $this->db->last_query();exit;
         foreach($result['data'] as $k=>$v){
             if(!empty($data['user_id'])){
@@ -336,6 +338,13 @@ class User extends REST_Controller
             $result = array('status'=>TRUE, 'message' => $this->lang->line('delete_sc'), 'data'=>'');
             $this->response($result, REST_Controller::HTTP_OK);
         }
+        // if($table=='school_master'){
+        //    $check_de $this->User_model->check_record();
+        //     $this->User_model->update_data($table,array('user_status'=>2),array('id'=>$id));
+        //     $result = array('status'=>TRUE, 'message' => $this->lang->line('delete_sc'), 'data'=>'');
+        //     $this->response($result, REST_Controller::HTTP_OK);
+        // }
+        
         else{
             // $this->User_model->update_data($table,array('status'=>2),array('id'=>$id));echo $this->db->last_query();exit;
             if($this->User_model->update_data($table,array('status'=>2),array('id'=>$id))){ 
@@ -443,9 +452,9 @@ class User extends REST_Controller
         if($this->session_user_info->user_role_id==2){
             $data['franchise_id']=$this->session_user_info->franchise_id;
         }
-        else{
-            $data=null;
-        }
+        // else{
+        //     $data=null;
+        // }
         $student_list=$this->User_model->getStudentList($data);//echo $this->db->last_query();exit;
         // print_r($student_list);exit;
         foreach($student_list['data'] as $k=>$v){

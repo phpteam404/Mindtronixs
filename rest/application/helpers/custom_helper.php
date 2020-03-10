@@ -871,8 +871,8 @@ if (!function_exists('getTableHeads')) {
                 return array(
                     array('field'=> 'student_name', 'header'=> 'Student Name','alias'=>'student_name'),
                     array('field'=> 'grade', 'header'=>'Grade' ,'alias' =>'grade'),
-                    array('field'=> 'school_name', 'header'=> 'School','alias'=>'school' ),
-                    array('field'=> 'franchise_name', 'header'=> 'Franchise','alias'=>'franchise' ),
+                    array('field'=> 'school_name', 'header'=> 'School','alias'=>'school_name' ),
+                    array('field'=> 'franchise_name', 'header'=> 'Franchise','alias'=>'franchise_name' ),
                     array('field'=> 'contact_email', 'header'=> 'Contact Email','alias'=>'contact_email' ),
                     array('field'=> 'phone_no', 'header'=> 'Contact Number','alias'=>'phone_no' ),
                     array('field'=> 'last_login', 'header'=> 'Last Login','alias' =>'last_login' ),

@@ -49,7 +49,7 @@ class Franchise_model extends CI_Model
             $this->db->like('f.name', $data['search_key'], 'both');
             $this->db->or_like('f.franchise_code', $data['search_key'], 'both');
             $this->db->or_like('f.email', $data['search_key'], 'both');
-            $this->db->or_like('f.city', $data['search_key'], 'both');
+            $this->db->or_like('mc.child_key', $data['search_key'], 'both');
             $this->db->or_like('f.primary_contact',$data['search_key'],'both');
             $this->db->group_end();
         }
@@ -131,26 +131,36 @@ class Franchise_model extends CI_Model
     }
     public function getFranchiseInfo($data)//this function is used for get franchise information
     {
-        $this->db->select('f.id as franchise_id,f.name as franchise_name, f.franchise_code,f.website_address,mc.child_name as country,mc1.child_name as state,mc2.child_name as city,f.landmark,f.email,f.pincode,f.primary_contact as contact_number,f.owner_name,GROUP_CONCAT(fee_master_id) as fee_master_id,f.franchise_contacts,if(f.status=1,"active","inactive") as status,f.address');
+        $this->db->select('f.id as franchise_id,f.name as franchise_name, f.franchise_code,f.website_address,mc.child_name as country,mc1.child_name as state,mc2.child_name as city,f.landmark,f.email,f.pincode,f.primary_contact as contact_number,f.owner_name,f.franchise_contacts,if(f.status=1,"active","inactive") as status,f.address');
         $this->db->from('franchise f');
         $this->db->join('master_child mc','f.country=mc.id and mc.master_id=12','left');
         $this->db->join('master_child mc1','f.state=mc1.id and mc1.master_id=13','left');
         $this->db->join('master_child mc2','f.city=mc2.id and mc2.master_id=14','left');
-        $this->db->join('franchise_fee af','f.id=af.franchise_id','left');
+        $this->db->join('franchise_fee ff','f.id=ff.franchise_id','left');
         if(!empty($data['franchise_id'])){
             $this->db->where('f.id',$data['franchise_id']);
         }
+        // $this->db->where('ff.status','1');
         $this->db->group_by('f.id');
         $query = $this->db->get();//echo $this->db->last_query();exit;
         return $query->result_array();
     }
     public function getFeeData($data)//this function is used for get fee data in for franchise
     {
-        $this->db->select('CASE WHEN mc.id=19 THEN "1 One Month)" WHEN mc.id=20 THEN "3 (Three Months)" WHEN mc.id=21 THEN "6 (Six Months)" WHEN mc.id=22 THEN "12 (Twelve Months)"
-        ELSE "" END as fee_title,fm.amount,mc.child_name as term,fm.discount,fm.id as fee_master_id');
-        $this->db->from('fee_master fm');
-        $this->db->join('master_child mc','fm.term=mc.id AND mc.master_id=11','left');
-        $this->db->where('fm.id',$data['fee_master_id']);
+        // $this->db->select('CASE WHEN mc.id=19 THEN "1 One Month)" WHEN mc.id=20 THEN "3 (Three Months)" WHEN mc.id=21 THEN "6 (Six Months)" WHEN mc.id=22 THEN "12 (Twelve Months)"
+        // ELSE "" END as fee_title,fm.amount,mc.child_name as term,fm.discount,fm.id as fee_master_id');
+        // $this->db->from('fee_master fm');
+        // $this->db->join('master_child mc','fm.term=mc.id AND mc.master_id=11','left');
+        // $this->db->where('fm.id',$data['fee_master_id']);
+        // $this->db->where('fm.status','1');
+        $this->db->select('ff.id as fee_master_id,fm.name as fee_title ,fm.amount,mc.child_name as term,fm.discount');
+        $this->db->from('franchise_fee ff');
+        $this->db->join('fee_master fm','ff.fee_master_id=fm.id','left');
+        $this->db->join('master_child mc','mc.id=fm.term and mc.master_id=11','left');
+        if(!empty($data['fee_master_id'])){
+            $this->db->where('ff.fee_master_id',$data['fee_master_id']);
+        }
+        $this->db->where('ff.status','1');
         $query = $this->db->get();
         return $query->result_array();
     }

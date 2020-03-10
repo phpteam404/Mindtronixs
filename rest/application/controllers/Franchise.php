@@ -226,7 +226,6 @@ class Franchise extends REST_Controller
         $phonennodRules   = array(
             'required'=> $this->lang->line('phone_num_req'),
             'min_len-10' => $this->lang->line('phone_num_min_len'),
-            'max_len-10' => $this->lang->line('phone_num_max_len'),
         );
         
         $this->form_validator->add_rules('name', array('required'=>$this->lang->line('school_name')));
@@ -299,9 +298,6 @@ class Franchise extends REST_Controller
         if($this->session_user_info->user_role_id==2){
             $data['franchise_id']=$this->session_user_info->franchise_id;
         }
-        else{
-            $data=null;
-        }
         $result = $this->Franchise_model->listSchools($data);//echo $this->db->last_query();exit;
         $result = array('status'=>TRUE, 'message' => $this->lang->line('success'),'data'=>array('data' =>$result['data'],'total_records' =>$result['total_records'],'table_headers'=>getTableHeads('school_mngmt_list')));
         $this->response($result, REST_Controller::HTTP_OK);
@@ -322,7 +318,7 @@ class Franchise extends REST_Controller
         }
         $franchise_info=$this->Franchise_model->getfranchiseInfo($data);//echo $this->db->last_query();exit;//this model used for get the franchise information
         foreach($franchise_info as $k=>$v){
-            $franchise_info[$k]['franchise_contacts']=json_decode($v['franchise_contacts']);
+           // $franchise_info[$k]['franchise_contacts']=json_decode($v['franchise_contacts']);
             // if(!empty($franchise_info[$k]['franchise_contacts'])){
             //     // print_r($franchise_info[$k]['franchise_contacts']);exit;
             //     foreach($franchise_info[$k]['franchise_contacts'] as $k1=>$v1){//this loop for get contacts of the franchise
@@ -340,10 +336,13 @@ class Franchise extends REST_Controller
                 $frachise_contacts[$c]['contact_title']=getObjOnId($d['contact_title'],!empty($d['contact_title'])?true:false);
             }
             $franchise_info[$k]['franchise_contacts_information']= $frachise_contacts;
-            if(!empty($franchise_info[$k]['fee_master_id'])){
-                $feemaster_ids=explode(",",$franchise_info[$k]['fee_master_id']);
+            $fee_master_ids=$this->User_model->check_record_selected('GROUP_CONCAT(fee_master_id) as fee_master_ids','franchise_fee',array('franchise_id'=>$data['franchise_id'],'status'=>1));//echo $this->db->last_query();exit;
+            // print_r($fee_master_ids[0]['fee_master_ids']);exit;
+            if(!empty($fee_master_ids[0]['fee_master_ids'])){
+                $feemaster_ids=explode(",",$fee_master_ids[0]['fee_master_ids']);
+                // print_r($fee_master_ids[0]['fee_master_ids']);exit;
                 foreach($feemaster_ids as $k2 =>$v2){//this loop for get fee details of franchise
-                    $get_fee_data=$this->Franchise_model->getFeeData(array('fee_master_id'=>$v2));//thsi model used for get fee data of franchise
+                    $get_fee_data=$this->Franchise_model->getFeeData(array('fee_master_id'=>$v2));//echo $this->db->last_query();exit;//thsi model used for get fee data of franchise
                     if(!empty($get_fee_data)){
                         $franchise_info[$k]['fee_detalis'][$k2]=$get_fee_data[0];
                         unset($get_fee_data);
@@ -355,6 +354,7 @@ class Franchise extends REST_Controller
             $franchise_info[$k]['fee_detalis']= !empty($franchise_info[$k]['fee_detalis'])?$franchise_info[$k]['fee_detalis']:array();
             
         }
+        
         unset($franchise_info[$k]['franchise_contacts']);
         $no_of_students = $this->User_model->custom_query('SELECT count(DISTINCT(id)) as no_of_students FROM student where school_id!=0 and status=1 and franchise_id = '.$data['franchise_id']);//echo $this->db->last_query();//get the no of students in the franchise
         $no_of_schools = $this->User_model->custom_query('SELECT count(DISTINCT(id)) as no_of_schools FROM school_master where status=1 and   franchise_id = '.$data['franchise_id']);//echo $this->db->last_query();//get the no of schools in the franchise
@@ -499,6 +499,7 @@ class Franchise extends REST_Controller
 
             $contact_data['created_on']=currentDate();
             $contact_data['created_by']=$this->session_user_id;
+            // print_r($contact_data);exit;
             $is_insert=$this->User_model->insert_data('franchise_contacts',$contact_data);
             if($is_insert >0){
                 $result = array('status'=>TRUE, 'message' => $this->lang->line('franchise_contacts_created'),'data'=>array('data' =>$is_insert));

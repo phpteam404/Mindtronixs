@@ -82,9 +82,11 @@ class Franchise_model extends CI_Model
         // }
 
         // $this->db->select('sm.id as school_id,sm.school_code code,sm.name,COUNT(DISTINCT s.id ) as no_of_students,sm.phone,sm.email,sm.franchise_id');
-        $this->db->select('(SELECT count(*) as no_of_studnets FROM student s1 LEFT JOIN  user u1  ON s1.user_id=u1.id WHERE u1.user_role_id=4 and	u1.user_status=1 and s1.status=1 AND s1.school_id=s.school_id) as no_of_students,`sm`.`id` as `school_id`, `sm`.`school_code` `code`, `sm`.`name`,  `sm`.`phone`, `sm`.`email`, `sm`.`franchise_id`');
+        $this->db->select('(SELECT count(*) as no_of_studnets FROM student s1 LEFT JOIN  user u1  ON s1.user_id=u1.id WHERE u1.user_role_id=4 and	u1.user_status=1 and s1.status=1 AND s1.school_id=s.school_id) as no_of_students,`sm`.`id` as `school_id`, `sm`.`school_code` `code`, `sm`.`name`,  `sm`.`phone`, `sm`.`email`, `sm`.`franchise_id`,f.name as franchise_name');
         $this->db->from('school_master sm');
         $this->db->join('student s','sm.id=s.school_id','left');
+        $this->db->join('franchise f','sm.franchise_id=f.id','left');
+
         // $this->db->join(' user u','s.user_id=u.id AND u.user_role_id=4','left');
         $this->db->where('sm.status','1');
         // $this->db->where('u.user_status','1');
@@ -97,6 +99,7 @@ class Franchise_model extends CI_Model
             $this->db->or_like('sm.email', $data['search_key'], 'both');
             $this->db->or_like('sm.phone',$data['search_key'],'both');
             $this->db->or_like('sm.school_code',$data['search_key'],'both');
+            $this->db->or_like('f.name',$data['search_key'],'both');
             $this->db->group_end();
         }
         if(isset($data['school_id']) && $data['school_id']>0){
@@ -160,7 +163,10 @@ class Franchise_model extends CI_Model
         if(!empty($data['fee_master_id'])){
             $this->db->where('ff.fee_master_id',$data['fee_master_id']);
         }
-        $this->db->where('ff.status','1');
+        if(!empty($data['franchise_id'])){
+            $this->db->where('ff.franchise_id',$data['franchise_id']);
+        }
+        // $this->db->where('ff.status','1');
         $query = $this->db->get();
         return $query->result_array();
     }

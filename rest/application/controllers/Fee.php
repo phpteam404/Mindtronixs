@@ -92,18 +92,21 @@ class Fee extends REST_Controller
 
     public function feeStructure_get() //this function is used to get fee structure information
     {
+        // print_r($_SERVER);exit;HTTP_USER_AGENT
         $data = $this->input->get();
         $validated = $this->form_validator->validate($data);
         if($validated != 1){
             $result = array('status'=>FALSE,'error'=>$validated,'data'=>'');
             $this->response($result, REST_Controller::HTTP_OK);
         }
-        // $data = tableOptions($data);//print_r($data);exit
-        // $this->User_model->check_record_selected('fee_master_id','franchise_fee',array('status'=>1));
-        $result = $this->Fee_model->listFeeMasterInfo($data);//echo $this->db->last_query();exit;
+       if(!empty($data['franchise_id'])){
+           $franchise_fee_ids=$this->User_model->check_record_selected('fee_master_id','franchise_fee',array('franchise_id'=>$data['franchise_id'],'status'=>1));
+           $data['fee_master_id_not_in']=array_column($franchise_fee_ids, 'fee_master_id');
+       }
+        $result = $this->Fee_model->listFeeMasterInfo($data);
 // print_r($result);exit;
         foreach($result['data'] as $k => $v){
-            if(isset($data['fee_master_id']) && $data['fee_master_id'] > 0){
+            if(isset($data['fee_master_id']) && $data['fee_master_id'] >0){
                 //Getting Objects for dropdown When One record is needed.
                 $result['data'][$k]['status']=getStatusObj($v['status']);
                 $result['data'][$k]['term']=getObjOnId($v['term'],!empty($v['term'])?true:false);
@@ -135,12 +138,11 @@ class Fee extends REST_Controller
             
                 if($this->session_user_info->user_role_id==2){
 
-                    $fee_structure=$this->Fee_model->getfeeStructureDropdown(array('franchise_id'=>$this->session_user_info->franchise_id));//print_query('fee',$this->db->last_query());//echo $this->db->last_query();exit;
+                    $fee_structure=$this->Fee_model->getfeeStructureDropdown(array('franchise_id'=>$this->session_user_info->franchise_id));
                 }
                 else{
                    
-                    $fee_structure=$this->Fee_model->getfeeStructureDropdown(array());//echo $this->db->last_query();exit;
-
+                    $fee_structure=$this->Fee_model->getfeeStructureDropdown(array());
                 }
                 foreach($fee_structure as $k=>$v){
                     $drop_down_data[$k]=getObjOnId($v['fee_master'],!empty($v['fee_master'])?true:false);

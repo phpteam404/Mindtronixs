@@ -318,18 +318,6 @@ class Franchise extends REST_Controller
         }
         $franchise_info=$this->Franchise_model->getfranchiseInfo($data);//echo $this->db->last_query();exit;//this model used for get the franchise information
         foreach($franchise_info as $k=>$v){
-           // $franchise_info[$k]['franchise_contacts']=json_decode($v['franchise_contacts']);
-            // if(!empty($franchise_info[$k]['franchise_contacts'])){
-            //     // print_r($franchise_info[$k]['franchise_contacts']);exit;
-            //     foreach($franchise_info[$k]['franchise_contacts'] as $k1=>$v1){//this loop for get contacts of the franchise
-            //         // print_r($v1);exit;
-            //         //$franchise_info[$k]['franchise_contacts_information'][$k1]['contact_title']=$v1->contact_title;
-            //         $franchise_info[$k]['franchise_contacts_information'][$k1]['contact_name']=$v1->contact_name;
-            //         $franchise_info[$k]['franchise_contacts_information'][$k1]['contact_phone']=$v1->contact_phone;
-            //         $franchise_info[$k]['franchise_contacts_information'][$k1]['contact_eamil']=$v1->contact_email;
-            //     } 
-            // }
-            // print_r($franchise_info[$k]['fee_master_id']);exit;
             $frachise_contacts=$this->Franchise_model->getFranchiseContacts(array('franchise_id'=>$data['franchise_id']));//echo $this->db->last_query();exit;
             if(!empty($frachise_contacts))
             foreach($frachise_contacts as $c=>$d){
@@ -341,20 +329,21 @@ class Franchise extends REST_Controller
             if(!empty($fee_master_ids[0]['fee_master_ids'])){
                 $feemaster_ids=explode(",",$fee_master_ids[0]['fee_master_ids']);
                 // print_r($fee_master_ids[0]['fee_master_ids']);exit;
-                foreach($feemaster_ids as $k2 =>$v2){//this loop for get fee details of franchise
-                    $get_fee_data=$this->Franchise_model->getFeeData(array('fee_master_id'=>$v2));//echo $this->db->last_query();exit;//thsi model used for get fee data of franchise
-                    if(!empty($get_fee_data)){
-                        $franchise_info[$k]['fee_detalis'][$k2]=$get_fee_data[0];
-                        unset($get_fee_data);
+                // foreach($feemaster_ids as $k2 =>$v2){//this loop for get fee details of franchise
+                    //     print_r($get_fee_data);exit;
+                    //     if(!empty($get_fee_data)){
+                        //         unset($get_fee_data);
+                        //     }
+                        
+                        // }
+                        $get_fee_data=$this->Franchise_model->getFeeData(array('franchise_id'=>$data['franchise_id']));print_query('sector',$this->db->last_query());//thsi model used for get fee data of franchise
+                                $franchise_info[$k]['fee_detalis']=$get_fee_data;
                     }
-
-                }
-            }
             $franchise_info[$k]['franchise_contacts_information']= !empty($franchise_info[$k]['franchise_contacts_information'])?$franchise_info[$k]['franchise_contacts_information']:array();
             $franchise_info[$k]['fee_detalis']= !empty($franchise_info[$k]['fee_detalis'])?$franchise_info[$k]['fee_detalis']:array();
             
         }
-        
+        // print_r($franchise_info);exit;
         unset($franchise_info[$k]['franchise_contacts']);
         $no_of_students = $this->User_model->custom_query('SELECT count(DISTINCT(id)) as no_of_students FROM student where school_id!=0 and status=1 and franchise_id = '.$data['franchise_id']);//echo $this->db->last_query();//get the no of students in the franchise
         $no_of_schools = $this->User_model->custom_query('SELECT count(DISTINCT(id)) as no_of_schools FROM school_master where status=1 and   franchise_id = '.$data['franchise_id']);//echo $this->db->last_query();//get the no of schools in the franchise

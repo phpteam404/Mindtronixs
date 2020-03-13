@@ -11,23 +11,15 @@ class Ticket_model extends CI_Model
 
     public function getChat($data)
     {
-        $this->db->select('`tc`.ticket_id,tc.ticket_chat_id,tc.message,tc.actions,tc.created_on, concat(u.first_name, " ", u.last_name) as created_by, mc.child_name as status');
+        $this->db->select('tc.ticket_chat_id,tc.message,DATE_FORMAT(tc.created_on,"%d-%m-%Y")as created_date,mc.child_name as status,concat(u.first_name," ",u.last_name) as created_by,DATE_FORMAT(tc.created_on,"%d %b %Y") as date,TIME_FORMAT(tc.created_on, "%h:%i %p")time');
         $this->db->from('ticket_chat tc');
         // $this->db->join('documents d','tc.ticket_chat_id=d.module_type_id','left');
-        $this->db->join('ticket t','tc.ticket_id=t.id','left');
-        $this->db->join('user u','tc.from_user=u.id','left');
+        $this->db->join('user u','tc.created_by=u.id','left');
         $this->db->join('master_child mc','tc.`status`=mc.id and mc.master_id=18','left');
-        // $this->db->join('user u1','tc.to_user=u1.id','left');
-        if(isset($data['ticket_id']) && $data['ticket_id']>0){
+        if(!empty($data['ticket_id'])){
             $this->db->where('tc.ticket_id',$data['ticket_id']);
         }
-        if(isset($data['date']) && $data['date']!=''){
-            $this->db->like('tc.created_on', $data['date']);
-        }
-        // $this->db->where('d.module_type','2');
-
-        $this->db->group_by('tc.ticket_chat_id');
-        $this->db->order_by('tc.created_on');
+        $this->db->order_by('tc.created_on','desc');
         $query = $this->db->get();
         // echo $this->db->last_query();exit;
         return $query->result_array();
@@ -55,7 +47,7 @@ class Ticket_model extends CI_Model
         else{
             // $this->db->where('t.status',1);
         }
-        if(isset($data['search'])){
+        if(isset($data['search_key'])){
             $this->db->group_start();
             $this->db->like('t.issue_id', $data['search']);
             $this->db->like('t.issue_type', $data['search']);
@@ -75,17 +67,15 @@ class Ticket_model extends CI_Model
         $all_clients_count_db=clone $this->db;
         $all_clients_count = $all_clients_count_db->get()->num_rows();
 
-        // if(isset($data['limit']) && isset($data['offset']))
-        //    $this->db->limit($data['limit'],$data['offset']);
-        if(isset($data['pagination']['number']) && $data['pagination']['number']!='')
-        $this->db->limit($data['pagination']['number'],$data['pagination']['start']);
+        if(isset($data['number']) && isset($data['start']))
+           $this->db->limit($data['number'],$data['start']);
         
         $query = $this->db->get();//echo $this->db->last_query();exit;
         return array('total_records' => $all_clients_count,'data' => $query->result_array());
         
     }
     public function getTicketData($data){
-        $this->db->select('t.id as ticket_id, t.ticket_no as issue_id,t.description, mc.child_name as issue_type,mc1.child_name as status,CONCAT(u.first_name," ",u.last_name) as created_by,concat(u1.first_name," ",u1.last_name) as last_updated_by,DATE_FORMAT(t.created_on,"%d/%m/%Y") as created_date,DATE_FORMAT(t.created_on,"%d/%m/%Y") as last_updated,GROUP_CONCAT(d.document_name) as document_name,mc1.id as status_id');
+        $this->db->select('t.id as ticket_id, t.ticket_no as issue_id,t.description, mc.child_name as issue_type,mc1.child_name as status,CONCAT(u.first_name," ",u.last_name) as created_by,concat(u1.first_name," ",u1.last_name) as last_updated_by,t.created_on created_date,t.last_update_on as last_updated,GROUP_CONCAT(d.document_name) as document_name,mc1.id as status_id');
         $this->db->from('ticket t');
         $this->db->join('user u','t.ticket_rised_by=u.id','left');
         $this->db->join('user u1','t.last_updated_by=u1.id','left');

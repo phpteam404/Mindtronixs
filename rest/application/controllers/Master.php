@@ -37,13 +37,14 @@ class Master extends REST_Controller
         $child_key=str_replace(' ','_',strtolower(rtrim(ltrim($data['child_name']))));
         $master_child_data=array(
             'master_id'=>$data['master_id'],
-            'child_name'=>$data['child_name'],
+            'child_name'=>ucfirst($data['child_name']),
             'child_key'=> $child_key,
             'description'=>!empty($data['description'])?$data['description']:'',
             'status'=>isset($data['status'])?$data['status']:'1'   
         );
         if(isset($data['child_id']) && $data['child_id']){
-            $check_existance=$this->Master_model->check_not_in('master_child',array('child_name'=>ltrim(rtrim($data['child_name']))),array('id'=>array($data['child_id'])));
+            $check_existance=$this->Master_model->check_not_in('master_child',array('child_name'=>ltrim(rtrim($data['child_name'])),'status'=>1,'master_id'=>$data['master_id']),array('id'=>array($data['child_id'])));
+            //echo $this->db->last_query();exit;
             if(count($check_existance)>0){
                 $result = array('status'=>FALSE,'error'=>$this->lang->line('child_name_duplicate'),'data'=>'');
                 $this->response($result, REST_Controller::HTTP_OK);

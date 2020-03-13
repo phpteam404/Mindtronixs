@@ -95,7 +95,7 @@ $lang['parent_req'] = 'Parent is required';
 $lang['grade_req'] = 'Grade is required';
 $lang['app_module_id_req'] = 'App module is required';
 $lang['access_status_req'] = 'Access status required';
-$lang['roles_updated'] = 'Roles management updated successfully ';
+$lang['roles_updated'] = 'Roles Access updated successfully ';
 $lang['std1_phone_num_min_len'] = 'Student Phone Number2 must be minimum 10 digits';
 $lang['std1_phone_num_max_len'] = 'Student Phone Number2 must be maximum 10 digits';
 $lang['nationality_req'] = 'Nationality is required';
@@ -427,7 +427,7 @@ $lang['task_desc'] ='Task Description Required';
 $lang['task_create'] ='Schedule Created Successfully';
 $lang['task_update'] ='Schedule Updated Successfully';
 $lang['category_req'] = 'Category is required';
-$lang['invalid_doc_format'] = 'Select Valid content files';
+$lang['invalid_doc_format'] = 'Invalid files. Upload valid files';
 $lang['content_add'] = 'Content added Successfully';
 $lang['content_update'] = 'Content updated Successfully';
 $lang['title_req_desc'] = 'Ticket title is required';
@@ -467,5 +467,7 @@ $lang['franchise_feemaster_add'] = 'Fee master added Successfully';
 $lang['account_inactive'] = 'Account is in inactvie ';
 $lang['duplicate_fee_name'] = 'Fee title already exists ';
 $lang['franchise_contacts_req'] = 'Franchise contact is required  ';
+$lang['digital_content_management_id_req'] = 'Digital content management id required  ';
+$lang['type_req'] = 'Request type required';
 
 

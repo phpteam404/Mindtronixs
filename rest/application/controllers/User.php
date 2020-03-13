@@ -119,7 +119,7 @@ class User extends REST_Controller
                 $this->response($result, REST_Controller::HTTP_OK);
             }
         }
-
+        // print_r($sudent_data_insert);exit;
         $user_data = array(
             'user_role_id' => isset($data['user_role_id'])?$data['user_role_id']:5,
             'first_name' => !empty($data['student_name'])? $data['student_name']:$data['first_name'],
@@ -186,7 +186,7 @@ class User extends REST_Controller
                 $student_data['created_by']=!empty($this->session_user_id)?$this->session_user_id:'0';
                 $student_data['created_on']=currentDate();
                 $student_data['user_id']=$is_insert;
-                $this->User_model->insertdata('student',$student_data);
+                $student_id=$this->User_model->insertdata('student',$student_data);
             }
             if($is_insert>0){
                 $result = array('status'=>TRUE, 'message' => $this->lang->line('user_add'), 'data'=>array('data' => $is_insert));
@@ -205,7 +205,7 @@ class User extends REST_Controller
         if($this->session_user_info->user_role_id==2){
             $data['franchise_id']=$this->session_user_info->franchise_id;
         }
-        $result=$this->User_model->getuserlist($data);//echo $this->db->last_query();exit;
+        $result=$this->User_model->getuserlist($data);print_query('sector',$this->db->last_query());//echo $this->db->last_query();exit;
         foreach($result['data'] as $k=>$v){
             if(!empty($data['user_id'])){
                 $result['data'][$k]['status']=getStatusObj($v['status']);
@@ -249,7 +249,7 @@ class User extends REST_Controller
         if(!isset($data['dropdown']))
             $modules= $this->User_model->menuList(array('user_role_id'=>!empty($data['user_role_id'])?$data['user_role_id']:1));//echo $this->db->last_query();exit;
         $user_roles= $this->User_model->getUserRoles(array('dropdown'=>isset($data['dropdown'])?true:false));
-        //echo $this->db->last_query();exit;
+        // echo $this->db->last_query();exit;
         foreach($user_roles as $k=>$v){
             $user_roles[$k]['value']=(int)$v['value'];
         }
@@ -576,7 +576,26 @@ class User extends REST_Controller
         // echo $this->db->last_query();exit;
         $this->response($result, REST_Controller::HTTP_OK);
     }
+    // function copyFeeStructureToStudent($student_id,$fee_master_id){
+    //     //this function is used to copy fee data to student
+    //     $get_fee_details=$this->User_model->check_record('fee_master',array('id'=>$fee_master_id));
+    //     if(!empty($get_fee_details)){
+    //         $student_fee_data=array(
+    //             'student_id'=>$student_id,
+    //             'student_fee_name'=>$get_fee_details[0]['name'],
+    //             'student_fee_description'=>$get_fee_details[0]['description'],
+    //             'student_fee_amount'=>$get_fee_details[0]['amount'],
+    //             'term'=>$get_fee_details[0]['term'],
+    //             'discount'=>$get_fee_details[0]['discount'],
+    //             'discount_details'=>$get_fee_details[0]['discount_details'],
+    //             'status'=>1,
+    //             'created_by'=>!empty($this->session_user_id)?$this->session_user_id:'0',
+    //             'created_on'=>currentDate() 
+    //         );
+    //         $is_insert=$this->User_model->insert_data('student_fee',$student_fee_data);
+    //         return $is_insert;
+
+    //     }
+    // }
     
 }
-
-

@@ -33,10 +33,10 @@ class Fee_model extends CI_Model
         if(isset($data['status']) && $data['status']!=''){
             $this->db->where('fm.status',$data['status']);
         }
-        // else{
-        //     $this->db->where_in('fm.status',array('0','1')); 
-        // }
-        if(isset($data['fee_master_id']) && $data['fee_master_id'] > 0){
+        if(!empty($data['fee_master_id_not_in'])){
+            $this->db->where_not_in('fm.id',$data['fee_master_id_not_in']);
+        }
+        if(!empty($data['fee_master_id'])){
             $this->db->where('fm.id',$data['fee_master_id']);
         }
         if(isset($data['sort']))

@@ -29,30 +29,35 @@ class Ticket extends REST_Controller
     public function addTicket_post()
     {
         $data=$this->input->post();
+        // print_r($_FILES);exit;
         if(!empty($_FILES)){
-            $no_of_files=count($_FILES['document']['name']);
+            $allowed_types=array('gif','jpg','jpeg','png'); 
+            $no_of_files=count($_FILES['files']['name']);
+            for ($i=0; $i <$no_of_files ; $i++) {
+                $extensions[] = pathinfo($_FILES['files']['name'][$i], PATHINFO_EXTENSION);
+            }
+            $intersect_data=array_intersect($extensions,$allowed_types);
             for ($i=0; $i <$no_of_files ; $i++) { 
-                //  print_r($_FILES['document']['type'][$i]);exit;
-                $allowed_types=array('image/gif','image/jpg','image/jpeg','image/png');   
-            //    print_r(in_array($_FILES['document']['type'][$i],$allowed_types));exit;
-                if(in_array($_FILES['document']['type'][$i],$allowed_types))
+                if($extensions==$intersect_data)
                 {
                     $path='uploads/ticket/';
                     $imageName = doUpload(array(
-                        'temp_name' => $_FILES['document']['tmp_name'][$i],
-                        'image' => $_FILES['document']['name'][$i],
+                        'temp_name' => $_FILES['files']['tmp_name'][$i],
+                        'image' => $_FILES['files']['name'][$i],
                         'upload_path' => $path,''
                         ));
                         // $imageName='ticket/'.$imageName;
-                            $ImageMaker =   new ImageFactory();
-                            // Here is just a test landscape sized image
-                            $image_target   =   "uploads/ticket/".$imageName;
-                            // This will save the file to disk. $destination is where the file will save and with what name
-                            $small_images_destination    =   "uploads/ticket/small_images/".$imageName ;
-                            $ImageMaker->Thumbnailer($image_target,65,65,$small_images_destination);//this is used to resize image with 65X65 resolution
-                            $medium_images_destination    =   "uploads/ticket/medium_images/".$imageName ;
-                            $ImageMaker->Thumbnailer($image_target,150,150,$medium_images_destination);//this is used to resize image with 150X150 resolution
-                        $document_id[]=$this->User_model->insertdata('documents',array('document_name'=>!empty($imageName)?$imageName:'','created_by'=>!empty($this->session_user_id)?$this->session_user_id:'0','created_on'=>currentDate(),'module_type'=>'1'));
+                        $ImageMaker =   new ImageFactory();
+                        // Here is just a test landscape sized image
+                        $image_target   =   "uploads/ticket/".$imageName;
+                        // This will save the file to disk. $destination is where the file will save and with what name
+                        if(!is_dir('uploads/ticket/small_images/')){ mkdir('uploads/ticket/small_images/'); }
+                        $small_images_destination    =   "uploads/ticket/small_images/".$imageName ;
+                        $ImageMaker->Thumbnailer($image_target,65,65,$small_images_destination);//this is used to resize image with 65X65 resolution
+                        if(!is_dir('uploads/ticket/medium_images/')){ mkdir('uploads/ticket/medium_images/'); }
+                        $medium_images_destination    =   "uploads/ticket/medium_images/".$imageName ;
+                        $ImageMaker->Thumbnailer($image_target,150,150,$medium_images_destination);//this is used to resize image with 150X150 resolution
+                        $document_id[]=$this->User_model->insertdata('documents',array('document_name'=>!empty($imageName)?$imageName:'','created_by'=>!empty($this->session_user_id)?$this->session_user_id:'0','created_on'=>currentDate(),'module_type'=>'ticket_create','status'=>1));
                 }
                 else
                 {
@@ -88,7 +93,7 @@ class Ticket extends REST_Controller
 
         );
         // print_r(ucwords($this->session_user_info->username));exit;
-        $message=ucwords($this->session_user_info->username).' Created ticket';
+        // $message=ucwords($this->session_user_info->username).' Created ticket';
         // print_r($message);exit;
        if(!empty($_FILES) && count($document_id)>0){
 
@@ -96,7 +101,7 @@ class Ticket extends REST_Controller
            if($inserted_id>0){
                $ticket_id="MINDTKTNO_".$inserted_id;
                $this->User_model->update_data('ticket',array('ticket_no'=>$ticket_id),array('id'=>$inserted_id));
-               $ticket_chat_id=$this->User_model->insertdata('ticket_chat',array('created_by'=>!empty($this->session_user_id)?$this->session_user_id:'0','ticket_id'=>$inserted_id,'actions'=>!empty($message)?$message:'','created_on'=>currentDate(),'type'=>'1','from_user'=>$this->session_user_id,'to_user'=>1,'status'=>46));
+            //    $ticket_chat_id=$this->User_model->insertdata('ticket_chat',array('created_by'=>!empty($this->session_user_id)?$this->session_user_id:'0','ticket_id'=>$inserted_id,'created_on'=>currentDate(),'status'=>46));
             }
             $this->User_model->update_where_in('documents',array('module_type_id'=>$inserted_id),array('id'=>$document_id));
         //    if(!empty($_FILES) && $document_id){
@@ -110,7 +115,7 @@ class Ticket extends REST_Controller
             if($inserted_id>0){
             $ticket_id="MINDTKTNO_".$inserted_id;
             $this->User_model->update_data('ticket',array('ticket_no'=>$ticket_id),array('id'=>$inserted_id));
-            $ticket_chat_id=$this->User_model->insertdata('ticket_chat',array('created_by'=>!empty($this->session_user_id)?$this->session_user_id:'0','ticket_id'=>$inserted_id,'actions'=>!emtpy($message)?$message:'','created_on'=>currentDate(),'type'=>'1','from_user'=>$this->session_user_id,'to_user'=>1,'status'=>46));
+            $ticket_chat_id=$this->User_model->insertdata('ticket_chat',array('created_by'=>!empty($this->session_user_id)?$this->session_user_id:'0','ticket_id'=>$inserted_id,'actions'=>!empty($message)?$message:'','created_on'=>currentDate(),'type'=>'1','from_user'=>$this->session_user_id,'to_user'=>1,'status'=>46));
             $result = array('status'=>TRUE, 'message' => $this->lang->line('ticket_add'), 'data'=>array('data'=>$ticket_id));
            $this->response($result, REST_Controller::HTTP_OK);
          }
@@ -139,50 +144,50 @@ class Ticket extends REST_Controller
             $result = array('status'=>FALSE,'error'=>$validated,'data'=>'');
             $this->response($result, REST_Controller::HTTP_OK);
         }
-        $get_ticket_data=$this->Ticket_model->getTicketData(array('ticket_id'=>$data['ticket_id']));//echo $this->db->last_query();exit;
-        if($get_ticket_data[0]['status_id']!=$data['ticket_status']){
-            $get_current_status_name=$this->User_model->check_record_selected('child_name as status','master_child',array('master_id'=>18,'id'=>$data['ticket_status']));
-            $action_message= 'Status changed from '.$get_ticket_data[0]['status'].' to '.$get_current_status_name[0]['status'];
-        }
-        // print_r($get_ticket_data[0]['status']);exit;
-        $to_user=$this->getFromAndToUser(array('ticket_id'=>$data['ticket_id']));
-        // print_r($to_user);exit;
+        // $get_ticket_data=$this->Ticket_model->getTicketData(array('ticket_id'=>$data['ticket_id']));//echo $this->db->last_query();exit;
+        // if($get_ticket_data[0]['status_id']!=$data['ticket_status']){
+        //     $get_current_status_name=$this->User_model->check_record_selected('child_name as status','master_child',array('master_id'=>18,'id'=>$data['ticket_status']));
+        //     $action_message= 'Status changed from '.$get_ticket_data[0]['status'].' to '.$get_current_status_name[0]['status'];
+        // }
+        // // print_r($get_ticket_data[0]['status']);exit;
+        // $to_user=$this->getFromAndToUser(array('ticket_id'=>$data['ticket_id']));
+        // // print_r($to_user);exit;
         $chat_data=array(
             'ticket_id'=>$data['ticket_id'],
             'message'=>!empty($data['description'])?$data['description']:'',
             'created_on'=>currentDate(), 
             'created_by'=>!empty($this->session_user_id)?$this->session_user_id:'0',
-            'type'=>'1',
-            'from_user'=>!empty($this->session_user_id)?$this->session_user_id:'0',
-            'to_user'=>$to_user,
-            'status'=>$data['ticket_status'],
-            'actions'=>!empty($action_message)?$action_message:''
-            
+            'status'=>$data['ticket_status']         
         );
+        // print_r($_FILES);exit;
         if(!empty($_FILES)){
-            $no_of_files=count($_FILES['document']['name']);
+            $allowed_types=array('gif','jpg','jpeg','png'); 
+            $no_of_files=count($_FILES['files']['name']);
+            for ($i=0; $i <$no_of_files ; $i++) {
+                $extensions[] = pathinfo($_FILES['files']['name'][$i], PATHINFO_EXTENSION);
+            }
+            $intersect_data=array_intersect($extensions,$allowed_types);
             for ($i=0; $i <$no_of_files ; $i++) { 
-                // print_r($_FILES['document']);//
-                $allowed_types=array('image/gif','image/jpg','image/jpeg','image/png');   
-              //  print_r(in_array($_FILES['document']['name'][$i],$allowed_types));exit;
-                if(in_array($_FILES['document']['type'][$i],$allowed_types))
+                if($extensions==$intersect_data)
                 {
                     $path='uploads/ticket/';
                     $imageName = doUpload(array(
-                        'temp_name' => $_FILES['document']['tmp_name'][$i],
-                        'image' => $_FILES['document']['name'][$i],
+                        'temp_name' => $_FILES['files']['tmp_name'][$i],
+                        'image' => $_FILES['files']['name'][$i],
                         'upload_path' => $path,''
                         ));
                         $ImageMaker =   new ImageFactory();
                         // Here is just a test landscape sized image
                         $image_target   =   "uploads/ticket/".$imageName;
                         // This will save the file to disk. $destination is where the file will save and with what name
+                        if(!is_dir('uploads/ticket/small_images/')){ mkdir('uploads/ticket/small_images/'); }
                         $small_images_destination    =   "uploads/ticket/small_images/".$imageName ;
                         $ImageMaker->Thumbnailer($image_target,65,65,$small_images_destination);//this is used to resize image with 65X65resolution
+                        if(!is_dir('uploads/ticket/medium_images/')){ mkdir('uploads/ticket/medium_images/'); }
                         $medium_images_destination    =   "uploads/ticket/medium_images/".$imageName ;
                         $ImageMaker->Thumbnailer($image_target,150,150,$medium_images_destination);//this is used to resize image with 150X150 resolution
                         // $imageName='ticket/'.$imageName;
-                        $document_id[]=$this->User_model->insertdata('documents',array('document_name'=>!empty($imageName)?$imageName:'','created_by'=>!empty($this->session_user_id)?$this->session_user_id:'0','created_on'=>currentDate(),'module_type'=>'2'));
+                        $document_id[]=$this->User_model->insertdata('documents',array('document_name'=>!empty($imageName)?$imageName:'','created_by'=>!empty($this->session_user_id)?$this->session_user_id:'0','created_on'=>currentDate(),'module_type'=>'ticket_chat'));
                 }
                 else
                 {
@@ -229,36 +234,40 @@ class Ticket extends REST_Controller
             $this->response($result, REST_Controller::HTTP_OK);
         }
         $ticket_data=$this->Ticket_model->getTicketData(array('ticket_id'=>$data['ticket_id']));//echo $this->db->last_query();exit;
-        if(!empty($ticket_data[0]['document_name'])){
-            $ticket_documents=explode(",",$ticket_data[0]['document_name']);
-            foreach($ticket_documents as $k=>$v){
-                $ticket_data[0]['documents'][$k]['document_name']=$v;
-                $ticket_data[0]['documents'][$k]['document_url']=DOCUMENT_PATH.'ticket/small_images/'.$v;
-
-            }
-
+        $ticket_data=$ticket_data[0];
+        $get_documents=$this->User_model->check_record('documents',array('module_type_id'=>$data['ticket_id'],'module_type'=>'ticket_create')); foreach($get_documents as $k=>$v){
+            $document[$k]['document_name']=$v['document_name'];
+            $document[$k]['document_url']=DOCUMENT_PATH.'ticket/small_images/'.$v['document_name'];
         }
-        $query='SELECT DATE_FORMAT(created_on,"%Y-%m-%d") as date   FROM  ticket_chat WHERE ticket_id='.$data['ticket_id'].' GROUP BY  DATE_FORMAT(created_on,"%Y-%m-%d")';
-        $get_dates=$this->User_model->custom_query($query);
-        //  print_r($get_dates);exit;
-        if(!empty($get_dates)){
-            foreach($get_dates as $i=>$j){
-                $chatdata=$this->Ticket_model->getChat(array('ticket_id'=>$data['ticket_id'],'date'=>$j['date']));
-               foreach($chatdata  as $k1=>$v1){
-                    $documents=$this->User_model->Check_record_selected('document_name','documents',array('module_type_id'=>$v1['ticket_chat_id'],'module_type'=>2));
-                        if(!empty($documents)){
-                            foreach($documents as $c=>$d){
-                                $chatdata[$k1]['document'][$c]['document_name']=$d['document_name'];
-                                $chatdata[$k1]['document'][$c]['document_url']=DOCUMENT_PATH.'ticket/small_images/'.$d['document_name'];
-                            }
-                        }
-                }   
-                $chat_history[$i]=array_reverse($chatdata);
-                unset($chat_data);        
+
+        $ticket_data['documents']=!empty($document)?$document:array();
+        $get_chat_details=$this->Ticket_model->getChat(array('ticket_id'=>$data['ticket_id']));///echo $this->db->last_query();exit;
+        //print_r($get_chat_details);exit;
+        $created_data=array(
+            'message'=>ucwords($ticket_data['created_by']).' Create ticket',
+            'created_by'=>$ticket_data['created_by'],
+            'created_date'=>date("d-m-Y",strtotime($ticket_data['created_date'])),
+            'date'=>date("d M Y",strtotime($ticket_data['created_date'])),
+            'time'=>date("h:i A",strtotime($ticket_data['created_date'])),
+            'status'=>$ticket_data['status']
+        );
+        array_push($get_chat_details,$created_data);
+        $groupby_date_data=$this->groupArray($get_chat_details, "created_date");//this function group the chat data by date
+        
+        foreach($groupby_date_data as $k2=>$v2){ 
+            if(!empty($v2))
+            {
+                foreach($v2 as $k3=>$v3){
+                    if(!empty($v3['ticket_chat_id'])){
+                        $url=DOCUMENT_PATH.'ticket/small_images/';
+                        $get_chat_documents=$this->User_model->check_record_selected('concat("'.$url.'",document_name) as document_url','documents',array('module_type_id'=>$v3['ticket_chat_id'],'module_type'=>'ticket_chat'));//echo $this->db->last_query();exit;
+                        if(!empty($get_chat_documents))
+                        $groupby_date_data[$k2][$k3]['documents']=!empty($get_chat_documents)?$get_chat_documents:array();
+                    }          
+                }
             }
         }
-        unset($ticket_data[0]['document_name']);
-        $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>array('ticket_data'=>$ticket_data[0],'chat_history'=>array_reverse($chat_history)));
+        $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>array('ticket_data'=>$ticket_data,'chat_history'=>$groupby_date_data));
         $this->response($result, REST_Controller::HTTP_OK);
         
     } 
@@ -268,8 +277,6 @@ class Ticket extends REST_Controller
         // print_r($data);exit;
         $data['user_role_id']=$this->session_user_info->user_role_id;
         $data['user_id']=$this->session_user_info->user_id;
-        // $data = tableOptions($data);
-        // print_r($this->session_user_info);exit;
         if(in_array($data['user_role_id'],array('1','4','5'))){//display tickets only specific user only
             $ticket_list=$this->Ticket_model->getTickets($data);//echo $this->db->last_query();exit;
         }
@@ -336,6 +343,30 @@ class Ticket extends REST_Controller
             }
         }
 
+    }
+    function groupArray($arr, $group, $preserveGroupKey = false, $preserveSubArrays = false) {
+        $temp = array();
+        foreach($arr as $key => $value) {
+            $groupValue = $value[$group];
+            if(!$preserveGroupKey)
+            {
+                unset($arr[$key][$group]);
+            }
+            if(!array_key_exists($groupValue, $temp)) {
+                $temp[$groupValue] = array();
+            }
+            if(!$preserveSubArrays){
+                $data = count($arr[$key]) == 1? array_pop($arr[$key]) : $arr[$key];
+            } else {
+                $data = $arr[$key];
+            }
+            $temp[$groupValue][] = $data;
+        }
+        // print_r($temp);exit;
+        foreach($temp as $k1=>$v1){
+            $chat_data[]=$v1;
+        }
+        return $chat_data;
     }
 
 }

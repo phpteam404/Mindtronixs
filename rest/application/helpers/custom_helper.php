@@ -294,7 +294,7 @@ if (!function_exists('getObjOnId')) {
     function getObjOnId($v,$bool){
         $v = explode('-',$v);
         if($bool){
-            return array('label'=>$v[0],'value'=>(int)$v[1]);
+            return array('label'=>ucfirst($v[0]),'value'=>(int)$v[1]);
         }else{
             return $v[0];
         }
@@ -304,7 +304,7 @@ if (!function_exists('getObjOnIdOfBloodGroup')) {
     function getObjOnIdOfBloodGroup($v,$bool){
         $v = explode(',',$v);
         if($bool){
-            return array('label'=>$v[0],'value'=>(int)$v[1]);
+            return array('label'=>ucfirst($v[0]),'value'=>(int)$v[1]);
         }else{
             return $v[0];
         }
@@ -854,6 +854,7 @@ if (!function_exists('getTableHeads')) {
                 return array(
                   array('field'=> 'code', 'header'=> 'School code','alias'=>'code' ),
                   array('field'=> 'name', 'header'=> 'School Name','alias'=>'name' ),
+                  array('field'=> 'franchise_name', 'header'=> 'Franchise Name','alias'=>'franchise_name' ),
                   array('field'=> 'no_of_students','header'=> 'Number of Students','alias'=>'no_of_students' ),
                   array('field'=> 'phone', 'header'=> 'Phone no','alias'=>'phone' ),
                   array('field'=> 'email', 'header'=> 'Email' ,'alias'=>'email'),
@@ -884,7 +885,7 @@ if (!function_exists('getTableHeads')) {
                   array('field'=> 'action', 'header'=> 'Actions' ,'alias'=>'action' )
                 );
                 break;
-        case 'all_users_list':
+            case 'all_users_list':
                 return array(
                    array('field' => 'user_name', 'header' => 'Name', 'alias' => 'user_name'),
                    array('field' => 'email', 'header' => 'Contact Email', 'alias' => 'email'),
@@ -926,6 +927,17 @@ if (!function_exists('getTableHeads')) {
                     array('field'=>'date', 'header'=> 'Date','alias'=>'date' ),
                     array('field'=> 'from_time', 'header'=> 'From Time','alias'=>'from_time' ),
                     array('field'=> 'to_time', 'header'=> 'To Time','alias'=>'to_time' ),
+                    array('field'=> 'actions', 'header'=> 'Actions','alias'=>'actions' )
+                );
+                break;
+            case 'digital_content_management_list':
+                return array(
+                    array('field'=> 'content_name', 'header'=> 'Content Name','alias'=>'content_name'),
+                    array('field'=>'grade', 'header'=> 'Grade','alias'=>'grade' ),
+                    array('field'=> 'category', 'header'=> 'Category','alias'=>'category' ),
+                    array('field'=> 'sub_category', 'header'=> 'Sub Category','alias'=>'sub_category' ),
+                    array('field'=> 'content_level', 'header'=> 'Level','alias'=>'content_level' ),
+                    array('field'=> 'no_of_views', 'header'=> 'No.of Views','alias'=>'no_of_views' ),
                     array('field'=> 'actions', 'header'=> 'Actions','alias'=>'actions' )
                 );
                 break;

@@ -180,7 +180,7 @@ class User_model extends CI_Model
 
     public function getUserRoles($data)
     {
-        if(isset($data['dropdown'])){
+        if(!empty($data['dropdown'])){
             $this->db->select('user_role_name as label, CAST(id AS SIGNED) as value')->from('user_role');
             // $this->db->where('role_level != 1');
             $this->db->where_not_in('role_level', array('1','5'));
@@ -576,7 +576,7 @@ class User_model extends CI_Model
         
         if(isset($data['search_key']) && $data['search_key']!==''){
             $this->db->group_start();
-            $this->db->where('u.first_name like "%'.$data['search_key'].'%" or u.last_name like "%'.$data['search_key'].'%" or CONCAT(u.first_name,\' \',u.last_name) like "%'.$data['search_key'].'%" or u.email like "%'.$data['search_key'].'%"  or u.phone_no like "%'.$data['search_key'].'%"');
+            $this->db->where('u.first_name like "%'.$data['search_key'].'%" or u.last_name like "%'.$data['search_key'].'%" or CONCAT(u.first_name,\' \',u.last_name) like "%'.$data['search_key'].'%" or u.email like "%'.$data['search_key'].'%" or u.phone_no like "%'.$data['search_key'].'%" or f.name like "%'.$data['search_key'].'%"');
             $this->db->group_end();
         }
         // print_r($data);exit;

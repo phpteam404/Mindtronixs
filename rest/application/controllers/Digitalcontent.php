@@ -20,6 +20,8 @@ class Digitalcontent extends REST_Controller
     {
         parent::__construct();
         // $this->load->model('Digitalcontent_model');
+        // $this->load->library('phpqrcode/qrlib');
+        // $this->load->helper('url');
         $getLoggedUserId=$this->User_model->getLoggedUserId();
         $this->session_user_id=$getLoggedUserId[0]['id'];
         $this->session_user_parent_id=$getLoggedUserId[0]['parent_user_id'];
@@ -30,10 +32,10 @@ class Digitalcontent extends REST_Controller
     Public function addDigitalContent_post()
     {
         $data=$this->input->post();
-        if(!empty($data['tags'])){
-            $data['tags']='['.$data['tags'].']';
-        }
-        // print_r($data);exit;
+        // if(!empty($data['tags'])){
+        //     $data['tags']='['.$data['tags'].']';
+        // }
+        // print_r($data);exit;// print_r($data);exit;
         if(empty($data)){
             $result = array('status'=>FALSE,'error'=>$this->lang->line('invalid_data'),'data'=>'');
             $this->response($result, REST_Controller::HTTP_OK);
@@ -53,44 +55,48 @@ class Digitalcontent extends REST_Controller
         }
         $content_data=array(
             'content_name'=>!empty($data['name'])?$data['name']:'',
-            'content_description'=>!empty($data['description'])?$data['description']:'',
+            'content_description'=>!empty($data['content_description'])?$data['content_description']:'',
             'category'=>!empty($data['category'])?$data['category']:'',
             'sub_category'=>!empty($data['sub_category'])?$data['sub_category']:'',
             'tags'=>!empty($data['tags'])?$data['tags']:'',
-            'exparity_date'=>!empty($data['expiry_date'])?$data['expiry_date']:'', 
+            'expiry_date'=>!empty($data['expiry_date'])?$data['expiry_date']:'', 
             'grade'=>!empty($data['grade'])?$data['grade']:'',
             'content_level'=>!empty($data['content_level'])?$data['content_level']:'',
             'status'=>!empty($data['status'])?$data['status']:'1'
             
         );
+        // print_r($_FILES);exit;
         if(!empty($_FILES)){
-            $allowed_types=array('gif','jpg','jpeg','png','pdf','mp4','xlsx','xls'); 
+            $allowed_types=array('gif','jpg','jpeg','png','pdf','mp4','mov'); 
             $no_of_files=count($_FILES['files']['name']);
             for ($i=0; $i <$no_of_files ; $i++) {
                 $extensions[] = pathinfo($_FILES['files']['name'][$i], PATHINFO_EXTENSION);
             }
             $intersect_data=array_intersect($extensions,$allowed_types);
+            // print_r($intersect_data);exit;
             for($i=0; $i <$no_of_files ; $i++) { 
                 if($extensions==$intersect_data)
                 {
-                    // print_r(pathinfo($_FILES['files']['name'][$i],PATHINFO_EXTENSION));exit;
+                    //   print_r($_FILES['files']['tmp_name'][$i]);exit;
                     $path='uploads/digitalcontent/';
                     $imageName = doUpload(array(
                         'temp_name' => $_FILES['files']['tmp_name'][$i],
                         'image' => $_FILES['files']['name'][$i],
                         'upload_path' => $path,''
                     )); 
+                    // print_r($_FILES['files']['name'][$i]);exit;
                     $image_extensions=array('gif','jpg','jpeg','png');
-                    if(in_array(pathinfo($_FILES['files']['name'][$i],PATHINFO_EXTENSION),$image_extensions)){
-                        print_r(!is_dir('uploads/digitalcontent/small_images/'));exit;
+                    if(in_array(pathinfo($_FILES['files']['name'][$i],PATHINFO_EXTENSION),$image_extensions)){  
+                        if(!is_dir('uploads/digitalcontent/small_images/'))
+                        { mkdir('uploads/digitalcontent/small_images/'); }
                         $ImageMaker =   new ImageFactory();
                         // Here is just a test landscape sized image
                         $image_target   =   "uploads/digitalcontent/".$imageName;
-                        if(!is_dir($small_images_destination)){ mkdir($small_images_destination); }
+                        // if(!is_dir($small_images_destination)){ mkdir($small_images_destination); }
                             // This will save the file to disk. $destination is where the file will save and with what name
                             $small_images_destination    =   "uploads/digitalcontent/small_images/".$imageName ;
                             $ImageMaker->Thumbnailer($image_target,65,65,$small_images_destination);//this is used to resize image with 65X65 resolution
-                        if(!is_dir($medium_images_destination)){ mkdir($medium_images_destination); }
+                            if(!is_dir('uploads/digitalcontent/medium_images/')){ mkdir('uploads/digitalcontent/medium_images/'); }
                             $medium_images_destination    =   "uploads/digitalcontent/medium_images/".$imageName ;
                             $ImageMaker->Thumbnailer($image_target,150,150,$medium_images_destination);//this is used to resize image with 150X150 resolution
                     }
@@ -107,15 +113,45 @@ class Digitalcontent extends REST_Controller
             }
             
         }
-        if(!empty($_FILES) && count($document_id>0)){   
+        if(empty($_FILES)){
+            if(!empty($data['digital_content_management_id'])){
+                $content_data['updated_by']=!empty($this->session_user_id)?$this->session_user_id:'0';
+                $content_data['updated_on']=currentDate();
+                $is_update=$this->User_model->update_data('digital_content_management',$content_data,array('id'=>$data['digital_content_management_id']));
+                if(isset($is_update)){
+                    $result = array('status'=>TRUE, 'message' => $this->lang->line('content_update'), 'data'=>array('data' => $data['digital_content_management_id']));
+                    $this->response($result, REST_Controller::HTTP_OK);
+                }
+                else{
+                    $result = array('status'=>FALSE,'error'=>array('message'=>$this->lang->line('invalid_data')),'data'=>'');
+                    $this->response($result, REST_Controller::HTTP_OK); 
+                }
+            }
+            else{
+                $content_data['created_by']=!empty($this->session_user_id)?$this->session_user_id:'0';
+                $content_data['created_on']=currentDate();
+                $insert_id = $this->User_model->insertdata('digital_content_management',$content_data);
+                if($insert_id>0){
+                    $result = array('status'=>TRUE, 'message' => $this->lang->line('content_add'), 'data'=>array('data' => $insert_id));
+                    $this->response($result, REST_Controller::HTTP_OK);
+                }
+                else{
+                    $result = array('status'=>FALSE,'error'=>array('message'=>$this->lang->line('invalid_data')),'data'=>'');
+                    $this->response($result, REST_Controller::HTTP_OK);
+                }
+            }
+        }
+        //print_r(count($document_id));exit;
+        if(!empty($_FILES) && !empty($document_id)){   
             if(isset($data['digital_content_management_id']) && $data['digital_content_management_id']>0){
-                // $content_data['updated_by']=!empty($this->session_user_id)?$this->session_user_id:'0';
-                // $content_data['updated_on']=currentDate();
-                // $is_update=$this->User_model->update_data('digital_content_management',$content_data,array('id'=>$data['digital_content_management_id']));
-                // if(isset($is_update)){
-                //     $result = array('status'=>TRUE, 'message' => $this->lang->line('content_update'), 'data'=>array('data' => $insert_id));
-                //     $this->response($result, REST_Controller::HTTP_OK);
-                // }
+                $content_data['updated_by']=!empty($this->session_user_id)?$this->session_user_id:'0';
+                $content_data['updated_on']=currentDate();
+                $is_update=$this->User_model->update_data('digital_content_management',$content_data,array('id'=>$data['digital_content_management_id']));
+                $this->User_model->update_where_in('documents',array('module_type_id'=>$data['digital_content_management_id']),array('id'=>$document_id));
+                if(isset($is_update)){
+                    $result = array('status'=>TRUE, 'message' => $this->lang->line('content_update'), 'data'=>array('data' => $data['digital_content_management_id']));
+                    $this->response($result, REST_Controller::HTTP_OK);
+                }
             }
             else{
                 $content_data['created_by']=!empty($this->session_user_id)?$this->session_user_id:'0';
@@ -137,34 +173,81 @@ class Digitalcontent extends REST_Controller
 
     public function digitalContetList_get(){
         $data=$this->input->get();
-        $data = tableOptions($data);
-        if(isset($data['tags']) && $data['tags']!='')
-        {
-            $data['tags']= explode(",",$data['tags']);
-        }
-        $content_data=$this->Digitalcontent_model->getContentList($data);//echo $this->db->last_query();exit;
-        $total_records=$content_data['total_records'];
-        $content_data=$content_data['data'];
-        foreach($content_data as $k=>$v){
-            if(!empty($v['documents'])){
-                $content_data[$k]['documents']=explode(",",$v['documents']); 
-                foreach($content_data[$k]['documents'] as $l=>$m){
-                    $document[$k][$l]['document_name']=$m;
-                    $document[$k][$l]['document_url']=DOCUMENT_PATH."digitalcontent/".$m;
-    
-                }
-                unset($content_data[$k]['documents'][$l]);
-                $content_data[$k]['documents']=$document[$k];
-            }
-            if(!empty($v['tags'])){
-                $tags_ids=json_decode($v['tags']);
-                $tags_names=$this->User_model->check_record_where_in('GROUP_CONCAT(child_name) tags_names','master_child',array('master_id'=>4,'status'=>1),array('id'=>$tags_ids));
-                $content_data[$k]['tags_names']=!empty($tags_names[0]['tags_names'])?$tags_names[0]['tags_names']:'';
-                unset($tags_names);
-            }
-        }
-        $result = array('status'=>TRUE, 'message' => $this->lang->line('Success'), 'data'=>array('data' => $content_data,'total_records'=>$total_records));
+        // print_r($_SERVER);exit;
+
+        // $long_url = 'https://stackoverflow.com/questions/ask';
+        // $apiv4 = 'https://api-ssl.bitly.com/v4/bitlinks';
+        // $genericAccessToken = '0816e649b20136c886681ea2e96c76a2fc2f84a8';
+        
+        // $data = array(
+        //     'long_url' => $long_url
+        // );
+        // $payload = json_encode($data);
+        
+        // $header = array(
+        //     'Authorization: Bearer ' . $genericAccessToken,
+        //     'Content-Type: application/json',
+        //     'Content-Length: ' . strlen($payload)
+        // );
+        
+        // $ch = curl_init($apiv4);
+        // curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+        // curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
+        // curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        // curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
+        // $result = curl_exec($ch);
+        
+        // print_r($result);
+
+        //         print_r($result);exit;
+        $content_list=$this->Digitalcontent_model->getContentList($data);//echo $this->db->last_query();exit;
+        $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>array('data' => $content_list['data'],'total_records'=>$content_list['total_records'],'table_headers'=>getTableHeads('digital_content_management_list')));
         $this->response($result, REST_Controller::HTTP_OK);
         
     }
+    public function digitalContentInfo_get(){
+        $data=$this->input->get();
+        // print_r($_SERVER['HTTP_AUTHORIZATION']);exit;
+            
+       if(empty($data)){
+            $result = array('status'=>FALSE,'error'=>$this->lang->line('invalid_data'),'data'=>'1');
+            $this->response($result, REST_Controller::HTTP_OK);
+        }
+        $this->form_validator->add_rules('digital_content_management_id', array('required'=>$this->lang->line('digital_content_management_id_req')));
+        $this->form_validator->add_rules('request_type', array('required'=>$this->lang->line('type_req')));
+        $validated = $this->form_validator->validate($data);
+        if($validated != 1)
+        {
+            $result = array('status'=>FALSE,'error'=>$validated,'data'=>'');
+            $this->response($result, REST_Controller::HTTP_OK);
+        }
+        if($data['request_type']=='view'){
+            $content_info=$this->Digitalcontent_model->getDigitalContentInfo($data);
+            // print_r($data['digital_content_management_id']);exit;
+            $documents=$this->Digitalcontent_model->getDocuments(array('module_type_id'=>$data['digital_content_management_id'],'module_type'=>'digital_content'));
+            if(!empty($documents)){
+                foreach($documents as $k=>$v){
+                    // print_r($v['document_name']);exit;
+                    $documents[$k]['document_url']=DOCUMENT_PATH.'digitalcontent/'.$v['document_name'];
+                }
+            }
+            $content_info[0]['documents']=!empty($documents)?$documents:array();
+            $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>array('data' => $content_info));
+        }
+        if($data['request_type']=='edit'){
+            $content_info=$this->Digitalcontent_model->getDigitalContentInfo($data);
+            $content_info[0]['category']= getObjOnId($content_info[0]['category'],!empty($content_info[0]['category'])?true:false);
+            $content_info[0]['sub_category']= getObjOnId($content_info[0]['sub_category'],!empty($content_info[0]['sub_category'])?true:false);
+            $content_info[0]['content_level']= getObjOnId($content_info[0]['content_level'],!empty($content_info[0]['content_level'])?true:false);
+            $content_info[0]['grade']= getObjOnId($content_info[0]['grade'],!empty($content_info[0]['grade'])?true:false);
+            //$content_info[0]['tags']= getObjOnId($content_info[0]['tags'],!empty($content_info[0]['tags'])?true:false);
+            $content_info[0]['status']= getStatusObj($content_info[0]['status']);
+            // print_r($content_info);exit;
+            $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>array('data' => $content_info));
+        }
+        $this->response($result, REST_Controller::HTTP_OK);
+    }
+
+    // public function 
+
 }

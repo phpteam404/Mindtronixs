@@ -768,6 +768,26 @@ if(!function_exists('print_query')){
         return true;
     }
 }
+if(!function_exists('data_crypto')){
+    function data_crypto( $string, $action ) {
+        // Encryption
+        $plaintext = $string;
+        $key = 'd41d8cd98f00b204e9800998ecf8427e';
+        $cipher ="AES-256-CBC";
+        $iv = '2DkB1LID6pDSJvh7h0CYtw==';
+        $ivText = base64_encode($iv);
+        if( $action == 'e' ) {
+            // Encryption
+            $chiperRaw = openssl_encrypt($plaintext, $cipher, $key, OPENSSL_RAW_DATA, $iv);
+            return $ciphertext = trim(base64_encode($chiperRaw));
+        } else {
+            // Decryption
+            $iv = base64_decode($ivText);
+            $chiperRaw = base64_decode($string);
+            return $originalPlaintext = openssl_decrypt($chiperRaw, $cipher, $key, OPENSSL_RAW_DATA, $iv);
+        }
+    }
+}
 if (!function_exists('getTableHeads')) {
     function getTableHeads($table){
         switch($table){

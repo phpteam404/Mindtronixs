@@ -8,7 +8,7 @@ define('WEB_BASE_URL', $base_host);
 define('REST_API_URL', $base_host.'rest/');
 define('PAGING_LIMIT', '10');
 define('LOG_AUTH_KEY', '');
-define('AES_KEY', '');
+define('AES_KEY', 'JKj178jircAPx7h4CbGyYVV6u0A1JF7YN5GfWDWx');
 define('DATA_ENCRYPT',FALSE);
 define('EXCEL_UPLOAD_SIZE','5097152');
 define('IMAGE_UPLOAD_SIZE','5097152');

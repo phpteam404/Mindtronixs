@@ -36,6 +36,8 @@ class Digitalcontent extends REST_Controller
         //     $data['tags']='['.$data['tags'].']';
         // }
         // print_r($data);exit;// print_r($data);exit;
+        // echo '<pre>'.print_r($_FILES);
+        // echo '<pre>'.print_r($data);exit;
         if(empty($data)){
             $result = array('status'=>FALSE,'error'=>$this->lang->line('invalid_data'),'data'=>'');
             $this->response($result, REST_Controller::HTTP_OK);

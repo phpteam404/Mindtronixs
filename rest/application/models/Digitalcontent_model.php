@@ -48,15 +48,15 @@ class Digitalcontent_model extends CI_Model
     }
     public function getDigitalContentInfo($data=null){
         if($data['request_type']=='view'){
-            $this->db->select('dcm.id as digital_content_management_id,dcm.content_name,dcm.content_description,dcm.expiry_date,mc.child_name as category,mc1.child_name as sub_category,mc2.child_name as content_level,mc3.child_name as grade,dcm.tags ,dcm.no_of_views,IF(dcm.status=1,"Active","Inactive") as status');
+            $this->db->select('dcm.id as digital_content_management_id,dcm.content_name,dcm.content_description as description,dcm.expiry_date,mc.child_name as category,mc1.child_name as sub_category,mc2.child_name as content_level,mc3.child_name as grade,dcm.tags ,dcm.no_of_views,IF(dcm.status=1,"Active","Inactive") as status');
         }
         if($data['request_type']=='edit'){
-            $this->db->select('`dcm`.`id` as `digital_content_management_id`, `dcm`.`content_name`, `dcm`.`content_description`, `dcm`.`expiry_date`,CONCAT(mc.child_name, "-", mc.id)as category,CONCAT(mc1.child_name, "-", mc1.id)as sub_category,CONCAT(mc2.child_name, "-", mc2.id)as content_level,CONCAT(mc3.child_name, "-", mc3.id)as grade,
+            $this->db->select('dcm.id as digital_content_management_id, dcm.content_name as name, dcm.content_description as description, dcm.expiry_date,CONCAT(mc.child_name, "-", mc.id)as category,CONCAT(mc1.child_name, "-", mc1.id)as sub_category,CONCAT(mc2.child_name, "-", mc2.id)as content_level,CONCAT(mc3.child_name, "-", mc3.id)as grade,
             dcm.tags,dcm.status');
         }
         $this->db->from('digital_content_management dcm');
         $this->db->join('master_child mc','dcm.category=mc.id and  mc.master_id=1','left');
-        $this->db->join('master_child mc1','dcm.sub_category=mc1.id and mc1.id=2','left');
+        $this->db->join('master_child mc1','dcm.sub_category=mc1.id and mc1.master_id=2','left');
         $this->db->join('master_child mc2','dcm.content_level=mc2.id and mc2.master_id=3','left');
         $this->db->join('master_child mc3','dcm.grade=mc3.id AND mc3.master_id=5','left');
         // $this->db->join('master_child mc4','dcm.tags=mc4.id AND mc4.master_id=4','left');

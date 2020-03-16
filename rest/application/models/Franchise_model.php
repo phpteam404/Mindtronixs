@@ -25,7 +25,7 @@ class Franchise_model extends CI_Model
     public function listfranchise($data)
     {
         $this->db->select('f.id as franchise_id,f.name as franchise_name, f.email,f.primary_contact as contact_number,f.franchise_code,
-        ,f.status,DATE_FORMAT(f.created_on, "%d-%m-%Y") as created_on');
+        ,f.status,DATE_FORMAT(f.created_on, "%Y-%m-%d") as created_date');
         // $this->db->select('*');
         $this->db->from('franchise f');
         $this->db->join('master_child mc','f.city=mc.id AND mc.master_id=14','left');

@@ -15,6 +15,7 @@ application/logs/*
 !application/logs/index.html
 !application/logs/.htaccess
 /vendor/
+/rest/uploads/
 composer.json
 composer.lock
 composer.phar

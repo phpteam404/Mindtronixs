@@ -26,7 +26,7 @@ class Ticket_model extends CI_Model
     }
     public function getTickets($data)
     { 
-        $this->db->select('`t`.`id` as `ticket_id`, `t`.`ticket_no` as `issue_id`, `t`.`title` as `issue_title`,mc.child_name issue_type, concat(u1.first_name, " ", u1.last_name) as created_by, DATE_FORMAT(t.created_on, "%d-%m-%Y") as created_date, mc1.child_name as status');
+        $this->db->select('`t`.`id` as `ticket_id`, `t`.`ticket_no` as `issue_id`, `t`.`title` as `issue_title`,mc.child_name issue_type, concat(u1.first_name, " ", u1.last_name) as created_by, DATE_FORMAT(t.created_on, "%Y-%m-%d") as created_date, mc1.child_name as status');
         $this->db->from('ticket t');
         $this->db->join('user u','t.assigned_to=u.id','left');
         $this->db->join('user u1','t.ticket_rised_by=u1.id','left');
@@ -57,9 +57,9 @@ class Ticket_model extends CI_Model
             $this->db->group_end();
         }
 
-        if(!empty($data['sort']) && !empty($data['reverse']))
+        if(!empty($data['sort']) && !empty($data['order']))
         { 
-            $this->db->order_by($data['sort'],$data['reverse']);
+            $this->db->order_by($data['sort'],$data['order']);
         }
         else{
             $this->db->order_by('t.id','desc');
@@ -75,7 +75,7 @@ class Ticket_model extends CI_Model
         
     }
     public function getTicketData($data){
-        $this->db->select('t.id as ticket_id, t.ticket_no as issue_id,t.description, mc.child_name as issue_type,mc1.child_name as status,CONCAT(u.first_name," ",u.last_name) as created_by,concat(u1.first_name," ",u1.last_name) as last_updated_by,t.created_on created_date,t.last_update_on as last_updated,GROUP_CONCAT(d.document_name) as document_name,mc1.id as status_id');
+        $this->db->select('t.id as ticket_id,t.title,t.ticket_no as issue_id,t.description, mc.child_name as issue_type,mc1.child_name as status,CONCAT(u.first_name," ",u.last_name) as created_by,concat(u1.first_name," ",u1.last_name) as last_updated_by,DATE_FORMAT(t.created_on, "%Y-%m-%d") created_date,t.last_update_on as last_updated,mc1.id as status_id');
         $this->db->from('ticket t');
         $this->db->join('user u','t.ticket_rised_by=u.id','left');
         $this->db->join('user u1','t.last_updated_by=u1.id','left');

@@ -798,7 +798,7 @@ if (!function_exists('getTableHeads')) {
                     array('field' => 'email', 'header' => 'Contact Email', 'alias' => 'email'),
                     array('field' => 'contact_number', 'header' => 'Contact Number', 'alias' => 'contact_number'),
                     array('field' => 'city', 'header' => 'City', 'alias' => 'mc.child_name'),
-                    array('field' => 'created_on', 'header' =>'Created On', 'alias' => 'created_on'),
+                    array('field' => 'created_date', 'header' =>'Created On', 'alias' => 'created_date'),
                     array('field' => 'status', 'header' =>'Status', 'alias' => 'status'),
                     array('field' => 'actions', 'header' => 'Actions', 'alias' => 'actions'),
                 );
@@ -820,7 +820,9 @@ if (!function_exists('getTableHeads')) {
                     array('field'=> 'issue_type', 'header'=>'IssueType','alias'=>'issue_type' ),
                     array('field'=> 'created_by', 'header'=> 'Created By' ,'alias'=>'created_by'),
                     array('field'=> 'created_date', 'header'=> 'Created date','alais'=>'created_date' ),
-                    array('field'=> 'status', 'header'=> 'Status','alais'=>'status' )
+                    array('field'=> 'status', 'header'=> 'Status','alais'=>'status' ),
+                    array('field'=> 'actions', 'header'=> 'Actions','alias'=>'actions' )
+
                 );
                 break;
             case  'students_invoice_list':

@@ -813,7 +813,7 @@ class User_model extends CI_Model
             CONCAT(DATE_FORMAT(ts.date, '%a %b %d %Y '),ts.to_time,' GMT+0530 (India Standard Time)') as to_time");
         }else{
             //$this->db->select("ts.id as trainer_schedule_id,ts.topic, DATE_FORMAT(ts.date, '%b %d, %Y') as date,TIME_FORMAT(ts.from_time, '%h:%i %p') as from_time,TIME_FORMAT(ts.to_time, '%h:%i %p') as to_time");
-            $this->db->select("ts.id as trainer_schedule_id,ts.topic, DATE_FORMAT(ts.date, '%b %d, %Y') as date,ts.from_time,ts.to_time");
+            $this->db->select("ts.id as trainer_schedule_id,ts.topic, DATE_FORMAT(ts.date, '%Y-%m-%d') as date,ts.from_time,ts.to_time");
 
         }
        $this->db->from('trainer_schedule ts');
@@ -825,6 +825,9 @@ class User_model extends CI_Model
         }
         if(!empty($data['trainer_schedule_id'])){
             $this->db->where('ts.id',$data['trainer_schedule_id']);
+        }
+        if(!empty($data['created_by'])){
+            $this->db->where('ts.created_by',$data['created_by']);
         }
         if(!empty($data['sort']) && !empty($data['order']))
         { 
@@ -842,6 +845,20 @@ class User_model extends CI_Model
         $query = $this->db->get();//echo $this->db->last_query();exit;
         return array('total_records'=>$count_result,'data'=>$query->result_array());
 
+    }
+    public function check_not_in($table,$where=null,$where_not_in=null){//this function is used for check records not exists
+        $this->db->select('*');
+        $this->db->from($table);
+        if(!empty($where)){
+            $this->db->where($where);
+        }
+        if(!empty($where_not_in)){
+            foreach($where_not_in as $k=>$v){
+               $this->db->where_not_in($k,$v);
+            }
+        }
+        $query = $this->db->get();
+        return $query->result_array();
     }
 
 

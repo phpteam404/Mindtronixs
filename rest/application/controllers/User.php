@@ -566,7 +566,11 @@ class User extends REST_Controller
 
         }
         else{
-            $trainerschedulelist= $this->User_model->getTrainerScheduleList($data); 
+            // print_r($this->session_user_info->user_role_id);exit;
+            if($this->session_user_info->user_role_id==3){
+                $data['created_by']=$this->session_user_info->user_id;
+            }
+            $trainerschedulelist= $this->User_model->getTrainerScheduleList($data); //echo $this->db->last_query();exit;
             foreach($trainerschedulelist['data'] as $k=>$v){
                $trainerschedulelist['data'][$k]['from_time']=date("h:i A", strtotime($v['from_time']));
                 $trainerschedulelist['data'][$k]['to_time']=date("h:i A", strtotime($v['to_time']));
@@ -597,5 +601,31 @@ class User extends REST_Controller
 
     //     }
     // }
+    public function updateProfile_post(){
+        $data=$this->input->post();
+        $data['user_id']=!empty($data['user_id'])?$data['user_id']:$this->session_user_info;
+        if(!empty($data['firstname']) && !empty($data['lastname']) && !empty($data['email']) && !empty($data['contact_number'])){
+            $upadate_data=array(
+                'first_name'=>$data['firstname'],
+                'last_name'=>$data['lastname'],
+                'eamil'=>$data['email'],
+                'phone_no'=>$data['contact_number']
+            );
+            //   $check_email=$this->User_model->check_not_in('user',array('eamil'=>$data['email']),array('id'=>$data['user_id']));
+             // print_r($this->session_user_info);exit;
+           $is_update= $this->User_model->update_data('user',$upadate_data,array('id'=>$data['user_id']));
+           if(isset($is_update)){
+            $result = array('status'=>TRUE, 'message' =>$this->lang->line('update_profile'), 'data'=>array('data'=>$inserted_id));
+            $this->response($result, REST_Controller::HTTP_OK);
+           }
+        }  
+       if(!empty($data['old_password'])){
+             $check_password=$this->User_model->check_record('user',array('id'=>$data['user_id']));
+             if($check_password[0]['password']!=md5($data['old_password'])){
+            // $this->db->
+       }  
+    }
+}
     
+
 }

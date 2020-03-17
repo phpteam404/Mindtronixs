@@ -115,9 +115,9 @@ class Ticket extends REST_Controller
             if($inserted_id>0){
             $ticket_id="MINDTKTNO_".$inserted_id;
             $this->User_model->update_data('ticket',array('ticket_no'=>$ticket_id),array('id'=>$inserted_id));
-            $ticket_chat_id=$this->User_model->insertdata('ticket_chat',array('created_by'=>!empty($this->session_user_id)?$this->session_user_id:'0','ticket_id'=>$inserted_id,'actions'=>!empty($message)?$message:'','created_on'=>currentDate(),'type'=>'1','from_user'=>$this->session_user_id,'to_user'=>1,'status'=>46));
+            $ticket_chat_id=$this->User_model->insertdata('ticket_chat',array('created_by'=>!empty($this->session_user_id)?$this->session_user_id:'0','ticket_id'=>$inserted_id,'created_on'=>currentDate(),'status'=>46));
             $result = array('status'=>TRUE, 'message' => $this->lang->line('ticket_add'), 'data'=>array('data'=>$ticket_id));
-           $this->response($result, REST_Controller::HTTP_OK);
+            $this->response($result, REST_Controller::HTTP_OK);
          }
        }
        else{
@@ -210,7 +210,7 @@ class Ticket extends REST_Controller
             $ticket_chat_id=$this->User_model->insertdata('ticket_chat',$chat_data);
             $this->User_model->update_data('ticket',array('last_updated_by'=>!empty($this->session_user_id)?$this->session_user_id:'0','last_update_on'=>currentDate(),'status'=>$data['ticket_status']),array('id'=>$data['ticket_id']));
             $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>array());
-           $this->response($result, REST_Controller::HTTP_OK);
+            $this->response($result, REST_Controller::HTTP_OK);
         }
         else{
             $result = array('status'=>FALSE,'error'=>$this->lang->line('invalid_data'),'data'=>'');

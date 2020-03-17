@@ -860,6 +860,19 @@ class User_model extends CI_Model
         $query = $this->db->get();
         return $query->result_array();
     }
+    public function getProfileInfo($data=null){
+        $this->db->select('s.id,u.first_name,u.last_name,u.email,u.phone_no,CONCAT(mc.child_key, "-",mc.id) as grade,CONCAT(mc1.child_key, "-",mc1.id) as type,CONCAT(sm.name, "-",sm.id) as school_name');
+        $this->db->from('user u');
+        $this->db->join('student s','u.id=s.user_id','left');
+        $this->db->join('master_child mc','s.grade=mc.id AND mc.master_id=5','left');
+        $this->db->join('master_child mc1','s.type=mc1.id AND mc1.master_id=20','left');
+        $this->db->join('school_master sm','s.school_id=sm.id','left');
+        if(!empty($data['user_id'])){
+            $this->db->where('u.id',$data['user_id']);
+        }
+        $query = $this->db->get();
+        return $query->result_array();
+    }
 
 
 }

@@ -470,5 +470,7 @@ $lang['franchise_contacts_req'] = 'Franchise contact is required  ';
 $lang['digital_content_management_id_req'] = 'Digital content management id required  ';
 $lang['type_req'] = 'Request type required';
 $lang['update_profile'] = 'Profile updated Successfully';
+$lang['phono_duplicate'] = 'Phone number already exists';
+$lang['invalid_password'] = 'Enter correct password';
 
 

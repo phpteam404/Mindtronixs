@@ -15,7 +15,7 @@ class Digitalcontent_model extends CI_Model
         $this->db->select('dcm.id as digital_content_management_id,dcm.content_name,mc.child_name as category,mc1.child_name as sub_category,mc2.child_name as content_level,mc3.child_name as grade,dcm.no_of_views,dcm.tags');
         $this->db->from('digital_content_management dcm');
         $this->db->join('master_child mc','dcm.category=mc.id and  mc.master_id=1','left');
-        $this->db->join('master_child mc1','dcm.sub_category=mc1.id and mc1.id=2','left');
+        $this->db->join('master_child mc1','dcm.sub_category=mc1.id and mc1.master_id=2','left');
         $this->db->join('master_child mc2','dcm.content_level=mc2.id AND mc2.master_id=3','left');
         $this->db->join('master_child mc3','dcm.grade=mc3.id AND mc3.master_id=5','left');
         $this->db->where_in('dcm.status',array(1,0));

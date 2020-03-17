@@ -692,7 +692,11 @@ AND `u`.`franchise_id` = '1'
 AND `u`.`user_status` IN(0, 1)
 ORDER BY `u`.`id` DESC
  LIMIT 10
+<<<<<<< HEAD
+192.168.0.66=sector
+=======
 192.168.0.63=sector
+>>>>>>> d71fc3be449a24279b476b7b401ffc93f6584288
 SELECT concat(u.first_name, " ", u.last_name) as user_name, `u`.`id` as `user_id`, `u`.`user_role_id`, `u`.`email`, `u`.`phone_no`, `f`.`name` as `franchise_name`, `u`.`user_status` as `status`, CONCAT(ur.user_role_name, "-", ur.id)  as user_role, CONCAT(f.name, "-", f.id) franchise_name
 FROM `user` `u`
 LEFT JOIN `franchise` `f` ON `u`.`franchise_id`=`f`.`id`
@@ -702,6 +706,9 @@ AND `u`.`franchise_id` = '1'
 AND `u`.`user_status` IN(0, 1)
 ORDER BY `u`.`id` DESC
  LIMIT 10
+<<<<<<< HEAD
+192.168.0.57=sector
+=======
 192.168.0.63=sector
 SELECT concat(u.first_name, " ", u.last_name) as user_name, `u`.`id` as `user_id`, `u`.`user_role_id`, `u`.`email`, `u`.`phone_no`, `f`.`name` as `franchise_name`, `u`.`user_status` as `status`, CONCAT(ur.user_role_name, "-", ur.id)  as user_role, CONCAT(f.name, "-", f.id) franchise_name
 FROM `user` `u`
@@ -712,11 +719,15 @@ AND `u`.`user_status` IN(0, 1)
 ORDER BY `u`.`id` DESC
  LIMIT 10
 192.168.0.63=sector
+>>>>>>> d71fc3be449a24279b476b7b401ffc93f6584288
 SELECT `ff`.`id` as `fee_master_id`, `fm`.`name` as `fee_title`, `fm`.`amount`, `mc`.`child_name` as `term`, `fm`.`discount`
 FROM `franchise_fee` `ff`
 LEFT JOIN `fee_master` `fm` ON `ff`.`fee_master_id`=`fm`.`id`
 LEFT JOIN `master_child` `mc` ON `mc`.`id`=`fm`.`term` and `mc`.`master_id`=11
 WHERE `ff`.`franchise_id` = '47'
+<<<<<<< HEAD
+192.168.0.57=sector
+=======
 192.168.0.63=sector
 SELECT concat(u.first_name, " ", u.last_name) as user_name, `u`.`id` as `user_id`, `u`.`user_role_id`, `u`.`email`, `u`.`phone_no`, `f`.`name` as `franchise_name`, `u`.`user_status` as `status`, CONCAT(ur.user_role_name, "-", ur.id)  as user_role, CONCAT(f.name, "-", f.id) franchise_name
 FROM `user` `u`
@@ -745,86 +756,136 @@ AND `u`.`user_status` IN(0, 1)
 ORDER BY `u`.`id` DESC
  LIMIT 10
 192.168.0.63=sector
+>>>>>>> d71fc3be449a24279b476b7b401ffc93f6584288
 SELECT `ff`.`id` as `fee_master_id`, `fm`.`name` as `fee_title`, `fm`.`amount`, `mc`.`child_name` as `term`, `fm`.`discount`
 FROM `franchise_fee` `ff`
 LEFT JOIN `fee_master` `fm` ON `ff`.`fee_master_id`=`fm`.`id`
 LEFT JOIN `master_child` `mc` ON `mc`.`id`=`fm`.`term` and `mc`.`master_id`=11
 WHERE `ff`.`franchise_id` = '47'
+<<<<<<< HEAD
+192.168.0.57=sector
+=======
 192.168.0.63=sector
+>>>>>>> d71fc3be449a24279b476b7b401ffc93f6584288
 SELECT `ff`.`id` as `fee_master_id`, `fm`.`name` as `fee_title`, `fm`.`amount`, `mc`.`child_name` as `term`, `fm`.`discount`
 FROM `franchise_fee` `ff`
 LEFT JOIN `fee_master` `fm` ON `ff`.`fee_master_id`=`fm`.`id`
 LEFT JOIN `master_child` `mc` ON `mc`.`id`=`fm`.`term` and `mc`.`master_id`=11
 WHERE `ff`.`franchise_id` = '47'
+<<<<<<< HEAD
+192.168.0.57=sector
+=======
 192.168.0.63=sector
+>>>>>>> d71fc3be449a24279b476b7b401ffc93f6584288
 SELECT `ff`.`id` as `fee_master_id`, `fm`.`name` as `fee_title`, `fm`.`amount`, `mc`.`child_name` as `term`, `fm`.`discount`
 FROM `franchise_fee` `ff`
 LEFT JOIN `fee_master` `fm` ON `ff`.`fee_master_id`=`fm`.`id`
 LEFT JOIN `master_child` `mc` ON `mc`.`id`=`fm`.`term` and `mc`.`master_id`=11
 WHERE `ff`.`franchise_id` = '47'
+<<<<<<< HEAD
+192.168.0.57=sector
+=======
 192.168.0.63=sector
+>>>>>>> d71fc3be449a24279b476b7b401ffc93f6584288
 SELECT `ff`.`id` as `fee_master_id`, `fm`.`name` as `fee_title`, `fm`.`amount`, `mc`.`child_name` as `term`, `fm`.`discount`
 FROM `franchise_fee` `ff`
 LEFT JOIN `fee_master` `fm` ON `ff`.`fee_master_id`=`fm`.`id`
 LEFT JOIN `master_child` `mc` ON `mc`.`id`=`fm`.`term` and `mc`.`master_id`=11
 WHERE `ff`.`franchise_id` = '47'
+<<<<<<< HEAD
+192.168.0.57=sector
+=======
 192.168.0.63=sector
+>>>>>>> d71fc3be449a24279b476b7b401ffc93f6584288
 SELECT `ff`.`id` as `fee_master_id`, `fm`.`name` as `fee_title`, `fm`.`amount`, `mc`.`child_name` as `term`, `fm`.`discount`
 FROM `franchise_fee` `ff`
 LEFT JOIN `fee_master` `fm` ON `ff`.`fee_master_id`=`fm`.`id`
 LEFT JOIN `master_child` `mc` ON `mc`.`id`=`fm`.`term` and `mc`.`master_id`=11
 WHERE `ff`.`franchise_id` = '47'
+<<<<<<< HEAD
+192.168.0.57=sector
+=======
 192.168.0.63=sector
+>>>>>>> d71fc3be449a24279b476b7b401ffc93f6584288
 SELECT `ff`.`id` as `fee_master_id`, `fm`.`name` as `fee_title`, `fm`.`amount`, `mc`.`child_name` as `term`, `fm`.`discount`
 FROM `franchise_fee` `ff`
 LEFT JOIN `fee_master` `fm` ON `ff`.`fee_master_id`=`fm`.`id`
 LEFT JOIN `master_child` `mc` ON `mc`.`id`=`fm`.`term` and `mc`.`master_id`=11
-WHERE `ff`.`franchise_id` = '48'
-192.168.0.63=sector
-SELECT `ff`.`id` as `fee_master_id`, `fm`.`name` as `fee_title`, `fm`.`amount`, `mc`.`child_name` as `term`, `fm`.`discount`
-FROM `franchise_fee` `ff`
-LEFT JOIN `fee_master` `fm` ON `ff`.`fee_master_id`=`fm`.`id`
-LEFT JOIN `master_child` `mc` ON `mc`.`id`=`fm`.`term` and `mc`.`master_id`=11
-WHERE `ff`.`franchise_id` = '48'
-192.168.0.7=sector
-SELECT `ff`.`id` as `fee_master_id`, `fm`.`name` as `fee_title`, `fm`.`amount`, `mc`.`child_name` as `term`, `fm`.`discount`
-FROM `franchise_fee` `ff`
-LEFT JOIN `fee_master` `fm` ON `ff`.`fee_master_id`=`fm`.`id`
-LEFT JOIN `master_child` `mc` ON `mc`.`id`=`fm`.`term` and `mc`.`master_id`=11
-WHERE `ff`.`franchise_id` = '48'
-192.168.0.7=sector
-SELECT `ff`.`id` as `fee_master_id`, `fm`.`name` as `fee_title`, `fm`.`amount`, `mc`.`child_name` as `term`, `fm`.`discount`
-FROM `franchise_fee` `ff`
-LEFT JOIN `fee_master` `fm` ON `ff`.`fee_master_id`=`fm`.`id`
-LEFT JOIN `master_child` `mc` ON `mc`.`id`=`fm`.`term` and `mc`.`master_id`=11
-WHERE `ff`.`franchise_id` = '48'
-192.168.0.7=sector
-SELECT `ff`.`id` as `fee_master_id`, `fm`.`name` as `fee_title`, `fm`.`amount`, `mc`.`child_name` as `term`, `fm`.`discount`
-FROM `franchise_fee` `ff`
-LEFT JOIN `fee_master` `fm` ON `ff`.`fee_master_id`=`fm`.`id`
-LEFT JOIN `master_child` `mc` ON `mc`.`id`=`fm`.`term` and `mc`.`master_id`=11
-WHERE `ff`.`franchise_id` = '48'
-192.168.0.7=sector
-SELECT `ff`.`id` as `fee_master_id`, `fm`.`name` as `fee_title`, `fm`.`amount`, `mc`.`child_name` as `term`, `fm`.`discount`
-FROM `franchise_fee` `ff`
-LEFT JOIN `fee_master` `fm` ON `ff`.`fee_master_id`=`fm`.`id`
-LEFT JOIN `master_child` `mc` ON `mc`.`id`=`fm`.`term` and `mc`.`master_id`=11
-WHERE `ff`.`franchise_id` = '48'
-192.168.0.7=sector
-SELECT `ff`.`id` as `fee_master_id`, `fm`.`name` as `fee_title`, `fm`.`amount`, `mc`.`child_name` as `term`, `fm`.`discount`
-FROM `franchise_fee` `ff`
-LEFT JOIN `fee_master` `fm` ON `ff`.`fee_master_id`=`fm`.`id`
-LEFT JOIN `master_child` `mc` ON `mc`.`id`=`fm`.`term` and `mc`.`master_id`=11
-WHERE `ff`.`franchise_id` = '48'
-192.168.0.7=sector
-SELECT `ff`.`id` as `fee_master_id`, `fm`.`name` as `fee_title`, `fm`.`amount`, `mc`.`child_name` as `term`, `fm`.`discount`
-FROM `franchise_fee` `ff`
-LEFT JOIN `fee_master` `fm` ON `ff`.`fee_master_id`=`fm`.`id`
-LEFT JOIN `master_child` `mc` ON `mc`.`id`=`fm`.`term` and `mc`.`master_id`=11
+<<<<<<< HEAD
+WHERE `ff`.`franchise_id` = '47'
+192.168.0.57=sector
+=======
 WHERE `ff`.`franchise_id` = '48'
 192.168.0.63=sector
+>>>>>>> d71fc3be449a24279b476b7b401ffc93f6584288
+SELECT `ff`.`id` as `fee_master_id`, `fm`.`name` as `fee_title`, `fm`.`amount`, `mc`.`child_name` as `term`, `fm`.`discount`
+FROM `franchise_fee` `ff`
+LEFT JOIN `fee_master` `fm` ON `ff`.`fee_master_id`=`fm`.`id`
+LEFT JOIN `master_child` `mc` ON `mc`.`id`=`fm`.`term` and `mc`.`master_id`=11
+<<<<<<< HEAD
+WHERE `ff`.`franchise_id` = '47'
+192.168.0.57=sector
+=======
+WHERE `ff`.`franchise_id` = '48'
+192.168.0.7=sector
+>>>>>>> d71fc3be449a24279b476b7b401ffc93f6584288
+SELECT `ff`.`id` as `fee_master_id`, `fm`.`name` as `fee_title`, `fm`.`amount`, `mc`.`child_name` as `term`, `fm`.`discount`
+FROM `franchise_fee` `ff`
+LEFT JOIN `fee_master` `fm` ON `ff`.`fee_master_id`=`fm`.`id`
+LEFT JOIN `master_child` `mc` ON `mc`.`id`=`fm`.`term` and `mc`.`master_id`=11
+<<<<<<< HEAD
+WHERE `ff`.`franchise_id` = '47'
+192.168.0.57=sector
+=======
+WHERE `ff`.`franchise_id` = '48'
+192.168.0.7=sector
+>>>>>>> d71fc3be449a24279b476b7b401ffc93f6584288
+SELECT `ff`.`id` as `fee_master_id`, `fm`.`name` as `fee_title`, `fm`.`amount`, `mc`.`child_name` as `term`, `fm`.`discount`
+FROM `franchise_fee` `ff`
+LEFT JOIN `fee_master` `fm` ON `ff`.`fee_master_id`=`fm`.`id`
+LEFT JOIN `master_child` `mc` ON `mc`.`id`=`fm`.`term` and `mc`.`master_id`=11
+<<<<<<< HEAD
+WHERE `ff`.`franchise_id` = '47'
+192.168.0.57=sector
+=======
+WHERE `ff`.`franchise_id` = '48'
+192.168.0.7=sector
+>>>>>>> d71fc3be449a24279b476b7b401ffc93f6584288
+SELECT `ff`.`id` as `fee_master_id`, `fm`.`name` as `fee_title`, `fm`.`amount`, `mc`.`child_name` as `term`, `fm`.`discount`
+FROM `franchise_fee` `ff`
+LEFT JOIN `fee_master` `fm` ON `ff`.`fee_master_id`=`fm`.`id`
+LEFT JOIN `master_child` `mc` ON `mc`.`id`=`fm`.`term` and `mc`.`master_id`=11
+<<<<<<< HEAD
+WHERE `ff`.`franchise_id` = '47'
+192.168.0.57=sector
+=======
+WHERE `ff`.`franchise_id` = '48'
+192.168.0.7=sector
 SELECT `ff`.`id` as `fee_master_id`, `fm`.`name` as `fee_title`, `fm`.`amount`, `mc`.`child_name` as `term`, `fm`.`discount`
 FROM `franchise_fee` `ff`
 LEFT JOIN `fee_master` `fm` ON `ff`.`fee_master_id`=`fm`.`id`
 LEFT JOIN `master_child` `mc` ON `mc`.`id`=`fm`.`term` and `mc`.`master_id`=11
 WHERE `ff`.`franchise_id` = '48'
+192.168.0.7=sector
+SELECT `ff`.`id` as `fee_master_id`, `fm`.`name` as `fee_title`, `fm`.`amount`, `mc`.`child_name` as `term`, `fm`.`discount`
+FROM `franchise_fee` `ff`
+LEFT JOIN `fee_master` `fm` ON `ff`.`fee_master_id`=`fm`.`id`
+LEFT JOIN `master_child` `mc` ON `mc`.`id`=`fm`.`term` and `mc`.`master_id`=11
+WHERE `ff`.`franchise_id` = '48'
+192.168.0.7=sector
+SELECT `ff`.`id` as `fee_master_id`, `fm`.`name` as `fee_title`, `fm`.`amount`, `mc`.`child_name` as `term`, `fm`.`discount`
+FROM `franchise_fee` `ff`
+LEFT JOIN `fee_master` `fm` ON `ff`.`fee_master_id`=`fm`.`id`
+LEFT JOIN `master_child` `mc` ON `mc`.`id`=`fm`.`term` and `mc`.`master_id`=11
+WHERE `ff`.`franchise_id` = '48'
+192.168.0.63=sector
+>>>>>>> d71fc3be449a24279b476b7b401ffc93f6584288
+SELECT `ff`.`id` as `fee_master_id`, `fm`.`name` as `fee_title`, `fm`.`amount`, `mc`.`child_name` as `term`, `fm`.`discount`
+FROM `franchise_fee` `ff`
+LEFT JOIN `fee_master` `fm` ON `ff`.`fee_master_id`=`fm`.`id`
+LEFT JOIN `master_child` `mc` ON `mc`.`id`=`fm`.`term` and `mc`.`master_id`=11
+<<<<<<< HEAD
+WHERE `ff`.`franchise_id` = '47'
+=======
+WHERE `ff`.`franchise_id` = '48'
+>>>>>>> d71fc3be449a24279b476b7b401ffc93f6584288

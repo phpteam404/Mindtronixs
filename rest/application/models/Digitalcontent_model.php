@@ -12,7 +12,7 @@ class Digitalcontent_model extends CI_Model
     
     public function getContentList($data=null){
         // print($data['search_key']);exit;
-        $this->db->select('dcm.id as digital_content_management_id,dcm.content_name,mc.child_name as category,mc1.child_name as sub_category,mc2.child_name as content_level,mc3.child_name as grade,IFNULL(dcm.no_of_views, 0) no_of_views,dcm.tags');
+        $this->db->select('dcm.id as digital_content_management_id,dcm.content_name,mc.child_name as category,mc1.child_name as sub_category,mc2.child_name as content_level,mc3.child_name as grade,IFNULL(dcm.no_of_views, 0) no_of_views,dcm.tags,if(dcm.status=1,"Active","Inactive") as status');
         $this->db->from('digital_content_management dcm');
         $this->db->join('master_child mc','dcm.category=mc.id and  mc.master_id=1','left');
         $this->db->join('master_child mc1','dcm.sub_category=mc1.id and mc1.master_id=2','left');

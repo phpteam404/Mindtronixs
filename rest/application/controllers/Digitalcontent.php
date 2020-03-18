@@ -207,6 +207,7 @@ class Digitalcontent extends REST_Controller
         if($data['request_type']=='view'){
             $content_info=$this->Digitalcontent_model->getDigitalContentInfo($data);//echo $this->db->last_query();exit;
             // print_r($data['digital_content_management_id']);exit;
+            $content_info[0]['no_of_views']=!empty($content_info[0]['no_of_views'])?$content_info[0]['no_of_views']:0;
             $documents=$this->Digitalcontent_model->getDocuments(array('module_type_id'=>$data['digital_content_management_id'],'module_type'=>'digital_content'));
             if(!empty($documents)){
                 foreach($documents as $k=>$v){

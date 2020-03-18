@@ -217,7 +217,13 @@ class Digitalcontent extends REST_Controller
             }
             $qr_document=$this->User_model->check_record('documents',array('module_type_id'=>$data['digital_content_management_id'],'module_type'=>'qr_code'));
             // print_r($qr_document);exit;
-            $content_info[0]['qr_code']=DOCUMENT_PATH.'digitalcontent/qrcodes/'.$qr_document[0]['document_name'];
+            // print_r($qr_document);exit;
+            if(!empty($qr_document)){
+                $content_info[0]['qr_code']=DOCUMENT_PATH.'digitalcontent/qrcodes/'.$qr_document[0]['document_name'];
+            }
+            else{
+                $content_info[0]['qr_code']=array();
+            }
             $content_info[0]['documents']=!empty($documents)?$documents:array();
             $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>array('data' => $content_info));
         }

@@ -249,7 +249,7 @@ class Ticket extends REST_Controller
             'date'=>date("d M Y",strtotime($ticket_data['created_date'])),
             'created_date'=>date("Y-m-d",strtotime($ticket_data['created_date'])),
             'time'=>date("h:i A",strtotime($ticket_data['created_date'])),
-            'status'=>$ticket_data['status']
+            'status'=>"New"
         );
         array_push($get_chat_details,$created_data);
         $groupby_date_data=$this->groupArray($get_chat_details, "created_date");//this function group the chat data by date

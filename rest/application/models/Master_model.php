@@ -24,6 +24,7 @@ class Master_model extends CI_Model
     }
     function getMaster($data)
     {
+        // print_r($data);exit;
         if(isset($data['dropdown']) && $data['dropdown']!=''){
             // print_r($data);exit;
             if(isset($data['master_key']) && $data['master_key']=='status')
@@ -41,6 +42,9 @@ class Master_model extends CI_Model
         if(isset($data['child_key']))
             $this->db->where('mc.child_key',$data['child_key']);
         $this->db->where('mc.status',1);
+        if(!empty($data['master_ids'])){
+            $this->db->where_in('mc.id',$data['master_ids']);
+        }
         if(isset($data['order']))
             $this->db->order_by($data['order']);
         else{

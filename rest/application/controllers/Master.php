@@ -94,8 +94,15 @@ class Master extends REST_Controller
             $this->response($result, REST_Controller::HTTP_OK);
         }
         // $data = tableOptions($data);
-        
-        
+        // print_r($this->session_user_info->user_role_id);exit;
+        if($data['master_key']=='ticket_status')){
+            if($this->session_user_info->user_role_id==1){
+                $data['master_ids']=array(46,47,48);
+            }
+            if($this->session_user_info->user_role_id==4){
+                $data['master_ids']=array(49);
+            }
+        }
         $result = $this->Master_model->getMaster($data);//echo $this->db->last_query();exit;
         if(isset($data['dropdown']) && $data['dropdown']!=''){
             foreach($result['data'] as $k => $v){

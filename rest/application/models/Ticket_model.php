@@ -35,9 +35,9 @@ class Ticket_model extends CI_Model
         if(isset($data['user_role_id']) && $data['user_role_id']==4){
             $this->db->where('t.ticket_rised_by',$data['user_id']);
         }
-        if(isset($data['user_role_id']) && $data['user_role_id']==5){
-            $this->db->where('t.assigned_to',$data['user_id']);
-        }
+        // if(isset($data['user_role_id']) && $data['user_role_id']==5){
+        //     $this->db->where('t.assigned_to',$data['user_id']);
+        // }
         if(isset($data['ticket_id']) && $data['ticket_id']>0){
             $this->db->where('t.id',$data['ticket_id']);
         }
@@ -76,7 +76,7 @@ class Ticket_model extends CI_Model
         
     }
     public function getTicketData($data){
-        $this->db->select('t.id as ticket_id,t.title,t.ticket_no as issue_id,t.description, mc.child_name as issue_type,mc1.child_name as status,CONCAT(u.first_name," ",u.last_name) as created_by,concat(u1.first_name," ",u1.last_name) as last_updated_by,DATE_FORMAT(t.created_on, "%Y-%m-%d") created_date,t.last_update_on as last_updated,mc1.id as status_id');
+        $this->db->select('t.id as ticket_id,t.title,t.ticket_no as issue_id,t.description, mc.child_name as issue_type,mc1.child_name as status,CONCAT(u.first_name," ",u.last_name) as created_by,concat(u1.first_name," ",u1.last_name) as last_updated_by,DATE_FORMAT(t.created_on, "%Y-%m-%d") created_date,t.last_update_on as last_updated,mc1.id as status_id,CONCAT(mc1.child_name, "-", mc1.id) as status_display');
         $this->db->from('ticket t');
         $this->db->join('user u','t.ticket_rised_by=u.id','left');
         $this->db->join('user u1','t.last_updated_by=u1.id','left');

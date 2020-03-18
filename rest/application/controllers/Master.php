@@ -95,12 +95,19 @@ class Master extends REST_Controller
         }
         // $data = tableOptions($data);
         // print_r($this->session_user_info->user_role_id);exit;
-        if($data['master_key']=='ticket_status')){
+        if($data['master_key']=='ticket_status' && empty($data['type'])){
             if($this->session_user_info->user_role_id==1){
                 $data['master_ids']=array(46,47,48);
             }
             if($this->session_user_info->user_role_id==4){
-                $data['master_ids']=array(49);
+                if(!empty($data['ticket_id'])){
+                    $get_id=$this->User_model->check_record_selected('status','ticket',array('id'=>$data['ticket_id']));
+                    $data['master_ids']=array($get_id[0]['status']);
+                }
+                else{
+
+                    $data['master_ids']=array(49);
+                }
             }
         }
         $result = $this->Master_model->getMaster($data);//echo $this->db->last_query();exit;

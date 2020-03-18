@@ -250,8 +250,10 @@ class User extends REST_Controller
             $modules= $this->User_model->menuList(array('user_role_id'=>!empty($data['user_role_id'])?$data['user_role_id']:1));//echo $this->db->last_query();exit;
         $user_roles= $this->User_model->getUserRoles(array('dropdown'=>isset($data['dropdown'])?true:false));
         // echo $this->db->last_query();exit;
-        foreach($user_roles as $k=>$v){
-            $user_roles[$k]['value']=(int)$v['value'];
+        if(isset($data['dropdown'])){
+            foreach($user_roles as $k=>$v){
+                $user_roles[$k]['value']=(int)$v['value'];
+            }
         }
         $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>array('modules' => $modules,'user_roles'=>$user_roles));
         $this->response($result, REST_Controller::HTTP_OK);
@@ -259,7 +261,6 @@ class User extends REST_Controller
     
     public function updateRolesManagement_post(){
         $data=$this->input->post();
-            // print_r($data);exit;
         if(empty($data)){
             $result = array('status'=>FALSE,'error'=>$this->lang->line('invalid_data'),'data'=>'');
             $this->response($result, REST_Controller::HTTP_OK);

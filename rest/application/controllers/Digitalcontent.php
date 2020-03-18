@@ -65,10 +65,9 @@ class Digitalcontent extends REST_Controller
             'expiry_date'=>!empty($data['expiry_date'])?$data['expiry_date']:'', 
             'grade'=>!empty($data['grade'])?$data['grade']:'',
             'content_level'=>!empty($data['content_level'])?$data['content_level']:'',
-            'status'=>!empty($data['status'])?$data['status']:'1'
-            
+            'status'=>isset($data['status'])?$data['status']:'1'
         );
-        // print_r($_FILES);exit;
+        // print_r($content_data);exit;
         if(!empty($_FILES)){
             $allowed_types=array('image/gif','image/jpg','image/jpeg','image/png','application/pdf','video/mp4','video/quicktime'); 
             $no_of_files=count($_FILES['files']['name']);

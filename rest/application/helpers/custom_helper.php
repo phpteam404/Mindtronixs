@@ -939,6 +939,7 @@ if (!function_exists('getTableHeads')) {
                     array('field'=> 'category', 'header'=> 'Category','alias'=>'category' ),
                     array('field'=> 'sub_category', 'header'=> 'Sub Category','alias'=>'sub_category' ),
                     array('field'=> 'content_level', 'header'=> 'Level','alias'=>'content_level' ),
+                    array('field'=> 'tags', 'header'=> 'Tags','alias'=>'tags' ),
                     array('field'=> 'no_of_views', 'header'=> 'No.of Views','alias'=>'no_of_views' ),
                     array('field'=> 'actions', 'header'=> 'Actions','alias'=>'actions' )
                 );

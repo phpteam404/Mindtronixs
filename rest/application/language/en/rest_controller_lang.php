@@ -472,5 +472,6 @@ $lang['type_req'] = 'Request type required';
 $lang['update_profile'] = 'Profile updated Successfully';
 $lang['phono_duplicate'] = 'Phone number already exists';
 $lang['invalid_password'] = 'Enter correct password';
+$lang['docs_add'] = 'Digital Content added Successfully';
 
 

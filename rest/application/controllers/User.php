@@ -28,7 +28,7 @@ class User extends REST_Controller
     public function addUser_post() //this function is to add user data to the user table
     {
         $data = $this->input->post();
-        // print_r($data);exit;
+        //  print_r(json_encode($data));exit;
         if(empty($data)){
             $result = array('status'=>FALSE,'error'=>$this->lang->line('invalid_data'),'data'=>'');
             $this->response($result, REST_Controller::HTTP_OK);
@@ -335,6 +335,12 @@ class User extends REST_Controller
         $id=$data['id'];
         if($table=='user'){
             $this->User_model->update_data($table,array('user_status'=>2),array('id'=>$id));
+            $result = array('status'=>TRUE, 'message' => $this->lang->line('delete_sc'), 'data'=>'');
+            $this->response($result, REST_Controller::HTTP_OK);
+        }
+        if($table=='student'){
+            $this->User_model->update_data('user    ',array('user_status'=>2),array('id'=>$id));
+            $this->User_model->update_data($table,array('status'=>2),array('user_id'=>$id));
             $result = array('status'=>TRUE, 'message' => $this->lang->line('delete_sc'), 'data'=>'');
             $this->response($result, REST_Controller::HTTP_OK);
         }

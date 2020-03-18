@@ -31,10 +31,10 @@ class Ticket extends REST_Controller
         $data=$this->input->post();
         // print_r($_FILES);exit;
         if(!empty($_FILES)){
-            $allowed_types=array('gif','jpg','jpeg','png'); 
+            $allowed_types=array('image/gif','image/jpg','image/jpeg','image/png','application/pdf','video/mp4','video/quicktime'); 
             $no_of_files=count($_FILES['files']['name']);
             for ($i=0; $i <$no_of_files ; $i++) {
-                $extensions[] = pathinfo($_FILES['files']['name'][$i], PATHINFO_EXTENSION);
+                $extensions[] = $_FILES['files']['type'][$i];
             }
             $intersect_data=array_intersect($extensions,$allowed_types);
             for ($i=0; $i <$no_of_files ; $i++) { 
@@ -154,17 +154,17 @@ class Ticket extends REST_Controller
         // // print_r($to_user);exit;
         $chat_data=array(
             'ticket_id'=>$data['ticket_id'],
-            'message'=>!empty($data['description'])?$data['description']:'',
+            'message'=>!empty($data['message'])?$data['message']:'',
             'created_on'=>currentDate(), 
             'created_by'=>!empty($this->session_user_id)?$this->session_user_id:'0',
             'status'=>$data['ticket_status']         
         );
         // print_r($_FILES);exit;
         if(!empty($_FILES)){
-            $allowed_types=array('gif','jpg','jpeg','png'); 
+            $allowed_types=array('image/gif','image/jpg','image/jpeg','image/png','application/pdf','video/mp4','video/quicktime'); 
             $no_of_files=count($_FILES['files']['name']);
             for ($i=0; $i <$no_of_files ; $i++) {
-                $extensions[] = pathinfo($_FILES['files']['name'][$i], PATHINFO_EXTENSION);
+                $extensions[] = $_FILES['files']['type'][$i];
             }
             $intersect_data=array_intersect($extensions,$allowed_types);
             for ($i=0; $i <$no_of_files ; $i++) { 
@@ -246,13 +246,14 @@ class Ticket extends REST_Controller
         $created_data=array(
             'message'=>ucwords($ticket_data['created_by']).' Create ticket',
             'created_by'=>$ticket_data['created_by'],
-            // 'created_date'=>date("d-m-Y",strtotime($ticket_data['created_date'])),
+            'date'=>date("d M Y",strtotime($ticket_data['created_date'])),
             'created_date'=>date("Y-m-d",strtotime($ticket_data['created_date'])),
             'time'=>date("h:i A",strtotime($ticket_data['created_date'])),
             'status'=>$ticket_data['status']
         );
         array_push($get_chat_details,$created_data);
         $groupby_date_data=$this->groupArray($get_chat_details, "created_date");//this function group the chat data by date
+        // print_r($groupby_date_data);exit;
         foreach($groupby_date_data as $k2=>$v2){ 
             if(!empty($v2))
             {

@@ -49,10 +49,11 @@ class Ticket_model extends CI_Model
         }
         if(isset($data['search_key'])){
             $this->db->group_start();
-            $this->db->like('t.issue_id', $data['search']);
-            $this->db->like('t.issue_type', $data['search']);
-            $this->db->like('t.created_by', $data['search']);
-            $this->db->like('t.status', $data['search']);
+            $this->db->like('t.ticket_no', $data['search_key'], 'both');
+            $this->db->or_like('t.title', $data['search_key'], 'both');
+            $this->db->or_like('mc.child_name', $data['search_key'], 'both');
+            $this->db->or_like('mc1.child_name', $data['search_key'], 'both');
+            // $this->db->or_like('created_by', $data['search_key'], 'both');
 
             $this->db->group_end();
         }

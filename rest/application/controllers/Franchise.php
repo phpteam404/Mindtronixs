@@ -26,6 +26,7 @@ class Franchise extends REST_Controller
     {   
         //this function is to add/update franchise information.
         $data = $this->input->post();
+        // print_r(json_encode($data));exit;
         if(empty($data)){
             $result = array('status'=>FALSE,'error'=>$this->lang->line('invalid_data'),'data'=>'1');
             $this->response($result, REST_Controller::HTTP_OK);

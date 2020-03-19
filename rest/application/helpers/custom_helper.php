@@ -762,10 +762,11 @@ if(!function_exists('validateDate')){
 }
 if(!function_exists('print_query')){
     function print_query($msg,$qry){
-        $myfile = fopen("newfile.txt", "a") or die("Unable to open file!");
-        $txt = PHP_EOL.$_SERVER['REMOTE_ADDR'].'='.$msg.PHP_EOL.$qry;
-        fwrite($myfile, $txt);
-        fclose($myfile);
+        // $myfile = fopen("newfile.txt", "a") or die("Unable to open file!");
+        // fwrite($myfile, $txt);
+        // fclose($myfile);
+        if($_SERVER['REMOTE_ADDR'] == '192.168.0.63' || $_SERVER['REMOTE_ADDR'] == '192.168.0.12')
+            echo $txt = PHP_EOL.$msg.PHP_EOL.$qry;
         return true;
     }
 }

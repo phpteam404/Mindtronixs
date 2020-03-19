@@ -159,16 +159,17 @@ class User extends REST_Controller
             $user_data['updated_by'] = !empty($this->session_user_id)?$this->session_user_id:'0';
             $user_data['updated_on'] = currentDate();
             $is_update = $this->User_model->update_data('user',$user_data,array('id'=>$data['user_id']));
+            $message="User Updated successfully.";
             if(isset($data['user_role_id']) && $data['user_role_id']==4){
                 $student_data['updated_by']=!empty($this->session_user_id)?$this->session_user_id:'0';
                 $student_data['updated_on']=currentDate();
                 $this->User_model->update_data('student',$student_data,array('user_id'=>$data['user_id']));
                 $this->User_model->update_data('user',array('user_status'=>$data['status']),array('id'=>$data['user_id']));
-
+                $message="Student Updated successfully.";
 
             }
             if($is_update>0){
-                $result = array('status'=>TRUE, 'message' => $this->lang->line('user_update'), 'data'=>array('data' => $data['user_id']));
+                $result = array('status'=>TRUE, 'message' => $message, 'data'=>array('data' => $data['user_id']));
                 $this->response($result, REST_Controller::HTTP_OK);
             }
             else{
@@ -182,11 +183,33 @@ class User extends REST_Controller
             $user_data['created_by'] = !empty($this->session_user_id)?$this->session_user_id:'0';
             $user_data['password'] = !empty($data['password'])?md5($data['password']):'';
             $is_insert = $this->User_model->insertdata('user',$user_data);
+            $message="User Created successfully.";
             if(isset($data['user_role_id']) && $data['user_role_id']==4){
                 $student_data['created_by']=!empty($this->session_user_id)?$this->session_user_id:'0';
                 $student_data['created_on']=currentDate();
                 $student_data['user_id']=$is_insert;
-                $student_id=$this->User_model->insertdata('student',$student_data);
+                if(!empty($student_data['franchise_fee_id'])){
+                    if(!empty($student_data['franchise_fee_id'])){
+                        $date=date("Y-m-d");
+                        if($student_data['franchise_fee_id']==27){
+                            $next_invoice_date= date('Y-m-01', strtotime($date .'+1 month'));
+                        }
+                        if($student_data['franchise_fee_id']==1){
+                            $next_invoice_date= date('Y-m-01', strtotime($date .'+6 month'));
+                        }
+                        if($student_data['franchise_fee_id']==28){
+                            $next_invoice_date= date('Y-m-01', strtotime($date .'+3 month'));
+                        }
+                        if($student_data['franchise_fee_id']==29){
+                            $next_invoice_date= date('Y-m-01', strtotime($date .'+12 month'));
+                        }
+                    }
+                }
+                $student_data['next_invoice_date']=$next_invoice_date;
+                $student_data['subscription_status']=1;
+                $student_id=$this->User_model->insertdata('student',$student_data);//echo $this->db->last_query();exit;
+            $message="Student created successfully.";
+
             }
             if($is_insert>0){
                 $result = array('status'=>TRUE, 'message' => $this->lang->line('user_add'), 'data'=>array('data' => $is_insert));
@@ -205,7 +228,7 @@ class User extends REST_Controller
         if($this->session_user_info->user_role_id==2){
             $data['franchise_id']=$this->session_user_info->franchise_id;
         }
-        $result=$this->User_model->getuserlist($data);print_query('sector',$this->db->last_query());//echo $this->db->last_query();exit;
+        $result=$this->User_model->getuserlist($data);//print_query('sector',$this->db->last_query());//echo $this->db->last_query();exit;
         foreach($result['data'] as $k=>$v){
             if(!empty($data['user_id'])){
                 $result['data'][$k]['status']=getStatusObj($v['status']);
@@ -604,16 +627,18 @@ class User extends REST_Controller
     // }
     public function updateProfile_post(){
         $data=$this->input->post();
+        // print_r($data);exit;
         $data['user_id']=!empty($data['user_id'])?$data['user_id']:$this->session_user_info->user_id;
-        if(!empty($data['firstname']) && !empty($data['lastname']) && !empty($data['email']) && !empty($data['contact_number'])){
+        if(!empty($data['first_name']) && !empty($data['last_name']) && !empty($data['email']) && !empty($data['phone_no'])){
             $upadate_data=array(
-                'first_name'=>$data['firstname'],
-                'last_name'=>$data['lastname'],
+                'first_name'=>$data['first_name'],
+                'last_name'=>$data['last_name'],
                 'email'=>$data['email'],
-                'phone_no'=>$data['contact_number']
+                'phone_no'=>$data['phone_no']
             );
+            // print_r($upadate_data);exit;
               $check_email=$this->User_model->check_not_in('user',array('email'=>$data['email']),array('id'=>$data['user_id']));
-              $check_phone_no=$this->User_model->check_not_in('user',array('phone_no'=>$data['contact_number']),array('id'=>$data['user_id']));
+              $check_phone_no=$this->User_model->check_not_in('user',array('phone_no'=>$data['phone_no']),array('id'=>$data['user_id']));
             //   if($check_email)
               if(!empty($check_email)){
                   $result = array('status'=>FALSE,'error'=>array('message'=>$this->lang->line('email_duplicate')),'data'=>'');
@@ -632,7 +657,7 @@ class User extends REST_Controller
        if(!empty($data['old_password'])){
         //    print_r($data);exit;
              $check_password=$this->User_model->check_record('user',array('id'=>$data['user_id']));
-            //  print_r(md5($data['old_password']));
+            // //  print_r(md5($data['old_password']));
             //  print_r($check_password[0]['password']);exit;
              if($check_password[0]['password']!=md5($data['old_password'])){
                 $result = array('status'=>FALSE,'error'=>array('message'=>$this->lang->line('invalid_password')),'data'=>'');
@@ -650,7 +675,7 @@ class User extends REST_Controller
         if(!empty($data['grade'])){
             // print_r($this->session_user_info->user_role_id);exit;
             if($this->session_user_info->user_role_id==4){      
-                $is_update=$this->User_model->update_data('student',array('grade'=>$data['grade'],'type'=>$data['type'],'school_id'=>$data['school_id']),array('user_id'=>$data['user_id']));//echo $this->db->last_query();exit;
+                $is_update=$this->User_model->update_data('student',array('grade'=>$data['grade'],'type'=>$data['type'],'school_id'=>$data['school_name']),array('user_id'=>$data['user_id']));//echo $this->db->last_query();exit;
                 if(isset($is_update)){
                     $result = array('status'=>TRUE, 'message' =>$this->lang->line('update_profile'), 'data'=>array('data'=>''));
                     $this->response($result, REST_Controller::HTTP_OK);
@@ -669,7 +694,7 @@ class User extends REST_Controller
     public function profileInfo_get(){
         $data=$this->input->post();
         $data['user_id']=!empty($data['user_id'])?$data['user_id']:$this->session_user_info->user_id;
-        $profile_data=$this->User_model->getProfileInfo($data);
+        $profile_data=$this->User_model->getProfileInfo($data);//echo $this->db->last_query();exit;
         if(!empty($profile_data)){
             $profile_data[0]['grade']= getObjOnId($profile_data[0]['grade'],!empty($profile_data[0]['grade'])?true:false);
             $profile_data[0]['type']= getObjOnId($profile_data[0]['type'],!empty($profile_data[0]['type'])?true:false);

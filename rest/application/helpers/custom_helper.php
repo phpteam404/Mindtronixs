@@ -794,10 +794,10 @@ if (!function_exists('getTableHeads')) {
         switch($table){
             case 'franchilse_list':
                 return array(
-                    array('field' => 'franchise_code', 'header' => 'Franchise Code', 'alias' => 'franchise_code'),
-                    array('field' => 'franchise_name', 'header' => 'Franchise Name', 'alias' => 'franchise_name'),
-                    array('field' => 'email', 'header' => 'Contact Email', 'alias' => 'email'),
-                    array('field' => 'contact_number', 'header' => 'Contact Number', 'alias' => 'contact_number'),
+                    array('field' => 'franchise_code', 'header' => 'Code', 'alias' => 'franchise_code'),
+                    array('field' => 'franchise_name', 'header' => 'Name', 'alias' => 'franchise_name'),
+                    array('field' => 'email', 'header' => 'Email', 'alias' => 'email'),
+                    array('field' => 'contact_number', 'header' => 'Number', 'alias' => 'contact_number'),
                     array('field' => 'city', 'header' => 'City', 'alias' => 'mc.child_name'),
                     array('field' => 'created_date', 'header' =>'Created On', 'alias' => 'created_date'),
                     array('field' => 'status', 'header' =>'Status', 'alias' => 'status'),
@@ -901,12 +901,12 @@ if (!function_exists('getTableHeads')) {
                break;
             case 'students_list':
                 return array(
-                    array('field'=> 'student_name', 'header'=> 'Student Name','alias'=>'student_name'),
+                    array('field'=> 'student_name', 'header'=> 'Name','alias'=>'student_name'),
                     array('field'=> 'grade', 'header'=>'Grade' ,'alias' =>'grade'),
                     array('field'=> 'school_name', 'header'=> 'School','alias'=>'school_name' ),
                     array('field'=> 'franchise_name', 'header'=> 'Franchise','alias'=>'franchise_name' ),
-                    array('field'=> 'contact_email', 'header'=> 'Contact Email','alias'=>'contact_email' ),
-                    array('field'=> 'phone_no', 'header'=> 'Contact Number','alias'=>'phone_no' ),
+                    array('field'=> 'contact_email', 'header'=> 'Email','alias'=>'contact_email' ),
+                    array('field'=> 'phone_no', 'header'=> 'Number','alias'=>'phone_no' ),
                     array('field'=> 'last_login', 'header'=> 'Last Login','alias' =>'last_login' ),
                     array('field'=> 'status', 'header'=> 'Status','alias'=>'status' ),
                     array('field'=> 'actions', 'header'=> 'Actions' ,'alias'=>'actions')
@@ -940,8 +940,6 @@ if (!function_exists('getTableHeads')) {
                     array('field'=> 'category', 'header'=> 'Category','alias'=>'category' ),
                     array('field'=> 'sub_category', 'header'=> 'Sub Category','alias'=>'sub_category' ),
                     array('field'=> 'content_level', 'header'=> 'Level','alias'=>'content_level' ),
-                    array('field'=> 'tags', 'header'=> 'Tags','alias'=>'tags' ),
-                    array('field'=> 'no_of_views', 'header'=> 'No.of Views','alias'=>'no_of_views' ),
                     array('field'=> 'status', 'header'=> 'Status','alias'=>'status' ),
                     array('field'=> 'actions', 'header'=> 'Actions','alias'=>'actions' )
                 );

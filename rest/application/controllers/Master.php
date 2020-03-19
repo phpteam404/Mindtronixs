@@ -5,9 +5,9 @@ require APPPATH . '/libraries/REST_Controller.php';
 
 class Master extends REST_Controller
 {
-   
     public function __construct()
     {
+        
         parent::__construct();
         $getLoggedUserId=$this->User_model->getLoggedUserId();
         $this->session_user_id=$getLoggedUserId[0]['id'];
@@ -86,6 +86,7 @@ class Master extends REST_Controller
     public function getMsaterData_get()
     {
         $data=$this->input->get();//sprint_r($data);exit;
+        // echo date_default_timezone_get();exit;
         $this->form_validator->add_rules('master_key', array('required'=> $this->lang->line('master_key_req')));
         $validated = $this->form_validator->validate($data);
         if($validated != 1)
@@ -100,16 +101,26 @@ class Master extends REST_Controller
             if($this->session_user_info->user_role_id==1){
                 $data['master_ids']=array(46,47,48);
             }
+            $get_id=$this->User_model->check_record_selected('status','ticket',array('id'=>$data['ticket_id']));
             if($this->session_user_info->user_role_id==4){
                 if(!empty($data['ticket_id'])){
-                    $get_id=$this->User_model->check_record_selected('status','ticket',array('id'=>$data['ticket_id']));
-                    $data['master_ids']=array($get_id[0]['status']);
+                    if($get_id[0]['status']==48){
+
+                        $data['master_ids']=array(48,49);
+                    }
+                    else{
+                        $data['master_ids']=array($get_id[0]['status']); 
+                    }
                 }
                 else{
 
                     $data['master_ids']=array(49);
                 }
             }
+            else{
+                    $data['master_ids']=array_unique(array($get_id[0]['status'],46,47,48,49));
+            }
+            
         }
         $result = $this->Master_model->getMaster($data);//echo $this->db->last_query();exit;
         if(isset($data['dropdown']) && $data['dropdown']!=''){

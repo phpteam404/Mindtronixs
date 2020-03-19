@@ -262,6 +262,7 @@ if (!function_exists('formatSizeUnits')) {
 if (!function_exists('currentDate')) {
     function currentDate()
     {
+        date_default_timezone_set('Asia/Kolkata');
         return date('Y-m-d H:i:s');
     }
 }

@@ -263,7 +263,7 @@ class Ticket extends REST_Controller
             {
                 foreach($v2 as $k3=>$v3){
                     if(!empty($v3['ticket_chat_id'])){
-                        $url=DOCUMENT_PATH.'ticket/small_images/';
+                        $url=DOCUMENT_PATH.'ticket/';
                         $get_chat_documents=$this->User_model->check_record_selected('concat("'.$url.'",document_name) as document_url','documents',array('module_type_id'=>$v3['ticket_chat_id'],'module_type'=>'ticket_chat'));//echo $this->db->last_query();exit;
                         if(!empty($get_chat_documents))
                         $groupby_date_data[$k2][$k3]['documents']=!empty($get_chat_documents)?$get_chat_documents:array();

@@ -188,24 +188,23 @@ class User extends REST_Controller
                 $student_data['created_by']=!empty($this->session_user_id)?$this->session_user_id:'0';
                 $student_data['created_on']=currentDate();
                 $student_data['user_id']=$is_insert;
-                        $date=date("Y-m-d");
-                        if($student_data['franchise_fee_id']==27){
-                            $next_invoice_date= date('Y-m-01', strtotime($date .'+1 month'));
-                        }
-                        if($student_data['franchise_fee_id']==1){
-                            $next_invoice_date= date('Y-m-01', strtotime($date .'+6 month'));
-                        }
-                        if($student_data['franchise_fee_id']==28){
-                            $next_invoice_date= date('Y-m-01', strtotime($date .'+3 month'));
-                        }
-                        if($student_data['franchise_fee_id']==29){
-                            $next_invoice_date= date('Y-m-01', strtotime($date .'+12 month'));
-                        }
-
-                $student_data['next_invoice_date']=$next_invoice_date;
-                $student_data['subscription_status']=1;
+                //         $date=date("Y-m-d");
+                //         if($student_data['franchise_fee_id']==27){
+                //             $next_invoice_date= date('Y-m-01', strtotime($date .'+1 month'));
+                //         }
+                //         if($student_data['franchise_fee_id']==1){
+                //             $next_invoice_date= date('Y-m-01', strtotime($date .'+6 month'));
+                //         }
+                //         if($student_data['franchise_fee_id']==28){
+                //             $next_invoice_date= date('Y-m-01', strtotime($date .'+3 month'));
+                //         }
+                //         if($student_data['franchise_fee_id']==29){
+                //             $next_invoice_date= date('Y-m-01', strtotime($date .'+12 month'));
+                //         }
+                // $student_data['next_invoice_date']=$next_invoice_date;
+                // $student_data['subscription_status']=1;
                 $student_id=$this->User_model->insertdata('student',$student_data);//echo $this->db->last_query();exit;
-            $message="Student created successfully.";
+                $message="Student created successfully.";
 
             }
             if($is_insert>0){

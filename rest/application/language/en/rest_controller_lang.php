@@ -471,7 +471,7 @@ $lang['digital_content_management_id_req'] = 'Digital content management id requ
 $lang['type_req'] = 'Request type required';
 $lang['update_profile'] = 'Profile updated Successfully';
 $lang['phono_duplicate'] = 'Phone number already exists';
-$lang['invalid_password'] = 'Enter correct password';
+$lang['invalid_password'] = 'Enter correct old password';
 $lang['docs_add'] = 'Attachments added Successfully';
 
 

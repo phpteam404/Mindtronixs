@@ -163,6 +163,9 @@ class User extends REST_Controller
             if(isset($data['user_role_id']) && $data['user_role_id']==4){
                 $student_data['updated_by']=!empty($this->session_user_id)?$this->session_user_id:'0';
                 $student_data['updated_on']=currentDate();
+                $next_invoice_date=$this->getInvoiceDate($student_data['franchise_fee_id']);
+                $student_data['next_invoice_date']=$next_invoice_date;
+                $student_data['subscription_status']=1;
                 $this->User_model->update_data('student',$student_data,array('user_id'=>$data['user_id']));
                 $this->User_model->update_data('user',array('user_status'=>$data['status']),array('id'=>$data['user_id']));
                 $message="Student Updated successfully.";
@@ -188,21 +191,9 @@ class User extends REST_Controller
                 $student_data['created_by']=!empty($this->session_user_id)?$this->session_user_id:'0';
                 $student_data['created_on']=currentDate();
                 $student_data['user_id']=$is_insert;
-                //         $date=date("Y-m-d");
-                //         if($student_data['franchise_fee_id']==27){
-                //             $next_invoice_date= date('Y-m-01', strtotime($date .'+1 month'));
-                //         }
-                //         if($student_data['franchise_fee_id']==1){
-                //             $next_invoice_date= date('Y-m-01', strtotime($date .'+6 month'));
-                //         }
-                //         if($student_data['franchise_fee_id']==28){
-                //             $next_invoice_date= date('Y-m-01', strtotime($date .'+3 month'));
-                //         }
-                //         if($student_data['franchise_fee_id']==29){
-                //             $next_invoice_date= date('Y-m-01', strtotime($date .'+12 month'));
-                //         }
-                // $student_data['next_invoice_date']=$next_invoice_date;
-                // $student_data['subscription_status']=1;
+                $next_invoice_date=$this->getInvoiceDate($student_data['franchise_fee_id']);
+                $student_data['next_invoice_date']=$next_invoice_date;
+                $student_data['subscription_status']=1;
                 $student_id=$this->User_model->insertdata('student',$student_data);//echo $this->db->last_query();exit;
                 $message="Student created successfully.";
 
@@ -714,6 +705,42 @@ class User extends REST_Controller
             $result = array('status'=>FALSE,'error'=>$this->lang->line('invalid_data'),'data'=>'');
         }
         $this->response($result, REST_Controller::HTTP_OK);
+    }
+    function getInvoiceDate($franchise_fee_id){
+        $date=date("Y-m-d");
+        $day=date("d");
+        if($franchise_fee_id==27){
+            if($day==1){
+                return $next_invoice_date= date('Y-m-01', strtotime($date .'+1 month'));
+            }
+            else{
+                return $next_invoice_date= date('Y-m-01', strtotime($date .'+2 month'));
+            }
+        }
+        if($franchise_fee_id==1){
+            if($day==1){
+                return $next_invoice_date= date('Y-m-01', strtotime($date .'+6 month'));
+            }
+            else{
+                return $next_invoice_date= date('Y-m-01', strtotime($date .'+7 month')); 
+            }
+        }
+        if($franchise_fee_id==28){
+            if($day==1){
+                return $next_invoice_date= date('Y-m-01', strtotime($date .'+3 month'));
+            }
+            else{
+                return $next_invoice_date= date('Y-m-01', strtotime($date .'+4 month'));
+            }
+        }
+        if($franchise_fee_id==29){
+            if($day==1){
+                return $next_invoice_date= date('Y-m-01', strtotime($date .'+12 month'));
+            }
+            else{
+                return $next_invoice_date= date('Y-m-01', strtotime($date .'+13 month'));
+            }
+        }
     }
     
 }

@@ -156,7 +156,7 @@ class Franchise_model extends CI_Model
         // $this->db->join('master_child mc','fm.term=mc.id AND mc.master_id=11','left');
         // $this->db->where('fm.id',$data['fee_master_id']);
         // $this->db->where('fm.status','1');
-        $this->db->select('ff.id as fee_master_id,fm.name as fee_title ,fm.amount,mc.child_name as term,fm.discount');
+        $this->db->select('ff.id as fee_master_id,fm.name as fee_title ,fm.amount,mc.child_name as term,fm.discount,ff.status');
         $this->db->from('franchise_fee ff');
         $this->db->join('fee_master fm','ff.fee_master_id=fm.id','left');
         $this->db->join('master_child mc','mc.id=fm.term and mc.master_id=11','left');

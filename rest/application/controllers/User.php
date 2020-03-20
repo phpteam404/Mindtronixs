@@ -188,8 +188,6 @@ class User extends REST_Controller
                 $student_data['created_by']=!empty($this->session_user_id)?$this->session_user_id:'0';
                 $student_data['created_on']=currentDate();
                 $student_data['user_id']=$is_insert;
-                if(!empty($student_data['franchise_fee_id'])){
-                    if(!empty($student_data['franchise_fee_id'])){
                         $date=date("Y-m-d");
                         if($student_data['franchise_fee_id']==27){
                             $next_invoice_date= date('Y-m-01', strtotime($date .'+1 month'));
@@ -203,8 +201,7 @@ class User extends REST_Controller
                         if($student_data['franchise_fee_id']==29){
                             $next_invoice_date= date('Y-m-01', strtotime($date .'+12 month'));
                         }
-                    }
-                }
+
                 $student_data['next_invoice_date']=$next_invoice_date;
                 $student_data['subscription_status']=1;
                 $student_id=$this->User_model->insertdata('student',$student_data);//echo $this->db->last_query();exit;
@@ -228,7 +225,9 @@ class User extends REST_Controller
         if($this->session_user_info->user_role_id==2){
             $data['franchise_id']=$this->session_user_info->franchise_id;
         }
-        $result=$this->User_model->getuserlist($data);//print_query('sector',$this->db->last_query());//echo $this->db->last_query();exit;
+        // print_r($data);exit;
+        $result=$this->User_model->getuserlist($data);//echo $this->db->last_query();exit;
+        // print_r($result);exit;
         foreach($result['data'] as $k=>$v){
             if(!empty($data['user_id'])){
                 $result['data'][$k]['status']=getStatusObj($v['status']);
@@ -236,7 +235,12 @@ class User extends REST_Controller
                     $result['data'][$k]['franchise_name']='--';
                 }
                 else{
-                    $result['data'][$k]['franchise_name']=getObjOnId($v['franchise_name'],!empty($v['franchise_name'])?true:false);
+                    if(!empty($v['franchise_name'])){
+                        $result['data'][$k]['franchise_name']=getObjOnId($v['franchise_name'],!empty($v['franchise_name'])?true:false);
+                    }
+                    else{
+                        $result['data'][$k]['franchise_name']='--'; 
+                    }
                 }
                 $result['data'][$k]['user_role']=getObjOnId($v['user_role'],!empty($v['user_role'])?true:false);
                 
@@ -249,7 +253,13 @@ class User extends REST_Controller
                     $result['data'][$k]['franchise_name']='--';
                 }
                 else{
-                    $result['data'][$k]['franchise_name']=getObjOnId($v['franchise_name'],!empty($v['franchise_name'])?false:true);
+                    if(!empty($v['franchise_name'])){
+
+                        $result['data'][$k]['franchise_name']=getObjOnId($v['franchise_name'],!empty($v['franchise_name'])?false:true);
+                    }
+                    else{
+                        $result['data'][$k]['franchise_name']="--";
+                    }
                 }
                 $result['data'][$k]['user_role']=getObjOnId($v['user_role'],!empty($v['user_role'])?false:true);
                 

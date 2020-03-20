@@ -204,7 +204,7 @@ class Signup extends CI_Controller
             $result = array('status'=>FALSE,'error'=>$this->lang->line('invalid_data'),'data'=>'');
             echo json_encode($result);exit;
         }
-
+        // print_r($data);exit;
         //validating data
         $this->form_validator->add_rules('email', array('required'=> $this->lang->line('email_req'),
                                                            'valid_email' => $this->lang->line('email_invalid')
@@ -215,7 +215,7 @@ class Signup extends CI_Controller
             $result = array('status'=>FALSE,'error'=>$validated,'data'=>'');
             echo json_encode($result);exit;
         }
-        $result = $this->User_model->check_email(array('email' => $data['email']));
+        $result = $this->User_model->check_email(array('email' => $data['email']));//print_r($result);exit;
         if(empty($result)){
             //Message should not be shown
             $result = array('status'=>FALSE, 'message' => $this->lang->line('email_wrong'), 'data'=>'');
@@ -223,52 +223,52 @@ class Signup extends CI_Controller
         }
         else
         {
-            $new_password = generatePassword(8);
-            $this->User_model->updatePassword($new_password,$result->id_user);
+            $new_password = generatePassword(8);//print_r($result);exit;
+            $this->User_model->updatePassword($new_password,$result->id);//echo $this->db->last_query();exit;
 
             $user_info = $this->User_model->getUserInfo(array('user_id' => $result->id_user));
             $template_configurations=$this->User_model->EmailTemplateList(array('customer_id' => $user_info->customer_id,'language_id' =>1,'module_key'=>'FORGOT_PASSWORD'));
-            if($template_configurations['total_records']>0){
-                $template_configurations=$template_configurations['data'][0];
-                $wildcards=$template_configurations['wildcards'];
-                $wildcards_replaces=array();
-                $wildcards_replaces['first_name']=$user_info->first_name;
-                $wildcards_replaces['last_name']=$user_info->last_name;
-                $wildcards_replaces['customer_name']=$customer_name;
-                $wildcards_replaces['logo']=$customer_logo;
-                $wildcards_replaces['email']=$user_info->email;
-                $wildcards_replaces['role']=$user_info->user_role_name;
-                $wildcards_replaces['password']=$new_password;
-                $wildcards_replaces['year'] = date("Y");
-                $wildcards_replaces['url']=WEB_BASE_URL.'html';
-                $body = wildcardreplace($wildcards,$wildcards_replaces,$template_configurations['template_content']);
-                $subject=$template_configurations['template_subject'];
-                $from_name=SEND_GRID_FROM_NAME;
-                $from=SEND_GRID_FROM_EMAIL;
-                $to=$user_info->email;
-                $to_name=$user_info->first_name.' '.$user_info->last_name;
-                $mailer_data['mail_from_name']=$from_name;
-                $mailer_data['mail_to_name']=$to_name;
-                $mailer_data['mail_to_user_id']=$user_info->id_user;
-                $mailer_data['mail_from']=$from;
-                $mailer_data['mail_to']=$to;
-                $mailer_data['mail_subject']=$subject;
-                $mailer_data['mail_message']=$body;
-                $mailer_data['status']=0;
-                $mailer_data['send_date']=currentDate();
-                $mailer_data['is_cron']=0;
-                $mailer_data['email_template_id']=$template_configurations['id_email_template'];
-                $mailer_id=$this->User_model->addMailer($mailer_data);
-                if($mailer_data['is_cron']==0) {
-                    //$mail_sent_status=sendmail($to, $subject, $body, $from);
-                    $this->load->library('sendgridlibrary');
-                    $mail_sent_status=$this->sendgridlibrary->sendemail($from_name,$from,$subject,$body,$to_name,$to,array(),$mailer_id);
-                    if($mail_sent_status==1)
-                        $this->User_model->updateMailer(array('status'=>1,'mailer_id'=>$mailer_id));
-                }
-            }
+            // if($template_configurations['total_records']>0){
+            //     $template_configurations=$template_configurations['data'][0];
+            //     $wildcards=$template_configurations['wildcards'];
+            //     $wildcards_replaces=array();
+            //     $wildcards_replaces['first_name']=$user_info->first_name;
+            //     $wildcards_replaces['last_name']=$user_info->last_name;
+            //     $wildcards_replaces['customer_name']=$customer_name;
+            //     $wildcards_replaces['logo']=$customer_logo;
+            //     $wildcards_replaces['email']=$user_info->email;
+            //     $wildcards_replaces['role']=$user_info->user_role_name;
+            //     $wildcards_replaces['password']=$new_password;
+            //     $wildcards_replaces['year'] = date("Y");
+            //     $wildcards_replaces['url']=WEB_BASE_URL.'html';
+            //     $body = wildcardreplace($wildcards,$wildcards_replaces,$template_configurations['template_content']);
+            //     $subject=$template_configurations['template_subject'];
+            //     $from_name=SEND_GRID_FROM_NAME;
+            //     $from=SEND_GRID_FROM_EMAIL;
+            //     $to=$user_info->email;
+            //     $to_name=$user_info->first_name.' '.$user_info->last_name;
+            //     $mailer_data['mail_from_name']=$from_name;
+            //     $mailer_data['mail_to_name']=$to_name;
+            //     $mailer_data['mail_to_user_id']=$user_info->id_user;
+            //     $mailer_data['mail_from']=$from;
+            //     $mailer_data['mail_to']=$to;
+            //     $mailer_data['mail_subject']=$subject;
+            //     $mailer_data['mail_message']=$body;
+            //     $mailer_data['status']=0;
+            //     $mailer_data['send_date']=currentDate();
+            //     $mailer_data['is_cron']=0;
+            //     $mailer_data['email_template_id']=$template_configurations['id_email_template'];
+            //     $mailer_id=$this->User_model->addMailer($mailer_data);
+            //     if($mailer_data['is_cron']==0) {
+            //         //$mail_sent_status=sendmail($to, $subject, $body, $from);
+            //         $this->load->library('sendgridlibrary');
+            //         $mail_sent_status=$this->sendgridlibrary->sendemail($from_name,$from,$subject,$body,$to_name,$to,array(),$mailer_id);
+            //         if($mail_sent_status==1)
+            //             $this->User_model->updateMailer(array('status'=>1,'mailer_id'=>$mailer_id));
+            //     }
+            // }
 
-            $result = array('status'=>TRUE, 'message' => $this->lang->line('new_password'), 'data'=>'');
+            $result = array('status'=>TRUE, 'message' => $this->lang->line('new_password'), 'data'=>$new_password);
             echo json_encode($result);exit;
         }
     }

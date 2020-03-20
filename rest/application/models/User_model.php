@@ -161,7 +161,7 @@ class User_model extends CI_Model
     public function updatePassword($password,$id)
     {
         $update = array('password' => md5($password));
-        $this->db->where('id_user', $id);
+        $this->db->where('id', $id);
         $this->db->update('user', $update);
         return 1;
     }
@@ -876,7 +876,7 @@ class User_model extends CI_Model
     }
     public function custom_query_affected_rows($q){
         $query = $this->db->query($q);
-        $query->result_array();
+        // $query->result_array();
         return $this->db->affected_rows();
     }
 

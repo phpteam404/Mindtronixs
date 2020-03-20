@@ -319,7 +319,7 @@ class Franchise extends REST_Controller
         }
         $franchise_info=$this->Franchise_model->getfranchiseInfo($data);//echo $this->db->last_query();exit;//this model used for get the franchise information
         foreach($franchise_info as $k=>$v){
-            $frachise_contacts=$this->Franchise_model->getFranchiseContacts(array('franchise_id'=>$data['franchise_id']));//echo $this->db->last_query();exit;
+            $frachise_contacts=$this->Franchise_model->getFranchiseContacts(array('franchise_id'=>$data['franchise_id']));
             if(!empty($frachise_contacts))
             foreach($frachise_contacts as $c=>$d){
                 $frachise_contacts[$c]['contact_title']=getObjOnId($d['contact_title'],!empty($d['contact_title'])?true:false);
@@ -337,7 +337,7 @@ class Franchise extends REST_Controller
                         //     }
                         
                         // }
-                        $get_fee_data=$this->Franchise_model->getFeeData(array('franchise_id'=>$data['franchise_id']));print_query('sector',$this->db->last_query());//thsi model used for get fee data of franchise
+                        $get_fee_data=$this->Franchise_model->getFeeData(array('franchise_id'=>$data['franchise_id']));//echo $this->db->last_query();exit;//thsi model used for get fee data of franchise
                                 $franchise_info[$k]['fee_detalis']=$get_fee_data;
                     }
             $franchise_info[$k]['franchise_contacts_information']= !empty($franchise_info[$k]['franchise_contacts_information'])?$franchise_info[$k]['franchise_contacts_information']:array();

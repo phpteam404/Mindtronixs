@@ -67,6 +67,24 @@ class Invoice extends REST_Controller
         }
         $this->response($result, REST_Controller::HTTP_OK);
     }
+    public function getPreviousStudentInvoices_get(){
+        //this function is used to get student previous invoices $data['student_invoice_id']
+        $data=$this->input->get();
+       if(empty($data)){
+            $result = array('status'=>FALSE,'error'=>$this->lang->line('invalid_data'),'data'=>'1');
+            $this->response($result, REST_Controller::HTTP_OK);
+        }
+        $this->form_validator->add_rules('student_id', array('required'=>$this->lang->line('student_id_req')));
+        $validated = $this->form_validator->validate($data);
+        if($validated != 1)
+        {
+            $result = array('status'=>FALSE,'error'=>$validated,'data'=>'');
+            $this->response($result, REST_Controller::HTTP_OK);
+        }
+        $previous_invoice_data=$this->Invoices_model->getPreviousStudentInvoice($data);//echo $this->db->last_query();exit;
+        $result = array('status'=>TRUE, 'message' => $this->lang->line('success'),'data'=>array('data' =>!empty($previous_invoice_data)?$previous_invoice_data:array()));
+        $this->response($result, REST_Controller::HTTP_OK);
+    }
 
 
 }

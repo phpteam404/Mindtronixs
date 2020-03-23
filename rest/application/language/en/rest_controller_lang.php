@@ -473,5 +473,6 @@ $lang['update_profile'] = 'Profile updated Successfully';
 $lang['phono_duplicate'] = 'Phone number already exists';
 $lang['invalid_password'] = 'Enter correct old password';
 $lang['docs_add'] = 'Attachments added Successfully';
+$lang['student_id_req'] = 'Student  id required';
 
 

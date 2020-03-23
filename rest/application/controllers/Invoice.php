@@ -26,7 +26,6 @@ class Invoice extends REST_Controller
         $data=$this->input->get();
 
         if($this->session_user_info->user_role_id==2){
-            //$data['user_role_id']=$this->session_user_info->user_role_id;
             $data['franchise_id']=$this->session_user_info->franchise_id;
         }
         $invoice_amount=$this->Invoices_model->getAmount($data);
@@ -36,14 +35,12 @@ class Invoice extends REST_Controller
         $data['payment_status']=98;//to get the due amount pass the payment status id as 98
         $due_amount=$this->Invoices_model->getAmount($data);
         unset($data['payment_status']);
-        $invoice_list=$this->Invoices_model->getStudentInvoiceList($data);//print_r((int)$invoice_amount[0]['total_amount']);exit;
-       // print_r($invoice_list['data']);exit;
-        $invoice_list['data']['total_invoices_amount']=!empty($invoice_amount[0]['total_amount'])?(int)$invoice_amount[0]['total_amount']:0;
-        $invoice_list['data']['total_collected_amount']=!empty($collected_amount[0]['total_amount'])?(int)$collected_amount[0]['total_amount']:0;
-        $invoice_list['data']['due_amount']=!empty($due_amount[0]['total_amount'])?(int)$due_amount[0]['total_amount']:0;
-        $invoice_list['data']['invoices_count']=!empty($invoice_amount[0]['count'])?(int)$invoice_amount[0]['count']:0;
-        
-        $result = array('status'=>TRUE, 'message' => $this->lang->line('success'),'data'=>array('data' =>$invoice_list['data'],'total_records' =>$invoice_list['total_records'],'table_headers'=>getTableHeads('student_invoice_list')));
+        $student_invoice_list=$this->Invoices_model->getStudentInvoiceList($data);
+        $total_invoices_amount=!empty($invoice_amount[0]['total_amount'])?(int)$invoice_amount[0]['total_amount']:0;
+        $total_collected_amount=!empty($collected_amount[0]['total_amount'])?(int)$collected_amount[0]['total_amount']:0;
+        $due_amount=!empty($due_amount[0]['total_amount'])?(int)$due_amount[0]['total_amount']:0;
+        $invoices_count=!empty($invoice_amount[0]['count'])?(int)$invoice_amount[0]['count']:0;
+        $result = array('status'=>TRUE, 'message' => $this->lang->line('success'),'data'=>array('data' =>$student_invoice_list['data'],'total_records' =>$student_invoice_list['total_records'],'total_invoices_amount'=>$total_invoices_amount,'total_collected_amount'=>$total_collected_amount,'invoices_count'=>$invoices_count,'table_headers'=>getTableHeads('student_invoice_list')));
         $this->response($result, REST_Controller::HTTP_OK);
     }
 

@@ -42,7 +42,7 @@ class Signup extends CI_Controller
             $result = array('status'=>FALSE,'message'=>$this->lang->line('login_error'),'data'=>'');
             echo json_encode($result); exit;
         }
-
+        // print_r($data);exit;
         //validating inputs
         $this->form_validator->add_rules('username', array('required'=> $this->lang->line('user_name')
                                                         //    'valid_email' => $this->lang->line('email_invalid')
@@ -218,7 +218,7 @@ class Signup extends CI_Controller
         $result = $this->User_model->check_email(array('email' => $data['email']));//print_r($result);exit;
         if(empty($result)){
             //Message should not be shown
-            $result = array('status'=>FALSE, 'error' => $this->lang->line('email_wrong'), 'data'=>'');
+            $result = array('status'=>TRUE, 'error' => $this->lang->line('email_wrong'), 'data'=>'');
             echo json_encode($result);exit;
         }
         else

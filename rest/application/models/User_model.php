@@ -188,6 +188,7 @@ class User_model extends CI_Model
         }
         else{
             $this->db->select('*')->from('user_role');
+            $this->db->where('role_level >','1');
         }
         $this->db->order_by('role_level','ASC');
         $query = $this->db->get();

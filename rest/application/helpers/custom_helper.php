@@ -817,9 +817,9 @@ if (!function_exists('getTableHeads')) {
                 break;
             case 'ticket_list':
                 return array(
-                    array('field' => 'issue_id', 'header'=> 'Issue id' ,'alias'=>'issue_id' ),
-                    array('field'=>'issue_title', 'header'=> 'Issue Title' ,'alias' =>'issue_title' ),
-                    array('field'=> 'issue_type', 'header'=>'IssueType','alias'=>'issue_type' ),
+                    array('field' => 'issue_id', 'header'=> 'Id' ,'alias'=>'issue_id' ),
+                    array('field'=>'issue_title', 'header'=> 'Title' ,'alias' =>'issue_title' ),
+                    array('field'=> 'issue_type', 'header'=>'Type','alias'=>'issue_type' ),
                     array('field'=> 'created_by', 'header'=> 'Created By' ,'alias'=>'created_by'),
                     array('field'=> 'created_date', 'header'=> 'Created date','alais'=>'created_date' ),
                     array('field'=> 'status', 'header'=> 'Status','alais'=>'status' ),

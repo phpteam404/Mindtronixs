@@ -19,11 +19,18 @@ class Invoices_model extends CI_Model
 
     }
     public function getStudentInvoiceList($data=null){
-        $this->db->select('s.id as student_invoice_number,si.invoice_number,concat(u.first_name," ",u.last_name) as student_name,u.phone_no ,u.email as email,si.invoice_date,si.amount,mc.child_name as status,si.franchise_id');
+            $this->db->select('si.id as student_invoice_id,si.invoice_number,concat(u.first_name," ",u.last_name) as student_name,u.phone_no ,u.email as email,si.invoice_date,si.amount,mc.child_name as status,si.franchise_id');
+            if(!empty($data['student_invoice_id'])){
+                $this->db->select('mc1.child_name as fee_structure,fm.term,si.payment_status');
+            }
         $this->db->from('student_invoice si');
         $this->db->join('student s','si.student_id=s.id','left');
         $this->db->join('user u','s.user_id=u.id','left');
         $this->db->join('master_child mc','si.payment_status=mc.id AND mc.master_id=23','left');
+        if(!empty($data['student_invoice_id'])){
+            $this->db->join('fee_master fm','si.franchise_fee_id=fm.id','left');
+            $this->db->join('master_child mc1','fm.term=mc1.id AND mc1.master_id=11','left');
+        }
         if(isset($data['search_key']) && $data['search_key']!==''){
             $this->db->group_start();
             $this->db->where('u.first_name like "%'.$data['search_key'].'%" or u.last_name like "%'.$data['search_key'].'%" or CONCAT(u.first_name,\' \',u.last_name) like "%'.$data['search_key'].'%" or u.email like "%'.$data['search_key'].'%"  or u.phone_no like "%'.$data['search_key'].'%"or si.invoice_number like "%'.$data['search_key'].'%"');
@@ -38,7 +45,9 @@ class Invoices_model extends CI_Model
         if(!empty($data['franchise_id'])){
             $this->db->where('si.franchise_id',$data['franchise_id']);
         }
-
+        if(!empty($data['student_invoice_id'])){
+            $this->db->where('si.id',$data['student_invoice_id']);
+        }
         if(isset($data['sort']) && isset($data['order']))
             $this->db->order_by($data['sort'],$data['order']);
         else

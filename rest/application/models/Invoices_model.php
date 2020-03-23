@@ -21,7 +21,7 @@ class Invoices_model extends CI_Model
     public function getStudentInvoiceList($data=null){
             $this->db->select('si.id as student_invoice_id,si.invoice_number,concat(u.first_name," ",u.last_name) as student_name,u.phone_no ,u.email as email,si.invoice_date,si.amount,mc.child_name as status,si.franchise_id,s.id as student_id');
             if(!empty($data['student_invoice_id'])){
-                $this->db->select('mc1.child_name as fee_structure,fm.term,si.payment_status,DATE_FORMAT(s.created_on, "%Y-%m-%d") as member_since');
+                $this->db->select('mc1.child_name as fee_structure,fm.term,si.payment_status,DATE_FORMAT(s.created_on, "%Y-%m-%d") as member_since,s.id as student_id');
             }
         $this->db->from('student_invoice si');
         $this->db->join('student s','si.student_id=s.id','left');

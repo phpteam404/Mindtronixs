@@ -928,7 +928,7 @@ if (!function_exists('getTableHeads')) {
                 break;
             case 'digital_content_management_list':
                 return array(
-                    array('field'=> 'content_name', 'header'=> 'Content Name','alias'=>'content_name'),
+                    array('field'=> 'content_name', 'header'=> 'Content Title','alias'=>'content_name'),
                     array('field'=>'grade', 'header'=> 'Grade','alias'=>'grade' ),
                     array('field'=> 'category', 'header'=> 'Category','alias'=>'category' ),
                     array('field'=> 'sub_category', 'header'=> 'Sub Category','alias'=>'sub_category' ),

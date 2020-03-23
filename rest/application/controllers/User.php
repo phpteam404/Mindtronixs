@@ -629,21 +629,15 @@ class User extends REST_Controller
         $data=$this->input->post();
         // print_r($data);exit;
         $data['user_id']=!empty($data['user_id'])?$data['user_id']:$this->session_user_info->user_id;
-        if(!empty($data['first_name']) && !empty($data['last_name']) && !empty($data['email']) && !empty($data['phone_no'])){
+        if(!empty($data['first_name'])  || !empty($data['phone_no'])){
             $upadate_data=array(
-                'first_name'=>$data['first_name'],
-                'last_name'=>$data['last_name'],
-                'email'=>$data['email'],
-                'phone_no'=>$data['phone_no']
+                'first_name'=>!empty($data['first_name'])?$data['first_name']:'',
+                'last_name'=>!empty($data['last_name'])?$data['last_name']:'',
+                'phone_no'=>!empty($data['phone_no'])?$data['phone_no']:''
             );
             // print_r($upadate_data);exit;
-              $check_email=$this->User_model->check_not_in('user',array('email'=>$data['email']),array('id'=>$data['user_id']));
               $check_phone_no=$this->User_model->check_not_in('user',array('phone_no'=>$data['phone_no']),array('id'=>$data['user_id']));
             //   if($check_email)
-              if(!empty($check_email)){
-                  $result = array('status'=>FALSE,'error'=>array('message'=>$this->lang->line('email_duplicate')),'data'=>'');
-                  $this->response($result, REST_Controller::HTTP_OK);
-              }
               if(!empty($check_phone_no)){
                   $result = array('status'=>FALSE,'error'=>array('message'=>$this->lang->line('phono_duplicate')),'data'=>'');
                   $this->response($result, REST_Controller::HTTP_OK);

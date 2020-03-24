@@ -109,7 +109,7 @@ class Invoice extends REST_Controller
              'student_invoice_id'=>$data['student_invoice_id'],
              'payment_status'=>$data['status'],
              'payment_type'=>$data['payment_type'],
-             'comments'=>$data['comments'],
+             'comments'=>!empty($data['comments'])?$data['comments']:'',
              'updated_by'=>$this->session_user_info->user_id,
              'update_on'=>currentDate(),
             );
@@ -125,6 +125,6 @@ class Invoice extends REST_Controller
             $this->response($result, REST_Controller::HTTP_OK);
          }
     }
-
+    
 
 }

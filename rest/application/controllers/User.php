@@ -594,12 +594,14 @@ class User extends REST_Controller
             if($this->session_user_info->user_role_id==3){
                 $data['created_by']=$this->session_user_info->user_id;
             }
+            $table_headers=$this->session_user_info->user_role_id==3?getTableHeads('trainer_schedule_list'):getTableHeads('trainer_schedule_list1');
+            //print_r(getTableHeads('trainer_schedule_list'));exit;
             $trainerschedulelist= $this->User_model->getTrainerScheduleList($data); //echo $this->db->last_query();exit;
             foreach($trainerschedulelist['data'] as $k=>$v){
                $trainerschedulelist['data'][$k]['from_time']=date("h:i A", strtotime($v['from_time']));
                 $trainerschedulelist['data'][$k]['to_time']=date("h:i A", strtotime($v['to_time']));
             }
-            $result = array('status'=>TRUE, 'message' =>$this->lang->line('success'), 'data'=>array('data'=>$trainerschedulelist['data'],'total_records'=>$trainerschedulelist['total_records'],'table_headers'=>getTableHeads('trainer_schedule_list')));
+            $result = array('status'=>TRUE, 'message' =>$this->lang->line('success'), 'data'=>array('data'=>$trainerschedulelist['data'],'total_records'=>$trainerschedulelist['total_records'],'table_headers'=>$table_headers));
         }
         // echo $this->db->last_query();exit;
         $this->response($result, REST_Controller::HTTP_OK);

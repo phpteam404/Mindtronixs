@@ -926,6 +926,16 @@ if (!function_exists('getTableHeads')) {
                     array('field'=> 'actions', 'header'=> 'Actions','alias'=>'actions' )
                 );
                 break;
+                case 'trainer_schedule_list1':
+                    return array(
+                        array('field'=> 'topic', 'header'=> 'Topic','alias'=>'topic'),
+                        array('field'=> 'franchise_name', 'header'=> 'Franchise','alias'=>'franchise_name'),
+                        array('field'=>'date', 'header'=> 'Date','alias'=>'date' ),
+                        array('field'=> 'from_time', 'header'=> 'From Time','alias'=>'from_time' ),
+                        array('field'=> 'to_time', 'header'=> 'To Time','alias'=>'to_time' ),
+                        array('field'=> 'actions', 'header'=> 'Actions','alias'=>'actions' )
+                    );
+                    break;
             case 'digital_content_management_list':
                 return array(
                     array('field'=> 'content_name', 'header'=> 'Content Title','alias'=>'content_name'),

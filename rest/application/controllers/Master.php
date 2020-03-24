@@ -83,7 +83,7 @@ class Master extends REST_Controller
 
     }
 
-    public function getMsaterData_get()
+    public function getMasterData_get()
     {
         $data=$this->input->get();//sprint_r($data);exit;
         // echo date_default_timezone_get();exit;

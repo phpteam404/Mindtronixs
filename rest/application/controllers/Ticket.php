@@ -92,6 +92,7 @@ class Ticket extends REST_Controller
             // 'documents'=>!empty($imageName)?$imageName:''
 
         );
+        // print_r($ticket_data);exit;//
         // print_r(ucwords($this->session_user_info->username));exit;
         // $message=ucwords($this->session_user_info->username).' Created ticket';
         // print_r($message);exit;
@@ -115,7 +116,7 @@ class Ticket extends REST_Controller
             if($inserted_id>0){
             $ticket_id="MINDTKTNO_".$inserted_id;
             $this->User_model->update_data('ticket',array('ticket_no'=>$ticket_id),array('id'=>$inserted_id));
-            $ticket_chat_id=$this->User_model->insertdata('ticket_chat',array('created_by'=>!empty($this->session_user_id)?$this->session_user_id:'0','ticket_id'=>$inserted_id,'created_on'=>currentDate(),'status'=>46));
+            // $ticket_chat_id=$this->User_model->insertdata('ticket_chat',array('created_by'=>!empty($this->session_user_id)?$this->session_user_id:'0','ticket_id'=>$inserted_id,'created_on'=>currentDate(),'status'=>46));
             $result = array('status'=>TRUE, 'message' => $this->lang->line('ticket_add'), 'data'=>array('data'=>$ticket_id));
             $this->response($result, REST_Controller::HTTP_OK);
          }
@@ -233,7 +234,7 @@ class Ticket extends REST_Controller
             $result = array('status'=>FALSE,'error'=>$validated,'data'=>'');
             $this->response($result, REST_Controller::HTTP_OK);
         }
-        $ticket_data=$this->Ticket_model->getTicketData(array('ticket_id'=>$data['ticket_id']));
+        $ticket_data=$this->Ticket_model->getTicketData(array('ticket_id'=>$data['ticket_id']));//echo $this->db->last_query();exit;
         $ticket_data[0]['status_display']= getObjOnId($ticket_data[0]['status_display'],!empty($ticket_data[0]['status_display'])?true:false);
 
         $ticket_data=$ticket_data[0];
@@ -244,7 +245,6 @@ class Ticket extends REST_Controller
 
         $ticket_data['documents']=!empty($document)?$document:array();
         $get_chat_details=$this->Ticket_model->getChat(array('ticket_id'=>$data['ticket_id']));//echo $this->db->last_query();exit;
-        // print_r($get_chat_details);exit;
         $created_data=array(
             'message'=>'Created ticket',
             'created_by'=>$ticket_data['created_by'],
@@ -253,9 +253,7 @@ class Ticket extends REST_Controller
             'time'=>date("h:i A",strtotime($ticket_data['created_date'])),
             'status'=>"New"
         );
-        array_push($get_chat_details,$created_data);
-        // print_r($get_chat_details);exit;
-        
+        array_push($get_chat_details,$created_data);        
         $groupby_date_data=$this->groupArray($get_chat_details, "created_date");//this function group the chat data by date
         // print_r($groupby_date_data);exit;
         foreach($groupby_date_data as $k2=>$v2){ 

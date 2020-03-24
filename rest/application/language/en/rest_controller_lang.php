@@ -474,5 +474,9 @@ $lang['phono_duplicate'] = 'Phone number already exists';
 $lang['invalid_password'] = 'Enter correct old password';
 $lang['docs_add'] = 'Attachments added Successfully';
 $lang['student_id_req'] = 'Student  id required';
+$lang['student_invoice_id_req'] = 'Student invoice id required';
+$lang['payment_status_req'] = 'Student payment status required';
+$lang['payment_type_req'] = 'Student payment type required';
+$lang['update_payment_status'] = 'Payment status updated Successfully';
 
 

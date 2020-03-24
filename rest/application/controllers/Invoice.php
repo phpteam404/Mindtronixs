@@ -26,7 +26,9 @@ class Invoice extends REST_Controller
         $data=$this->input->get();
 
         if(!empty($data['student_invoice_id'])){
-            $student_invoice_info=$this->Invoices_model->getStudentInvoiceList($data);//print_r($student_invoice_info['data'][0]);exit;//echo $this->db->last_query();exit;
+            $student_invoice_payment_history=$this->Invoices_model->getStudentPaymentHistory(array('student_invoice_id'=>$data['student_invoice_id']));
+            $student_invoice_payment_history=!empty( $student_invoice_payment_history)?$student_invoice_payment_history:array();
+            $student_invoice_info=$this->Invoices_model->getStudentInvoiceList($data);//echo $this->db->last_query();exit;
             if(!empty($student_invoice_info['data'][0] && $student_invoice_info['data'][0]['payment_status']==98 ||$student_invoice_info['data'][0]['payment_status']==100)){
                 $date=date("Y-m-d");
                 if($student_invoice_info['data'][0]['term']==19){
@@ -41,10 +43,10 @@ class Invoice extends REST_Controller
                 if($student_invoice_info['data'][0]['term']==22){
                     $due_date= date('Y-m-d', strtotime($student_invoice_info['data'][0]['invoice_date'] .'+1 month')); 
                 }
-                $result = array('status'=>TRUE, 'message' => $this->lang->line('success'),'data'=>array('data' =>$student_invoice_info['data'],'due_date'=>$due_date));
+                $result = array('status'=>TRUE, 'message' => $this->lang->line('success'),'data'=>array('data' =>$student_invoice_info['data'],'due_date'=>$due_date,'student_invoice_payment_history'=>$student_invoice_payment_history));
             } 
             else{
-                $result = array('status'=>TRUE, 'message' => $this->lang->line('success'),'data'=>array('data' =>$student_invoice_info['data'],'paid_date'=>$date=date("Y-m-d")));
+                $result = array('status'=>TRUE, 'message' => $this->lang->line('success'),'data'=>array('data' =>$student_invoice_info['data'],'paid_date'=>$date=date("Y-m-d"),'student_invoice_payment_history'=>$student_invoice_payment_history));
             }
         }
         else{

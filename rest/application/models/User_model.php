@@ -814,10 +814,12 @@ class User_model extends CI_Model
             CONCAT(DATE_FORMAT(ts.date, '%a %b %d %Y '),ts.to_time,' GMT+0530 (India Standard Time)') as to_time");
         }else{
             //$this->db->select("ts.id as trainer_schedule_id,ts.topic, DATE_FORMAT(ts.date, '%b %d, %Y') as date,TIME_FORMAT(ts.from_time, '%h:%i %p') as from_time,TIME_FORMAT(ts.to_time, '%h:%i %p') as to_time");
-            $this->db->select("ts.id as trainer_schedule_id,ts.topic, DATE_FORMAT(ts.date, '%Y-%m-%d') as date,ts.from_time,ts.to_time");
+            $this->db->select("ts.id as trainer_schedule_id,ts.topic, DATE_FORMAT(ts.date, '%Y-%m-%d') as date,ts.from_time,ts.to_time,f.name as franchise_name");
 
         }
        $this->db->from('trainer_schedule ts');
+       $this->db->join('user u','ts.created_by=u.id');
+       $this->db->join('franchise f','u.franchise_id=f.id');
        $this->db->group_by('ts.id');
        if(isset($data['search_key']) && $data['search_key']!==''){
             $this->db->group_start();

@@ -528,8 +528,9 @@ class User extends REST_Controller
         }   
        $data['type']='view';//this key used for filter the select statement
        $student_info=$this->User_model->getStudentList($data);//echo $this->db->last_query();exit;//this model is used to get the student data
-        
-       $result = array('status'=>TRUE, 'message' =>$this->lang->line('success'), 'data'=>array('data'=>$student_info['data'],'last_invoice_amount'=>'10,000','student_history'=>'student_history'));
+        $student_id=$this->User_model->check_record_selected('id  as student_id','student',array('user_id'=>$data['user_id']));
+        $get_last_invoice_amount=$this->User_model->getLastInvoiceamount(array('student_id'=>$student_id[0]['student_id']));
+       $result = array('status'=>TRUE, 'message' =>$this->lang->line('success'), 'data'=>array('data'=>$student_info['data'],'last_invoice_amount'=>!empty($get_last_invoice_amount[0]['last_invoice_amount'])?$get_last_invoice_amount[0]['last_invoice_amount']:0,'student_history'=>'student_history'));
        $this->response($result, REST_Controller::HTTP_OK);
     }
      

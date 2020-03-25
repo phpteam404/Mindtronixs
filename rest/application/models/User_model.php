@@ -882,7 +882,15 @@ class User_model extends CI_Model
         // $query->result_array();
         return $this->db->affected_rows();
     }
-
+    public function getLastInvoiceamount($data=null){
+        $this->db->select('TRIM(total_amount)+0 as last_invoice_amount');
+        $this->db->from('student_invoice');
+        $this->db->where('student_id',$data['student_id']);
+        $this->db->order_by('id','desc');
+        $this->db->limit('1');
+        $query = $this->db->get();
+        return $query->result_array();
+    }
 
 }
 

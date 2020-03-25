@@ -478,5 +478,6 @@ $lang['student_invoice_id_req'] = 'Student invoice id required';
 $lang['payment_status_req'] = 'Student payment status required';
 $lang['payment_type_req'] = 'Student payment type required';
 $lang['update_payment_status'] = 'Payment status updated Successfully';
+$lang['invoice_generate'] = 'Student invoice generated Successfully';
 
 

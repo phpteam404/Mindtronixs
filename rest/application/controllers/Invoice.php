@@ -188,7 +188,7 @@ class Invoice extends REST_Controller
             'created_by'=>!empty($this->session_user_id)?$this->session_user_id:'0',
         );
         $franchise_name=str_replace(" ","",$student_data[0]['franchise_name']);
-        $month=date("F");
+        $month=date("M");
         $year=date("Y");
         $update_student=$this->User_model->update_data('student',array('next_invoice_date'=>$next_invoice_date),array('id'=>$data['student_id']));
         $invoice_insert=$this->User_model->insert_data('student_invoice',$invoice_data);

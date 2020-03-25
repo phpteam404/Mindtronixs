@@ -41,6 +41,12 @@ class Cron extends CI_Controller
         $update_rows=$this->User_model->custom_query_affected_rows($query2);
         print_r($insert_rows);
         print_r($update_rows);
+        if($insert_rows>0){
+            echo 'Invoice generated Successfully';
+        }
+        else{
+            echo 'No invoice generated';
+        }
         exit;
     }
     

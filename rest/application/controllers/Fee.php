@@ -126,8 +126,7 @@ class Fee extends REST_Controller
         $data=$this->input->get();
         $drop_down_data=array();
         if(isset($data['dropdown']) && $data['dropdown']!==''){
-            $fee_dropdown_data=$this->User_model->check_record_selected('concat(fm.name,"-",fm.id) as fee_master','fee_master fm',array('status'=>1));
-            print_query('fee',$this->db->last_query());
+            $fee_dropdown_data=$this->User_model->check_record_selected('concat(fm.name,"-",fm.id) as fee_master','fee_master fm',array('status'=>1));//echo $this->db->last_query();exit;
             foreach($fee_dropdown_data as $k=>$v){
                 $fee_dropdown_data[$k]=getObjOnId($v['fee_master'],!empty($v['fee_master'])?true:false);
             }
@@ -143,9 +142,11 @@ class Fee extends REST_Controller
                 else{
                    
                     $fee_structure=$this->Fee_model->getfeeStructureDropdown(array());
-                }
+                }//echo $this->db->last_query();exit;
                 foreach($fee_structure as $k=>$v){
+
                     $drop_down_data[$k]=getObjOnId($v['fee_master'],!empty($v['fee_master'])?true:false);
+                    $drop_down_data[$k]['amount']=$v['amount'];
                 }
                 $result = array('status'=>TRUE, 'message' => $this->lang->line('success'),'data'=>array('data' =>$drop_down_data));
             

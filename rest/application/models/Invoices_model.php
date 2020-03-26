@@ -21,7 +21,7 @@ class Invoices_model extends CI_Model
     public function getStudentInvoiceList($data=null){
             $this->db->select('si.id as student_invoice_id,replace(si.invoice_number," ","") as invoice_number,concat(u.first_name," ",u.last_name) as student_name,u.phone_no ,u.email as email,si.invoice_date,TRIM(si.amount)+0 as amount,mc.child_name as status,si.franchise_id,s.id as student_id');
             if(!empty($data['student_invoice_id'])){
-                $this->db->select('mc1.child_name as fee_structure,fm.term,si.payment_status,DATE_FORMAT(s.created_on, "%Y-%m-%d") as member_since,s.id as student_id,s.next_invoice_date');
+                $this->db->select('fm.name as fee_structure,fm.term,si.payment_status,DATE_FORMAT(s.created_on, "%Y-%m-%d") as member_since,s.id as student_id,s.next_invoice_date');
             }
         $this->db->from('student_invoice si');
         $this->db->join('student s','si.student_id=s.id','left');
@@ -45,12 +45,15 @@ class Invoices_model extends CI_Model
         if(!empty($data['franchise_id'])){
             $this->db->where('si.franchise_id',$data['franchise_id']);
         }
-        if(empty($data['from_date']) && empty($data['to_date']) && empty($data['status_id'])){
+        if(empty($data['from_date']) && empty($data['to_date']) && empty($data['status_id']) && empty($data['month'])){
             $this->db->where('MONTH(si.invoice_date)', date('m')); //For current month
             $this->db->where('YEAR(si.invoice_date)', date('Y')); // For current year
         }
         if(!empty($data['student_invoice_id'])){
             $this->db->where('si.id',$data['student_invoice_id']);
+        }
+        if(!empty($data['month'])){
+            $this->db->like('si.invoice_date', $data['month'], 'both');
         }
         if(isset($data['sort']) && isset($data['order']))
             $this->db->order_by($data['sort'],$data['order']);
@@ -66,12 +69,28 @@ class Invoices_model extends CI_Model
     public function getAmount($data=null){
 
         $this->db->select('SUM(amount) as total_amount,count(*) as count');
-        $this->db->from('student_invoice');
-        if(!empty($data['franchise_id'])){
-            $this->db->where('franchise_id',$data['franchise_id']);
-        }
+        $this->db->from('student_invoice si');
+        // if(!empty($data['franchise_id'])){
+        //     $this->db->where('franchise_id',$data['franchise_id']);
+        // }
         if(!empty($data['payment_status'])){
             $this->db->where('payment_status',$data['payment_status']);
+        }
+        if(!empty($data['from_date']) && !empty($data['to_date'])){
+            $this->db->where('si.invoice_date between "'.$data['from_date'].'" and "'.$data['to_date'].'"');
+        }
+        if(!empty($data['status_id'])){
+            $this->db->where('si.payment_status',$data['status_id']);
+        }
+        if(!empty($data['franchise_id'])){
+            $this->db->where('si.franchise_id',$data['franchise_id']);
+        }
+        if(empty($data['from_date']) && empty($data['to_date']) && empty($data['status_id']) && empty($data['month'])){
+            $this->db->where('MONTH(si.invoice_date)', date('m')); //For current month
+            $this->db->where('YEAR(si.invoice_date)', date('Y')); // For current year
+        }
+        if(!empty($data['month'])){
+            $this->db->like('si.invoice_date', $data['month'], 'both');
         }
         $query = $this->db->get();
         return $query->result_array();
@@ -103,7 +122,7 @@ class Invoices_model extends CI_Model
 
     }
     public function getStudentInvoicedData($data=null){
-        $this->db->select('s.id student_id,s.franchise_id,fm.amount,fm.discount,fm.tax,,fm.term,TRIM(((fm.amount-(fm.amount*fm.discount/100))+((fm.amount-(fm.amount*fm.discount/100))*fm.tax/100)))+0 as total_amount,s.franchise_fee_id,f.name as franchise_name');
+        $this->db->select('s.id student_id,s.franchise_id,fm.amount,fm.discount,fm.tax,,fm.term,TRIM(((fm.amount-(fm.amount*fm.discount/100))+((fm.amount-(fm.amount*fm.discount/100))*fm.tax/100)))+0 as total_amount,s.franchise_fee_id,f.franchise_code');
         $this->db->from('student s');
         $this->db->join('franchise f','s.franchise_id=f.id','left');
         $this->db->join('fee_master fm','s.franchise_fee_id=fm.id','left');

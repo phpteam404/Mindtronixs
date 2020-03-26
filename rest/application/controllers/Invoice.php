@@ -66,7 +66,13 @@ class Invoice extends REST_Controller
                 $total_collected_amount=!empty($collected_amount[0]['total_amount'])?(int)$collected_amount[0]['total_amount']:0;
                 $due_amount=!empty($due_amount[0]['total_amount'])?(int)$due_amount[0]['total_amount']:0;
                 $invoices_count=!empty($invoice_amount[0]['count'])?(int)$invoice_amount[0]['count']:0;
-                $result = array('status'=>TRUE, 'message' => $this->lang->line('success'),'data'=>array('data' =>$student_invoice_list['data'],'total_records' =>$student_invoice_list['total_records'],'total_invoices_amount'=>$total_invoices_amount,'total_collected_amount'=>$total_collected_amount,'invoices_count'=>$invoices_count,'due_amount'=>$due_amount,'table_headers'=>getTableHeads('student_invoice_list')));
+                for ($i = 0; $i <= 5; $i++) 
+                {
+                   $months[$i]['label'] = date("M Y", strtotime( date( 'Y-m-01' )." -$i months"));
+                   $months[$i]['value'] = date("Y-m", strtotime( date( 'Y-m-01' )." -$i months"));
+                
+                }
+                $result = array('status'=>TRUE, 'message' => $this->lang->line('success'),'data'=>array('data' =>$student_invoice_list['data'],'total_records' =>$student_invoice_list['total_records'],'total_invoices_amount'=>$total_invoices_amount,'total_collected_amount'=>$total_collected_amount,'invoices_count'=>$invoices_count,'due_amount'=>$due_amount,'last_six_months'=>$months,'table_headers'=>getTableHeads('student_invoice_list')));
 
         }
         $this->response($result, REST_Controller::HTTP_OK);
@@ -187,14 +193,14 @@ class Invoice extends REST_Controller
             'total_amount'=>$student_data[0]['total_amount'],
             'created_by'=>!empty($this->session_user_id)?$this->session_user_id:'0',
         );
-        $franchise_name=str_replace(" ","",$student_data[0]['franchise_name']);
-        $month=date("M");
+        $franchise_name=str_replace(" ","",$student_data[0]['franchise_code']);
+        $month=date("m");
         $year=date("Y");
         $update_student=$this->User_model->update_data('student',array('next_invoice_date'=>$next_invoice_date),array('id'=>$data['student_id']));
         $invoice_insert=$this->User_model->insert_data('student_invoice',$invoice_data);
         //  MIN/test/March/2020/00
          $id=str_pad($invoice_insert,6,"0",STR_PAD_LEFT);
-        $invoice_number="MIN/".$franchise_name."/".$month."/".$year."/".$id;
+        $invoice_number="MIN/".$franchise_name."/".$year."/".$month."/".$id;
         $this->User_model->update_data('student_invoice',array('invoice_number'=>$invoice_number),array('id'=>$invoice_insert));
         // print_r($invoice_number);exit;
         if(!empty($invoice_insert)){

@@ -28,26 +28,28 @@ class Invoice extends REST_Controller
         if(!empty($data['student_invoice_id'])){
             $student_invoice_payment_history=$this->Invoices_model->getStudentPaymentHistory(array('student_invoice_id'=>$data['student_invoice_id']));//echo $this->db->last_query();exit;
             $student_invoice_payment_history=!empty( $student_invoice_payment_history)?$student_invoice_payment_history:array();
-            $student_invoice_info=$this->Invoices_model->getStudentInvoiceList($data);//echo $this->db->last_query();exit;
+            $student_invoice_info=$this->Invoices_model->getStudentInvoiceList($data);//print_r($student_invoice_info['data'][0]);exit;
             
             if(!empty($student_invoice_info['data'][0] && $student_invoice_info['data'][0]['payment_status']==98 ||$student_invoice_info['data'][0]['payment_status']==100)){//if payment status= 98 then it is consider as invoice payment status in Due,similarly 100 then it is OverDue
-                $date=date("Y-m-d");
-                if($student_invoice_info['data'][0]['term']==19){//if term  value is 19 then we consider as Monthly plan in fee master
-                    $due_date= date('Y-m-d', strtotime($student_invoice_info['data'][0]['next_invoice_date'] .'-10 day')); //this is due date that return before 10 days
-                }
-                if($student_invoice_info['data'][0]['term']==21){//if term  value is 19 then we consider as halfyearly plan in fee master
-                    $due_date= date('Y-m-d', strtotime($student_invoice_info['data'][0]['next_invoice_date'] .'-1 month')); 
-                }
-                if($student_invoice_info['data'][0]['term']==20){//if term  value is 19 then we consider as Quarterly plan in fee master
-                    $due_date= date('Y-m-d', strtotime($student_invoice_info['data'][0]['next_invoice_date'] .'-15 day')); 
-                }
-                if($student_invoice_info['data'][0]['term']==22){//if term  value is 19 then we consider as Yearly plan in fee master
-                    $due_date= date('Y-m-d', strtotime($student_invoice_info['data'][0]['next_invoice_date'] .'-2 month')); 
-                }
-                $result = array('status'=>TRUE, 'message' => $this->lang->line('success'),'data'=>array('data' =>$student_invoice_info['data'],'due_date'=>!empty($due_date)?$due_date:$date,'student_invoice_payment_history'=>$student_invoice_payment_history));
+                // $date=date("Y-m-d");
+                // if($student_invoice_info['data'][0]['term']==19){//if term  value is 19 then we consider as Monthly plan in fee master
+                //     $due_date= date('Y-m-d', strtotime($student_invoice_info['data'][0]['next_invoice_date'] .'-10 day')); //this is due date that return before 10 days
+                // }
+                // if($student_invoice_info['data'][0]['term']==21){//if term  value is 19 then we consider as halfyearly plan in fee master
+                //     $due_date= date('Y-m-d', strtotime($student_invoice_info['data'][0]['next_invoice_date'] .'-1 month')); 
+                // }
+                // if($student_invoice_info['data'][0]['term']==20){//if term  value is 19 then we consider as Quarterly plan in fee master
+                //     $due_date= date('Y-m-d', strtotime($student_invoice_info['data'][0]['next_invoice_date'] .'-15 day')); 
+                // }
+                // if($student_invoice_info['data'][0]['term']==22){//if term  value is 19 then we consider as Yearly plan in fee master
+                //     $due_date= date('Y-m-d', strtotime($student_invoice_info['data'][0]['next_invoice_date'] .'-2 month')); 
+                // }
+                $due_date=$student_invoice_info['data'][0]['due_date']?$student_invoice_info['data'][0]['due_date']:'';
+                $result = array('status'=>TRUE, 'message' => $this->lang->line('success'),'data'=>array('data' =>$student_invoice_info['data'],'due_date'=>!empty($due_date)?$due_date:'','student_invoice_payment_history'=>$student_invoice_payment_history));
             } 
             else{
-                $result = array('status'=>TRUE, 'message' => $this->lang->line('success'),'data'=>array('data' =>$student_invoice_info['data'],'paid_date'=>$date=date("Y-m-d"),'student_invoice_payment_history'=>$student_invoice_payment_history));
+                $paid_date=$student_invoice_info['data'][0]['paid_date']?$student_invoice_info['data'][0]['paid_date']:'';
+                $result = array('status'=>TRUE, 'message' => $this->lang->line('success'),'data'=>array('data' =>$student_invoice_info['data'],'paid_date'=>$paid_date,'student_invoice_payment_history'=>$student_invoice_payment_history));
             }
         }
         else{
@@ -121,7 +123,7 @@ class Invoice extends REST_Controller
              'update_on'=>currentDate(),
             );
          $histor_update=$this->User_model->insert_data('student_invoice_payment_history',$update_data);
-         $student_invoice_update=$this->User_model->update_data('student_invoice',array('payment_status'=>$data['status'],'payment_mode'=>$data['payment_type']),array('id'=>$data['student_invoice_id']));
+         $student_invoice_update=$this->User_model->update_data('student_invoice',array('payment_status'=>$data['status'],'payment_mode'=>$data['payment_type'],'paid_date'=>$data['status']==97?currentDate():'','update_on'=>currentDate(),'update_by'=>$this->session_user_info->user_id),array('id'=>$data['student_invoice_id']));
          if(isset($histor_update) && $student_invoice_update){
             $result = array('status'=>TRUE, 'message' =>$this->lang->line('update_payment_status'), 'data'=>array('data'=>''));
             $this->response($result, REST_Controller::HTTP_OK);
@@ -144,7 +146,7 @@ class Invoice extends REST_Controller
              $result = array('status'=>FALSE,'error'=>$validated,'data'=>'');
              $this->response($result, REST_Controller::HTTP_OK);
          }
-         $student_data=$this->Invoices_model->getStudentInvoicedData($data);
+         $student_data=$this->Invoices_model->getStudentInvoicedData($data);//print_r($student_data);exit;
         $date=date("Y-m-d");
         $day=date("d");
         if(!empty($student_data[0]['term'])){
@@ -192,6 +194,10 @@ class Invoice extends REST_Controller
             'invoice_date'=>date("Y-m-d"),
             'total_amount'=>$student_data[0]['total_amount'],
             'created_by'=>!empty($this->session_user_id)?$this->session_user_id:'0',
+            'discount_amount'=>$student_data[0]['discount_amount'],
+            'tax_amount'=>$student_data[0]['tax_amount'],
+            'due_date'=>date('Y-m-d', strtotime($date .'+'.$student_data[0]['due_days'].'days')),
+            'created_on'=>CurrentDate()
         );
         $franchise_name=str_replace(" ","",$student_data[0]['franchise_code']);
         $month=date("m");

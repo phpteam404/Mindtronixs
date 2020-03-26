@@ -19,9 +19,9 @@ class Invoices_model extends CI_Model
 
     }
     public function getStudentInvoiceList($data=null){
-            $this->db->select('si.id as student_invoice_id,replace(si.invoice_number," ","") as invoice_number,concat(u.first_name," ",u.last_name) as student_name,u.phone_no ,u.email as email,si.invoice_date,TRIM(si.amount)+0 as amount,mc.child_name as status,si.franchise_id,s.id as student_id');
+            $this->db->select('si.id as student_invoice_id,replace(si.invoice_number," ","") as invoice_number,concat(u.first_name," ",u.last_name) as student_name,u.phone_no ,u.email as email,si.invoice_date,TRIM(si.total_amount)+0 as amount,mc.child_name as status,si.franchise_id,s.id as student_id');
             if(!empty($data['student_invoice_id'])){
-                $this->db->select('fm.name as fee_structure,fm.term,si.payment_status,DATE_FORMAT(s.created_on, "%Y-%m-%d") as member_since,s.id as student_id,s.next_invoice_date');
+                $this->db->select('fm.name as fee_structure,fm.term,si.payment_status,DATE_FORMAT(s.created_on, "%Y-%m-%d") as member_since,s.id as student_id,s.next_invoice_date,si.due_date,si.paid_date');
             }
         $this->db->from('student_invoice si');
         $this->db->join('student s','si.student_id=s.id','left');
@@ -68,7 +68,7 @@ class Invoices_model extends CI_Model
     }
     public function getAmount($data=null){
 
-        $this->db->select('SUM(amount) as total_amount,count(*) as count');
+        $this->db->select('SUM(total_amount) as total_amount,count(*) as count');
         $this->db->from('student_invoice si');
         // if(!empty($data['franchise_id'])){
         //     $this->db->where('franchise_id',$data['franchise_id']);
@@ -102,6 +102,9 @@ class Invoices_model extends CI_Model
         if(!empty($data['student_id'])){
             $this->db->where('si.student_id',$data['student_id']);
         }
+        if(!empty($data['student_invoice_id'])){
+            $this->db->where_not_in('si.id',array($data['student_invoice_id']));
+        }
         $this->db->order_by('si.id','desc');
         $query = $this->db->get();
         return $query->result_array();
@@ -122,7 +125,7 @@ class Invoices_model extends CI_Model
 
     }
     public function getStudentInvoicedData($data=null){
-        $this->db->select('s.id student_id,s.franchise_id,fm.amount,fm.discount,fm.tax,,fm.term,TRIM(((fm.amount-(fm.amount*fm.discount/100))+((fm.amount-(fm.amount*fm.discount/100))*fm.tax/100)))+0 as total_amount,s.franchise_fee_id,f.franchise_code');
+        $this->db->select('s.id student_id,s.franchise_id,fm.amount,fm.discount,fm.tax,,fm.term,TRIM((fm.amount-(fm.amount*fm.discount/100)+(fm.amount*fm.tax/100)))+0 as total_amount,s.franchise_fee_id,f.franchise_code,TRIM((fm.amount*fm.discount/100))+0 as discount_amount,TRIM(fm.amount*fm.tax/100)+0 as tax_amount,fm.due_days');
         $this->db->from('student s');
         $this->db->join('franchise f','s.franchise_id=f.id','left');
         $this->db->join('fee_master fm','s.franchise_fee_id=fm.id','left');

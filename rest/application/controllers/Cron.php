@@ -16,11 +16,11 @@ class Cron extends CI_Controller
     public function studentinvoicegeneration(){
         //invoice_generation_status // From insert query
         //1 as invoice_generation_status // From Select query
-        $query  =   "SET @a=0";
+        $query  =   "SET @a=0"; 
         $this->db->query($query);
         $query1='
-        INSERT INTO  student_invoice (invoice_number,franchise_id,student_id,amount,tax,total_amount,franchise_fee_id,invoice_date,discount)
-        SELECT CONCAT("MIN/",f.franchise_code,"/",DATE_FORMAT(CURDATE(),"%b"),"/",YEAR(CURDATE()),"/",@a:=LPAD(@a+1, 6, 0)) invoice_number,f.id franchise_id,s.id student_id,fm.amount,(SELECT mc1.child_key from master_child mc1  WHERE mc1.master_id=21) as tax,(fm.amount-(fm.amount*fm.discount/100)+(fm.amount*fm.tax/100)) as total_amount,s.franchise_fee_id as franchise_fee_id,CURRENT_DATE()invoice_date,fm.discount
+        INSERT INTO  student_invoice (invoice_number,franchise_id,student_id,amount,tax,total_amount,franchise_fee_id,invoice_date,discount,discount_amount,tax_amount,created_on,created_by,due_date)
+        SELECT CONCAT("MIN/",f.franchise_code,"/",YEAR(CURDATE()),"/",DATE_FORMAT(CURDATE(),"%m"),"/",@a:=LPAD(@a+1, 6, 0)) invoice_number,f.id franchise_id,s.id student_id,fm.amount,(SELECT mc1.child_key from master_child mc1  WHERE mc1.master_id=21) as tax,(fm.amount-(fm.amount*fm.discount/100)+(fm.amount*fm.tax/100)) as total_amount,s.franchise_fee_id as franchise_fee_id,CURRENT_DATE()invoice_date,fm.discount,TRIM((fm.amount*fm.discount/100))+0 as discount_amount,TRIM(fm.amount*fm.tax/100)+0 as tax_amount,CURRENT_DATE() as created_on, 1 as created_by,DATE_ADD(CURDATE(), INTERVAL fm.due_days DAY) as due_date
         FROM student s
         LEFT JOIN franchise f ON s.franchise_id = f.id
         LEFT JOIN franchise_fee ff ON s.franchise_fee_id = ff.id

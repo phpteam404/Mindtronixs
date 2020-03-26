@@ -950,7 +950,7 @@ if (!function_exists('getTableHeads')) {
                 break;
                 case 'student_invoice_list':
                     return array(
-                        array('field'=> 'invoice_number', 'header'=> 'Number','alias'=>'invoice_number'),
+                        array('field'=> 'invoice_number', 'header'=> 'Invoice #','alias'=>'invoice_number'),
                         array('field'=>'student_name', 'header'=> 'Name','alias'=>'student_name' ),
                         array('field'=> 'phone_no', 'header'=> 'Contact','alias'=>'phone_no' ),
                         array('field'=> 'email', 'header'=> 'Email','alias'=>'email' ),

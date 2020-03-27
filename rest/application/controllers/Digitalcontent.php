@@ -38,7 +38,7 @@ class Digitalcontent extends REST_Controller
         // }
         // print_r($data);print_r($_FILES);exit;
 
-        // print_r($data);exit;
+        // print_r(json_encode($data));exit;
         if(empty($data)){
             $result = array('status'=>FALSE,'error'=>$this->lang->line('invalid_data'),'data'=>'');
             $this->response($result, REST_Controller::HTTP_OK);
@@ -49,7 +49,7 @@ class Digitalcontent extends REST_Controller
         $this->form_validator->add_rules('sub_category', array('required' => $this->lang->line('sub_category_req')));
         $this->form_validator->add_rules('tags', array('required' => $this->lang->line('tags_req')));
         $this->form_validator->add_rules('grade', array('required' => $this->lang->line('grade_req')));
-        $this->form_validator->add_rules('content_level', array('required' => $this->lang->line('content_level_req')));
+        // $this->form_validator->add_rules('content_level', array('required' => $this->lang->line('content_level_req')));
         $validated = $this->form_validator->validate($data);    
         if($validated != 1)
         {
@@ -65,7 +65,10 @@ class Digitalcontent extends REST_Controller
             'expiry_date'=>!empty($data['expiry_date'])?$data['expiry_date']:'', 
             'grade'=>!empty($data['grade'])?$data['grade']:'',
             'content_level'=>!empty($data['content_level'])?$data['content_level']:'',
-            'status'=>isset($data['status'])?$data['status']:'1'
+            'status'=>isset($data['status'])?$data['status']:'1',
+            'pre_url'=>isset($data['pre_url'])?$data['pre_url']:'',
+            'post_url'=>isset($data['post_url'])?$data['post_url']:'',
+            
         );
         // print_r($content_data);exit;
         if(!empty($_FILES)){

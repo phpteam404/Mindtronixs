@@ -100,10 +100,11 @@ class Fee extends REST_Controller
             $this->response($result, REST_Controller::HTTP_OK);
         }
        if(!empty($data['franchise_id'])){
-           $franchise_fee_ids=$this->User_model->check_record_selected('fee_master_id','franchise_fee',array('franchise_id'=>$data['franchise_id'],'status'=>1));
+           $franchise_fee_ids=$this->User_model->check_record_selected('fee_master_id','franchise_fee',array('franchise_id'=>$data['franchise_id']));
            $data['fee_master_id_not_in']=array_column($franchise_fee_ids, 'fee_master_id');
+        //    print_r($data['fee_master_id_not_in']);exit;
        }
-        $result = $this->Fee_model->listFeeMasterInfo($data);
+        $result = $this->Fee_model->listFeeMasterInfo($data);//echo $this->db->last_query();exit;
 // print_r($result);exit;
         foreach($result['data'] as $k => $v){
             if(isset($data['fee_master_id']) && $data['fee_master_id'] >0){

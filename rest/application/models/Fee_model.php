@@ -30,9 +30,9 @@ class Fee_model extends CI_Model
             $this->db->or_like('fm.discount', $data['search_key'], 'both');
             $this->db->group_end();
         }
-        if(isset($data['status']) && $data['status']!=''){
-            $this->db->where('fm.status',$data['status']);
-        }
+        // if(isset($data['status']) && $data['status']!=''){
+        //     $this->db->where('fm.status',$data['status']);
+        // }
         if(!empty($data['fee_master_id_not_in'])){
             $this->db->where_not_in('fm.id',$data['fee_master_id_not_in']);
         }

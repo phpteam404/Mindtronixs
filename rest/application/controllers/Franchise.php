@@ -502,6 +502,31 @@ class Franchise extends REST_Controller
 
         }
     }
+    public function updateFranchiseStatus_post()    {
+        $data = $this->input->post();
+        if(empty($data)){
+            $result = array('status'=>FALSE,'error'=>$this->lang->line('invalid_data'),'data'=>'');
+            $this->response($result, REST_Controller::HTTP_OK);
+        }
+        //print_r($data);exit;
+        $this->form_validator->add_rules('franchise_fee_id', array('required' => $this->lang->line('franchise_feeid_req')));
+        $this->form_validator->add_rules('status', array('required' => $this->lang->line('franchise_fee_status')));
+        $validated = $this->form_validator->validate($data);
+        if($validated != 1)
+        {
+            $result = array('status'=>FALSE,'error'=>$validated,'data'=>'');
+            $this->response($result, REST_Controller::HTTP_OK);
+        }
+        $update_frachise_fee_status=$this->User_model->update_data('franchise_fee',array('status'=>$data['status']),array('id'=>$data['franchise_fee_id']));
+        if($update_frachise_fee_status>0){
+            $result = array('status'=>TRUE, 'message' => $this->lang->line('frachise_status_update'),'data'=>array('data' =>$drop_down_data));
+            $this->response($result, REST_Controller::HTTP_OK);
+        }
+        else{
+            $result = array('status'=>FALSE,'error'=>$this->lang->line('invalid_data'),'data'=>'');
+            $this->response($result, REST_Controller::HTTP_OK);
+        }
+    }
 
 }
 

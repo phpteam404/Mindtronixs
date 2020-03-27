@@ -811,6 +811,7 @@ if (!function_exists('getTableHeads')) {
                      array('field'=> 'amount', 'header'=> 'Fee Amount (₹)' ,'alias' =>'amount'),
                      array('field'=> 'term', 'header'=> 'Term' ,'alias' =>'term'),
                      array('field'=> 'discount', 'header'=> 'Discount (%)' ,'alias' =>'discount' ),
+                     array('field'=> 'tax', 'header'=> 'Tax (%)' ,'alias' =>'tax' ),
                      array('field'=> 'status', 'header'=> 'Status','alias'=>'status' ),
                      array('field'=> 'actions', 'header'=> 'Actions','alias'=>'actions' )
                 );

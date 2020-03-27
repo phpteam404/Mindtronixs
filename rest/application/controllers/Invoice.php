@@ -106,7 +106,7 @@ class Invoice extends REST_Controller
          }
          $this->form_validator->add_rules('student_invoice_id', array('required'=>$this->lang->line('student_invoice_id_req')));
          $this->form_validator->add_rules('status', array('required'=>$this->lang->line('payment_status_req')));
-         $this->form_validator->add_rules('payment_type', array('required'=>$this->lang->line('payment_type_req')));
+        //  $this->form_validator->add_rules('payment_type', array('required'=>$this->lang->line('payment_type_req')));
 
          $validated = $this->form_validator->validate($data);
          if($validated != 1)

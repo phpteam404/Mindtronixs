@@ -49,6 +49,8 @@ class Fee extends REST_Controller
              'term' =>isset($data['term'])?$data['term']:'',
              'discount' =>isset($data['discount'])?$data['discount']:'',
              'discount_details' =>isset($data['discount_details'])?$data['discount_details']:'',
+             'tax'=>!empty($data['tax'])?$data['tax']:'0',
+             'due_days'=>!empty($data['due_days'])?$data['due_days']:'0',
              'status'=>isset($data['status'])?$data['status']:'1'
         );
         if(isset($data['fee_master_id']) && $data['fee_master_id']>0){
@@ -144,12 +146,15 @@ class Fee extends REST_Controller
                    
                     $fee_structure=$this->Fee_model->getfeeStructureDropdown(array());
                 }//echo $this->db->last_query();exit;
+                // print_r($fee_structure);exit;    
                 foreach($fee_structure as $k=>$v){
+                    $fee_structure[$k]=getObjOnId($v['fee_master'],!empty($v['fee_master'])?true:false);
+                    $fee_structure[$k]['amount']=$v['amount'];
+                    $fee_structure[$k]['tax']=$v['tax'];
+                    $fee_structure[$k]['discount']=$v['discount'];
 
-                    $drop_down_data[$k]=getObjOnId($v['fee_master'],!empty($v['fee_master'])?true:false);
-                    $drop_down_data[$k]['amount']=$v['amount'];
                 }
-                $result = array('status'=>TRUE, 'message' => $this->lang->line('success'),'data'=>array('data' =>$drop_down_data));
+                $result = array('status'=>TRUE, 'message' => $this->lang->line('success'),'data'=>array('data' =>$fee_structure));
             
         }
         $this->response($result, REST_Controller::HTTP_OK);

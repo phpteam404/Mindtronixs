@@ -17,7 +17,7 @@ class Fee_model extends CI_Model
     public function listFeeMasterInfo($data)
     {
         // print_r($data);exit;
-        $this->db->select('fm.id as fee_master_id,fm.name,fm.amount,fm.term,discount,fm.discount_details,fm.status,CONCAT(mc.child_name,"-",mc.id) term');
+        $this->db->select('fm.id as fee_master_id,fm.name,fm.amount,fm.term,discount,fm.discount_details,fm.status,CONCAT(mc.child_name,"-",mc.id) term,fm.tax,fm.due_days');
         $this->db->from('fee_master fm');
         $this->db->join('master_child mc','fm.term = mc.id AND mc.master_id = 11','left');
         $this->db->where_in('fm.status',array(1,0));
@@ -28,6 +28,7 @@ class Fee_model extends CI_Model
             $this->db->or_like('fm.amount', $data['search_key'], 'both');
             $this->db->or_like('mc.child_name', $data['search_key'], 'both');
             $this->db->or_like('fm.discount', $data['search_key'], 'both');
+            $this->db->or_like('fm.tax', $data['search_key'], 'both');
             $this->db->group_end();
         }
         // if(isset($data['status']) && $data['status']!=''){
@@ -56,14 +57,14 @@ class Fee_model extends CI_Model
     }
 
     public function getfeeStructureDropdown($data=null){
-        $this->db->select('CONCAT(fm.name," (",TRIM(fm.amount)+0,")", "-", fm.id) fee_master,TRIM(fm.amount)+0 as amount');
+        $this->db->select('CONCAT(fm.name," (",TRIM(fm.amount)+0,")", "-", fm.id) fee_master,TRIM(fm.amount)+0 as amount,fm.tax,fm.discount');
         $this->db->from('fee_master fm');
         $this->db->join('franchise_fee ff','fm.id=ff.fee_master_id','left');
         if(!empty($data['franchise_id']))
         $this->db->where('ff.franchise_id',$data['franchise_id']);
         $this->db->where('fm.status','1');
         $this->db->group_by('fm.id');
-        $query = $this->db->get();
+        $query = $this->db->get();//echo $this->db->last_query();exit;
         return $query->result_array();
     }
 

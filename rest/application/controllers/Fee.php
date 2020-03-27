@@ -149,9 +149,9 @@ class Fee extends REST_Controller
                 // print_r($fee_structure);exit;    
                 foreach($fee_structure as $k=>$v){
                     $fee_structure[$k]=getObjOnId($v['fee_master'],!empty($v['fee_master'])?true:false);
-                    $fee_structure[$k]['amount']=$v['amount'];
-                    $fee_structure[$k]['tax']=$v['tax'];
-                    $fee_structure[$k]['discount']=$v['discount'];
+                    $fee_structure[$k]['amount']=(int)$v['amount'];
+                    $fee_structure[$k]['tax']=(int)$v['tax'];
+                    $fee_structure[$k]['discount']=(int)$v['discount'];
 
                 }
                 $result = array('status'=>TRUE, 'message' => $this->lang->line('success'),'data'=>array('data' =>$fee_structure));

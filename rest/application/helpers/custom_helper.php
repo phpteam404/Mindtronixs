@@ -301,6 +301,17 @@ if (!function_exists('getObjOnId')) {
         }
     }
 }
+if (!function_exists('getMultipeObjOnId')) {
+    function getMultipeObjOnId($v,$bool){
+        $v = explode('-',$v);
+        // print_r($v);exit;
+        if($bool){
+            return array('label'=>ucfirst($v[0]),'value'=>(int)$v[1],'amount'=>round($v[2],0),'tax'=>(int)$v[3],'discount'=>(int)$v[4]);
+        }else{
+            return $v[0];
+        }
+    }
+}
 if (!function_exists('getObjOnIdOfBloodGroup')) {
     function getObjOnIdOfBloodGroup($v,$bool){
         $v = explode(',',$v);

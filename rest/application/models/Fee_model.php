@@ -57,7 +57,7 @@ class Fee_model extends CI_Model
     }
 
     public function getfeeStructureDropdown($data=null){
-        $this->db->select('CONCAT(fm.name," (",TRIM(fm.amount)+0,")", "-", fm.id) fee_master,TRIM(fm.amount)+0 as amount,fm.tax,fm.discount');
+        $this->db->select('CONCAT(fm.name, "-", fm.id) fee_master,TRIM(fm.amount)+0 as amount,fm.tax,fm.discount');
         $this->db->from('fee_master fm');
         $this->db->join('franchise_fee ff','fm.id=ff.fee_master_id','left');
         if(!empty($data['franchise_id']))

@@ -494,7 +494,7 @@ class User extends REST_Controller
                 $student_list['data'][$k]['grade']=getObjOnId($v['grade'],!empty($v['grade'])?true:false);//getting object  of  dropdown grade field
                 $student_list['data'][$k]['nationality']=getObjOnId($v['nationality'],!empty($v['nationality'])?true:false);
                 $student_list['data'][$k]['mother_tongue']=getObjOnId($v['mother_tongue'],!empty($v['mother_tongue'])?true:false);
-                $student_list['data'][$k]['fee_structure']=getObjOnId($v['fee_structure'],!empty($v['fee_structure'])?true:false);
+                $student_list['data'][$k]['fee_structure']=getMultipeObjOnId($v['fee_structure'],!empty($v['fee_structure'])?true:false);
                 $student_list['data'][$k]['status']=getStatusObj($v['status'],!empty($v['status'])?true:false);
                 $student_list['data'][$k]['date_of_birth']=date('Y-m-d', strtotime($v['date_of_birth']));
                 $student_list['data'][$k]['school_id']=getObjOnId($v['school_id'],!empty($v['school_id'])?true:false);

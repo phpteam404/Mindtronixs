@@ -505,7 +505,7 @@ class Franchise extends REST_Controller
     public function updateFranchiseStatus_post()    {
         $data = $this->input->post();
         if(empty($data)){
-            $result = array('status'=>FALSE,'error'=>$this->lang->line('invalid_data'),'data'=>'');
+            $result = array('status'=>FALSE,'error'=>$this->lang->line('invalid_data'),'data'=>'2');
             $this->response($result, REST_Controller::HTTP_OK);
         }
         //print_r($data);exit;
@@ -518,12 +518,12 @@ class Franchise extends REST_Controller
             $this->response($result, REST_Controller::HTTP_OK);
         }
         $update_frachise_fee_status=$this->User_model->update_data('franchise_fee',array('status'=>$data['status']),array('id'=>$data['franchise_fee_id']));
-        if($update_frachise_fee_status>0){
-            $result = array('status'=>TRUE, 'message' => $this->lang->line('frachise_status_update'),'data'=>array('data' =>$drop_down_data));
+        if(isset($update_frachise_fee_status)){
+            $result = array('status'=>TRUE, 'message' => $this->lang->line('frachise_status_update'),'data'=>array('data' =>$data['franchise_fee_id']));
             $this->response($result, REST_Controller::HTTP_OK);
         }
         else{
-            $result = array('status'=>FALSE,'error'=>$this->lang->line('invalid_data'),'data'=>'');
+            $result = array('status'=>FALSE,'error'=>$this->lang->line('invalid_data'),'data'=>'1');
             $this->response($result, REST_Controller::HTTP_OK);
         }
     }

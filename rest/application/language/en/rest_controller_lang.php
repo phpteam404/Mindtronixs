@@ -481,7 +481,7 @@ $lang['update_payment_status'] = 'Payment status updated Successfully';
 $lang['invoice_generate'] = 'Student invoice generated Successfully';
 $lang['franchise_feeid_req'] = 'Frachise fee id required';
 $lang['franchise_fee_status'] = 'Frachise fee status required';
-$lang['frachise_status_update'] = 'Frachise fee status updated Successfully';
+$lang['frachise_status_update'] = 'Franchise fee managemnt updated successfully';
 
 
 

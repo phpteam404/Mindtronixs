@@ -269,8 +269,16 @@ class User extends REST_Controller
     {
         $data = $this->input->get();
         $modules=array();
-        if(!isset($data['dropdown']))
+        if(!isset($data['dropdown'])){
             $modules= $this->User_model->menuList(array('user_role_id'=>!empty($data['user_role_id'])?$data['user_role_id']:1));//echo $this->db->last_query();exit;
+            // foreach($modules as $mk => $mv){
+            //     $modules[$mk]['create'] = (int)$mv['create'];
+            //     $modules[$mk]['edit'] = (int)$mv['edit'];
+            //     $modules[$mk]['view'] = (int)$mv['view'];
+            //     $modules[$mk]['delete'] = (int)$mv['delete'];
+            // }
+
+        }
         $user_roles= $this->User_model->getUserRoles(array('dropdown'=>isset($data['dropdown'])?true:false));
         // echo $this->db->last_query();exit;
         if(isset($data['dropdown'])){
@@ -321,12 +329,24 @@ class User extends REST_Controller
             $this->response($result, REST_Controller::HTTP_OK);
         }
         $modules=$this->User_model->menuList(array('user_role_id'=>$data['user_role_id'],'module_url'=>$data['module_url']));
-       // print_r($modules);exit;
+    //    print_r($modules);exit;
         if(count($modules)>0){
-            $access=TRUE;
+            $access = true;
+            // $access=array(
+            //     'create'=>(int)$modules[0]['create'],
+            //     'edit'=>(int)$modules[0]['edit'],
+            //     'view'=>(int)$modules[0]['view'],
+            //     'delete'=>(int)$modules[0]['delete']
+            // );
         }
         else{
-            $access=FALSE;
+            $access = false;
+            // $access=array(
+            //     'create'=>0,
+            //     'create'=>0,
+            //     'create'=>0,
+            //     'create'=>0
+            // );
         }
         $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>array('access'=>$access));
         $this->response($result, REST_Controller::HTTP_OK);

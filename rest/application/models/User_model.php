@@ -601,7 +601,7 @@ class User_model extends CI_Model
 
     public function menuList($data)
     {
-        $this->db->select('ap.module_name,ap.module_key,module_url,ur.user_role_name,ap.id as app_module_id,ma.id as module_access_id,ma.user_role_id,ma.is_access_status,ap.module_icon,ma.id as module_access,ap.parent_module_id,ap.module_order');
+        $this->db->select('ap.module_name,ap.module_key,module_url,ur.user_role_name,ap.id as app_module_id,ma.id as module_access_id,ma.user_role_id,ma.is_access_status,ap.module_icon,ma.id as module_access,ap.parent_module_id,ap.module_order,ma.create,ma.edit,ma.view,ma.delete');
         $this->db->from('app_module ap');
         $this->db->join('module_access ma','ap.id=ma.app_module_id','left');
         $this->db->join('user_role ur','ma.user_role_id=ur.id','left');
@@ -892,6 +892,18 @@ class User_model extends CI_Model
         return $query->result_array();
     }
 
+    public function getModulesAccess($data){
+                
+        $this->db->select('m.*,mc.*,mcc.application_role_id,IF(mcc.id_module_access,1,0) as checked');
+        $this->db->from('module m');
+        $this->db->join('module_action mc','mc.module_id=m.id_module','left');
+        $this->db->join('module_access mcc','mcc.module_action_id=mc.id_module_action and `mcc`.`application_role_id` = '.$data['application_role_id'].' and mcc.module_access_status=1','left');
+
+        $this->db->order_by('m.order','ASC');
+        $query = $this->db->get();
+        //echo $this->db->last_query(); exit;
+        return $query->result_array();
+    }
 }
 
 

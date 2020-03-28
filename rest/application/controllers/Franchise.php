@@ -327,8 +327,8 @@ class Franchise extends REST_Controller
             $franchise_info[$k]['franchise_contacts_information']= $frachise_contacts;
             $fee_master_ids=$this->User_model->check_record_selected('GROUP_CONCAT(fee_master_id) as fee_master_ids','franchise_fee',array('franchise_id'=>$data['franchise_id'],'status'=>1));//echo $this->db->last_query();exit;
             // print_r($fee_master_ids[0]['fee_master_ids']);exit;
-            if(!empty($fee_master_ids[0]['fee_master_ids'])){
-                $feemaster_ids=explode(",",$fee_master_ids[0]['fee_master_ids']);
+            // if(!empty($fee_master_ids[0]['fee_master_ids'])){
+            //     $feemaster_ids=explode(",",$fee_master_ids[0]['fee_master_ids']);
                 // print_r($fee_master_ids[0]['fee_master_ids']);exit;
                 // foreach($feemaster_ids as $k2 =>$v2){//this loop for get fee details of franchise
                     //     print_r($get_fee_data);exit;
@@ -339,7 +339,7 @@ class Franchise extends REST_Controller
                         // }
                         $get_fee_data=$this->Franchise_model->getFeeData(array('franchise_id'=>$data['franchise_id']));//echo $this->db->last_query();exit;//thsi model used for get fee data of franchise
                                 $franchise_info[$k]['fee_detalis']=$get_fee_data;
-                    }
+                    // }
             $franchise_info[$k]['franchise_contacts_information']= !empty($franchise_info[$k]['franchise_contacts_information'])?$franchise_info[$k]['franchise_contacts_information']:array();
             $franchise_info[$k]['fee_detalis']= !empty($franchise_info[$k]['fee_detalis'])?$franchise_info[$k]['fee_detalis']:array();
             

@@ -23,8 +23,7 @@ class Cron extends CI_Controller
         SELECT CONCAT("MIN/",f.franchise_code,"/",YEAR(CURDATE()),"/",DATE_FORMAT(CURDATE(),"%m"),"/",@a:=LPAD(@a+1, 6, 0)) invoice_number,f.id franchise_id,s.id student_id,fm.amount,(SELECT mc1.child_key from master_child mc1  WHERE mc1.master_id=21) as tax,(fm.amount-(fm.amount*fm.discount/100)+(fm.amount*fm.tax/100)) as total_amount,s.franchise_fee_id as franchise_fee_id,CURRENT_DATE()invoice_date,fm.discount,TRIM((fm.amount*fm.discount/100))+0 as discount_amount,TRIM(fm.amount*fm.tax/100)+0 as tax_amount,CURRENT_DATE() as created_on, 1 as created_by,DATE_ADD(CURDATE(), INTERVAL fm.due_days DAY) as due_date
         FROM student s
         LEFT JOIN franchise f ON s.franchise_id = f.id
-        LEFT JOIN franchise_fee ff ON s.franchise_fee_id = ff.id
-        LEFT JOIN fee_master fm ON ff.fee_master_id = fm.id
+        LEFT JOIN fee_master fm ON s.franchise_fee_id = fm.id
         WHERE s.status=1
         AND s.next_invoice_date = CURDATE()
         AND s.subscription_status = 1';

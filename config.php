@@ -19,6 +19,11 @@ define('SEND_GRID_API_KEY', '');//new code
 define('SEND_GRID_FROM_EMAIL', 'no-reply@mindtronix.com');
 define('SEND_GRID_FROM_NAME', 'Mindtronix');
 define('DOCUMENT_PATH', 'http://192.168.0.63/Mindtronixs/rest/uploads/');
+define('MONTHLY_TERM_KEY', 'monthly');
+define('QUARTERYL_TERM_KEY', 'quarterly');
+define('ANNUAL_TERM_KEY', 'annual');
+define('HALFYEARLY_TERM_KEY', 'half_yearly');
+
 
 switch(ENV)
 {

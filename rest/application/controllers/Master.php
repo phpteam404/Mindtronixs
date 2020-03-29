@@ -97,7 +97,7 @@ class Master extends REST_Controller
         // $data = tableOptions($data);
         // print_r($this->session_user_info->user_role_id);exit;
 
-        if($data['master_key']=='ticket_status' && empty($data['type'])){
+        if($data['master_key']=='ticket_status' && !empty($data['ticket_id'])){
             if($this->session_user_info->user_role_id==1){
                 $data['master_ids']=array(46,47,48);
             }

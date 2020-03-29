@@ -63,6 +63,7 @@ class Fee_model extends CI_Model
         if(!empty($data['franchise_id']))
         $this->db->where('ff.franchise_id',$data['franchise_id']);
         $this->db->where('fm.status','1');
+        $this->db->where('ff.status','1');
         $this->db->group_by('fm.id');
         $query = $this->db->get();//echo $this->db->last_query();exit;
         return $query->result_array();

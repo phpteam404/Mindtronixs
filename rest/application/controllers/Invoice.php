@@ -117,13 +117,13 @@ class Invoice extends REST_Controller
          $update_data=array(
              'student_invoice_id'=>$data['student_invoice_id'],
              'payment_status'=>$data['status'],
-             'payment_type'=>!empty($data['payment_type'])?$data['payment_type']:'',
+             'payment_type'=>isset($data['payment_type'])?$data['payment_type']:'',
              'comments'=>!empty($data['comments'])?$data['comments']:'',
              'updated_by'=>$this->session_user_info->user_id,
              'update_on'=>currentDate(),
             );
          $histor_update=$this->User_model->insert_data('student_invoice_payment_history',$update_data);
-         $student_invoice_update=$this->User_model->update_data('student_invoice',array('payment_status'=>$data['status'],'payment_mode'=>$data['payment_type'],'paid_date'=>$data['status']==97?currentDate():'','update_on'=>currentDate(),'update_by'=>$this->session_user_info->user_id),array('id'=>$data['student_invoice_id']));
+         $student_invoice_update=$this->User_model->update_data('student_invoice',array('payment_status'=>$data['status'],'payment_mode'=>isset($data['payment_type'])?$data['payment_type']:'','paid_date'=>$data['status']==97?currentDate():'','update_on'=>currentDate(),'update_by'=>$this->session_user_info->user_id),array('id'=>$data['student_invoice_id']));
          if(isset($histor_update) && $student_invoice_update){
             $result = array('status'=>TRUE, 'message' =>$this->lang->line('update_payment_status'), 'data'=>array('data'=>''));
             $this->response($result, REST_Controller::HTTP_OK);
@@ -150,7 +150,8 @@ class Invoice extends REST_Controller
         $date=date("Y-m-d");
         $day=date("d");
         if(!empty($student_data[0]['term'])){
-            if($student_data[0]['term']==20){ //if term is 20 means it quarterly plan and generate quarterly invoice date
+            $term_type=$this->User_model->getTermTypeKey(array('term_id'=>$student_data[0]['term']));
+            if($term_type[0]['child_key']==QUARTERYL_TERM_KEY){ //if term is quarterly plan then generate quarterly invoice date
                 if($day==1){
                      $next_invoice_date= date('Y-m-01', strtotime($date .'+3 month'));
                 }
@@ -158,7 +159,7 @@ class Invoice extends REST_Controller
                      $next_invoice_date= date('Y-m-01', strtotime($date .'+4 month'));
                 }
             }
-            if($student_data[0]['term']==19){//if term is 19 means it quarterly plan and generate monthly invoice date
+            if($term_type[0]['child_key']==MONTHLY_TERM_KEY){//if term is  monthly plan then generate monthly invoice date
                 if($day==1){
                      $next_invoice_date= date('Y-m-01', strtotime($date .'+1 month'));
                 }
@@ -166,7 +167,7 @@ class Invoice extends REST_Controller
                      $next_invoice_date= date('Y-m-01', strtotime($date .'+2 month'));
                 }
             }
-            if($student_data[0]['term']==22){//if term is 22 means it quarterly plan and generate yearly invoice date
+            if($term_type[0]['child_key']==ANNUAL_TERM_KEY){//if  yearly plan then generate yearly invoice date
                 if($day==1){
                      $next_invoice_date= date('Y-m-01', strtotime($date .'+12 month'));
                 }
@@ -174,7 +175,7 @@ class Invoice extends REST_Controller
                      $next_invoice_date= date('Y-m-01', strtotime($date .'+13 month'));
                 }
             }
-            if($student_data[0]['term']==21){//if term is 21 means it quarterly plan and generate halfyearly invoice date
+            if($term_type[0]['child_key']==HALFYEARLY_TERM_KEY){//if term is  halfyearly  plan then generate halfyearly invoice date
                 if($day==1){
                      $next_invoice_date= date('Y-m-01', strtotime($date .'+6 month'));
                 }

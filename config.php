@@ -2,7 +2,7 @@
 error_reporting(E_ALL ^ E_DEPRECATED);
 ini_set('display_errors','1');
 ini_set('memory_limit','256M');
-define('ENV','PROD');
+define('ENV','PRASAD');
 $base_host = "http://192.168.0.12/Mindtronics_test/";
 define('WEB_BASE_URL', $base_host);
 define('REST_API_URL', $base_host.'rest/');
@@ -18,7 +18,7 @@ define('SITE_ACCESS_TOKEN_EXPIRY',1800);//in seconds
 define('SEND_GRID_API_KEY', '');//new code
 define('SEND_GRID_FROM_EMAIL', 'no-reply@mindtronix.com');
 define('SEND_GRID_FROM_NAME', 'Mindtronix');
-define('DOCUMENT_PATH', 'http://192.168.0.63/Mindtronixs/rest/uploads/');
+define('DOCUMENT_PATH', 'http://192.168.0.12/Mindtronixs/rest/uploads/');
 
 switch(ENV)
 {
@@ -34,7 +34,7 @@ switch(ENV)
         define('DB_HOST', '139.59.59.231');//Here you need to mention your ip address  
         define('DB_USERNAME', 'admin');//UserName
         define('DB_PASSWORD', 'the@123');//Password
-        if($_SERVER['REMOTE_ADDR']=='192.168.0.19' || $_SERVER['REMOTE_ADDR']=='192.168.0.07')
+        if($_SERVER['REMOTE_ADDR']=='192.168.0.191' || $_SERVER['REMOTE_ADDR']=='192.168.0.071')
             define('DB_NAME', 'mindtronix_test'); // Here  you need to give your database name
         else
             define('DB_NAME', 'mindtronics_13th'); // Here  you need to give your database name
@@ -44,10 +44,10 @@ switch(ENV)
 
 
     case 'PRASAD':
-        define('DB_HOST', '');//Here you need to mention your ip address  
-        define('DB_USERNAME', '');//UserName
+        define('DB_HOST', 'localhost');//Here you need to mention your ip address  
+        define('DB_USERNAME', 'root');//UserName
         define('DB_PASSWORD', '');//Password
-        define('DB_NAME', ''); // Here  you need to give your database name
+        define('DB_NAME', 'mindtronics_13th'); // Here  you need to give your database name
         define('LOG_DB_NAME', '');
     break;
 

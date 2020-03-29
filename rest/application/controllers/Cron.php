@@ -28,15 +28,18 @@ class Cron extends CI_Controller
         AND s.next_invoice_date = CURDATE()
         AND s.subscription_status = 1';
         $insert_rows=$this->User_model->custom_query_affected_rows($query1);
-        $query2='UPDATE student s SET next_invoice_date =CASE 
-        WHEN s.franchise_fee_id=1 THEN DATE_ADD(s.next_invoice_date, INTERVAL +6 MONTH) 
-        WHEN s.franchise_fee_id=27 THEN DATE_ADD(s.next_invoice_date, INTERVAL +1 MONTH)
-        WHEN s.franchise_fee_id=28 THEN DATE_ADD(s.next_invoice_date, INTERVAL +3 MONTH) 
-        WHEN s.franchise_fee_id=29 THEN DATE_ADD(s.next_invoice_date, INTERVAL +12 MONTH)
-        END
-        WHERE s.status=1
-        AND s.subscription_status = 1
-        AND s.next_invoice_date = CURDATE()';
+        $query2='UPDATE student s 
+        LEFT JOIN fee_master fm ON s.franchise_fee_id=fm.id
+        LEFT JOIN master_child mc ON fm.term=mc.id AND mc.master_id=11
+        SET next_invoice_date =CASE 
+                WHEN mc.child_key="'.HALFYEARLY_TERM_KEY.'"THEN DATE_ADD(s.next_invoice_date, INTERVAL +6 MONTH) 
+                WHEN mc.child_key="'.MONTHLY_TERM_KEY.'" THEN DATE_ADD(s.next_invoice_date, INTERVAL +1 MONTH)
+                WHEN mc.child_key="'.QUARTERYL_TERM_KEY.'" THEN DATE_ADD(s.next_invoice_date, INTERVAL +3 MONTH) 
+                WHEN mc.child_key="'.ANNUAL_TERM_KEY.'" THEN DATE_ADD(s.next_invoice_date, INTERVAL +12 MONTH)
+                END
+                WHERE s.status=1
+                AND s.subscription_status = 1
+                AND s.next_invoice_date = CURDATE()';
         $update_rows=$this->User_model->custom_query_affected_rows($query2);
         print_r($insert_rows);
         print_r($update_rows);

@@ -904,6 +904,20 @@ class User_model extends CI_Model
         //echo $this->db->last_query(); exit;
         return $query->result_array();
     }
+    public function getTermTypeKey($data=null){
+        $this->db->select(' mc.child_key');
+        $this->db->from('fee_master fm');
+        $this->db->join('master_child mc','fm.term=mc.id AND mc.master_id=11','left');
+        if(!empty($data['term_id'])){
+            $this->db->where('fm.term',$data['term_id']);
+        }
+        if(!empty($data['fee_master_id'])){
+            $this->db->where('fm.id',$data['fee_master_id']);
+        }
+        $this->db->where('fm.status','1');
+        $query = $this->db->get();
+        return $query->result_array();
+    }
 }
 
 

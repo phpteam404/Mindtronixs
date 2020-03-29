@@ -726,36 +726,39 @@ class User extends REST_Controller
     function getInvoiceDate($franchise_fee_id){
         $date=date("Y-m-d");
         $day=date("d");
-        if($franchise_fee_id==27){
-            if($day==1){
-                return $next_invoice_date= date('Y-m-01', strtotime($date .'+1 month'));
+        $term_type=$this->User_model->getTermTypeKey(array('fee_master_id'=>$franchise_fee_id));
+        if(!empty($term_type[0]['child_key'])){
+            if($term_type[0]['child_key']==MONTHLY_TERM_KEY){
+                if($day==1){
+                    return $next_invoice_date= date('Y-m-01', strtotime($date .'+1 month'));
+                }
+                else{
+                    return $next_invoice_date= date('Y-m-01', strtotime($date .'+2 month'));
+                }
             }
-            else{
-                return $next_invoice_date= date('Y-m-01', strtotime($date .'+2 month'));
+            if($term_type[0]['child_key']==HALFYEARLY_TERM_KEY){
+                if($day==1){
+                    return $next_invoice_date= date('Y-m-01', strtotime($date .'+6 month'));
+                }
+                else{
+                    return $next_invoice_date= date('Y-m-01', strtotime($date .'+7 month')); 
+                }
             }
-        }
-        if($franchise_fee_id==1){
-            if($day==1){
-                return $next_invoice_date= date('Y-m-01', strtotime($date .'+6 month'));
+            if($term_type[0]['child_key']==QUARTERYL_TERM_KEY){
+                if($day==1){
+                    return $next_invoice_date= date('Y-m-01', strtotime($date .'+3 month'));
+                }
+                else{
+                    return $next_invoice_date= date('Y-m-01', strtotime($date .'+4 month'));
+                }
             }
-            else{
-                return $next_invoice_date= date('Y-m-01', strtotime($date .'+7 month')); 
-            }
-        }
-        if($franchise_fee_id==28){
-            if($day==1){
-                return $next_invoice_date= date('Y-m-01', strtotime($date .'+3 month'));
-            }
-            else{
-                return $next_invoice_date= date('Y-m-01', strtotime($date .'+4 month'));
-            }
-        }
-        if($franchise_fee_id==29){
-            if($day==1){
-                return $next_invoice_date= date('Y-m-01', strtotime($date .'+12 month'));
-            }
-            else{
-                return $next_invoice_date= date('Y-m-01', strtotime($date .'+13 month'));
+            if($term_type[0]['child_key']==ANNUAL_TERM_KEY){
+                if($day==1){
+                    return $next_invoice_date= date('Y-m-01', strtotime($date .'+12 month'));
+                }
+                else{
+                    return $next_invoice_date= date('Y-m-01', strtotime($date .'+13 month'));
+                }
             }
         }
     }

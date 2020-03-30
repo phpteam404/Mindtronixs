@@ -67,14 +67,14 @@ class Digitalcontent_model extends CI_Model
         return $query->result_array();
     }
     public function getDocuments($data=null){
-        $this->db->select('d.id as document_id,d.document_name');
+        $this->db->select('d.id as document_id,d.document_name,if(d.module_type="digital_content","files","url") as module_type');
         $this->db->from('documents d');
         $this->db->join('digital_content_management dcm','d.module_type_id=dcm.id');
         if(!empty($data['module_type_id'])){
             $this->db->where('d.module_type_id',$data['module_type_id']);
         }
         if(!empty($data['module_type'])){
-            $this->db->where('d.module_type',$data['module_type']);
+            $this->db->where_in('d.module_type',$data['module_type']);
         }
         $this->db->where('d.status','1');
         $this->db->order_by('d.id','desc');

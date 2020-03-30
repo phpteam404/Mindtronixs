@@ -48,7 +48,7 @@ class Digitalcontent extends REST_Controller
         $this->form_validator->add_rules('category', array('required' => $this->lang->line('category_req')));
         $this->form_validator->add_rules('sub_category', array('required' => $this->lang->line('sub_category_req')));
         $this->form_validator->add_rules('tags', array('required' => $this->lang->line('tags_req')));
-        $this->form_validator->add_rules('grade', array('required' => $this->lang->line('grade_req')));
+        // $this->form_validator->add_rules('grade', array('required' => $this->lang->line('grade_req')));
         // $this->form_validator->add_rules('content_level', array('required' => $this->lang->line('content_level_req')));
         $validated = $this->form_validator->validate($data);    
         if($validated != 1)
@@ -68,9 +68,8 @@ class Digitalcontent extends REST_Controller
             'status'=>isset($data['status'])?$data['status']:'1',
             'pre_url'=>isset($data['pre_url'])?$data['pre_url']:'',
             'post_url'=>isset($data['post_url'])?$data['post_url']:'',
-            
         );
-        // print_r($content_data);exit;
+        // print_r(explode(",",$data['tags']));exit;
         if(!empty($_FILES)){
             $allowed_types=array('image/gif','image/jpg','image/jpeg','image/png','application/pdf','video/mp4','video/quicktime'); 
             $no_of_files=count($_FILES['files']['name']);
@@ -140,6 +139,9 @@ class Digitalcontent extends REST_Controller
                 if($insert_id>0){
                     $this->generateQrCode($insert_id,'www.google.com');
                     $this->User_model->insert_data('documents',array('module_type_id'=>$insert_id,'document_name'=>$insert_id.'.png','module_type'=>'qr_code','created_by'=>!empty($this->session_user_id)?$this->session_user_id:0,'created_on'=>currentDate()));
+                    if(!empty($data['external_urls'])){
+                        $this->addDigitalContentUrls($insert_id,$data['external_urls']);
+                    }
                     $result = array('status'=>TRUE, 'message' => $this->lang->line('content_add'), 'data'=>array('data' => $insert_id));
                     $this->response($result, REST_Controller::HTTP_OK);
                 }
@@ -169,6 +171,9 @@ class Digitalcontent extends REST_Controller
                     $this->User_model->update_where_in('documents',array('module_type_id'=>$insert_id),array('id'=>$document_id));
                     $this->generateQrCode($insert_id,'www.google.com');
                     $this->User_model->insert_data('documents',array('module_type_id'=>$insert_id,'document_name'=>$insert_id.'.png','module_type'=>'qr_code','created_by'=>!empty($this->session_user_id)?$this->session_user_id:0,'created_on'=>currentDate()));
+                    if(!empty($data['external_urls'])){
+                        $this->addDigitalContentUrls($insert_id,$data['external_urls']);
+                    }
                     $result = array('status'=>TRUE, 'message' => $this->lang->line('content_add'), 'data'=>array('data' => $insert_id));
                     $this->response($result, REST_Controller::HTTP_OK);
                 }
@@ -211,10 +216,9 @@ class Digitalcontent extends REST_Controller
             $content_info=$this->Digitalcontent_model->getDigitalContentInfo($data);//echo $this->db->last_query();exit;
             // print_r($data['digital_content_management_id']);exit;
             $content_info[0]['no_of_views']=!empty($content_info[0]['no_of_views'])?$content_info[0]['no_of_views']:0;
-            $documents=$this->Digitalcontent_model->getDocuments(array('module_type_id'=>$data['digital_content_management_id'],'module_type'=>'digital_content'));
+            $documents=$this->Digitalcontent_model->getDocuments(array('module_type_id'=>$data['digital_content_management_id'],'module_type'=>array('digital_content','url')));//echo $this->db->last_query();exit;
             if(!empty($documents)){
                 foreach($documents as $k=>$v){
-                    // print_r($v['document_name']);exit;
                     $documents[$k]['document_url']=DOCUMENT_PATH.'digitalcontent/'.$v['document_name'];
                 }
             }
@@ -246,6 +250,7 @@ class Digitalcontent extends REST_Controller
 
     function generateQrCode($id,$codeContents){//this function is used to generate qr code for digital content
         $name=$id.'.png';
+        
         if(!is_dir('uploads/digitalcontent/qrcodes/'))
          { mkdir('uploads/digitalcontent/qrcodes/'); }
          $path='uploads/digitalcontent/qrcodes/';
@@ -326,6 +331,20 @@ class Digitalcontent extends REST_Controller
             $this->response($result, REST_Controller::HTTP_OK);
         }
         
+    }
+    function addDigitalContentUrls($content_id,$urls){
+        $list_urls=explode(",",$urls);
+        foreach($list_urls as $k=>$v){
+            $insert_batch_array[$k] = array(
+                'module_type_id'=>$content_id,
+                'document_name'=>$v,
+                'created_by'=>$this->session_user_id,
+                'created_on'=>currentDate(),
+                'module_type'=>'url'
+            );
+        }
+       $url_insert=$this->User_model->insertbatch('documents',$insert_batch_array);
+       return $url_insert;
     }
 
 }

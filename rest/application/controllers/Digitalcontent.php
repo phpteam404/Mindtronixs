@@ -125,6 +125,9 @@ class Digitalcontent extends REST_Controller
                 $is_update=$this->User_model->update_data('digital_content_management',$content_data,array('id'=>$data['digital_content_management_id']));
                 if(isset($is_update)){
                     $result = array('status'=>TRUE, 'message' => $this->lang->line('content_update'), 'data'=>array('data' => $data['digital_content_management_id']));
+                    if(!empty($data['external_urls'])){
+                        $this->addDigitalContentUrls($data['digital_content_management_id'],$data['external_urls']);
+                    }
                     $this->response($result, REST_Controller::HTTP_OK);
                 }
                 else{
@@ -157,6 +160,9 @@ class Digitalcontent extends REST_Controller
                 $content_data['updated_by']=!empty($this->session_user_id)?$this->session_user_id:'0';
                 $content_data['updated_on']=currentDate();
                 $is_update=$this->User_model->update_data('digital_content_management',$content_data,array('id'=>$data['digital_content_management_id']));
+                if(!empty($data['external_urls'])){
+                    $this->addDigitalContentUrls($data['digital_content_management_id'],$data['external_urls']);
+                }
                 $this->User_model->update_where_in('documents',array('module_type_id'=>$data['digital_content_management_id']),array('id'=>$document_id));
                 if(isset($is_update)){
                     $result = array('status'=>TRUE, 'message' => $this->lang->line('content_update'), 'data'=>array('data' => $data['digital_content_management_id']));

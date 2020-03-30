@@ -482,6 +482,7 @@ $lang['invoice_generate'] = 'Student invoice generated Successfully';
 $lang['franchise_feeid_req'] = 'Frachise fee id required';
 $lang['franchise_fee_status'] = 'Frachise fee status required';
 $lang['frachise_status_update'] = 'Franchise fee managemnt updated successfully';
+$lang['lead_source_req'] = 'Lead source is required';
 
 
 

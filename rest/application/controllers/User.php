@@ -70,20 +70,23 @@ class User extends REST_Controller
         // $this->form_validator->add_rules('password', array('required' => $this->lang->line('password_req')));
         // $this->form_validator->add_rules('franchise_id', array('required' => $this->lang->line('franchise_id_req')));
         $this->form_validator->add_rules('user_role_id', array('required' => $this->lang->line('user_role_id_req')));
-        $this->form_validator->add_rules('email', $emailRules);
-        $this->form_validator->add_rules('phone_no', $phonennodRules);
-        if(empty($data['user_id'])){
+        if(isset($data['user_role_id']) && $data['user_role_id']!=4){
+            $this->form_validator->add_rules('email', $emailRules);
+            $this->form_validator->add_rules('phone_no', $phonennodRules);
+        }
+
+        if(empty($data['user_id']) && $data['user_role_id']!=4){
 
             $this->form_validator->add_rules('password', $passwordRules);
         }
 
         if(isset($data['user_role_id']) && $data['user_role_id']==4){
-            $this->form_validator->add_rules('school_id', array('required' => $this->lang->line('school_req')));
+            // $this->form_validator->add_rules('school_id', array('required' => $this->lang->line('school_req')));
             $this->form_validator->add_rules('grade', array('required' => $this->lang->line('grade_req')));
-            $this->form_validator->add_rules('parent_name', array('required' => $this->lang->line('parent_req')));
-            $this->form_validator->add_rules('fee_structure', array('required' => $this->lang->line('franchise_fee_id_req')));
-            $this->form_validator->add_rules('date_of_birth', array('required' => $this->lang->line('date_of_birth_req')));
-            $this->form_validator->add_rules('blood_group', array('required' => $this->lang->line('blood_group_req')));
+            // $this->form_validator->add_rules('parent_name', array('required' => $this->lang->line('parent_req')));
+            // $this->form_validator->add_rules('fee_structure', array('required' => $this->lang->line('franchise_fee_id_req')));
+            // $this->form_validator->add_rules('date_of_birth', array('required' => $this->lang->line('date_of_birth_req')));
+            $this->form_validator->add_rules('lead_source', array('required' => $this->lang->line('lead_source_req')));
             $this->form_validator->add_rules('nationality', array('required' => $this->lang->line('nationality_req')));
         }
         if(isset($data['user_role_id']) && $data['user_role_id']!=4)
@@ -107,16 +110,20 @@ class User extends REST_Controller
             $this->response($result, REST_Controller::HTTP_OK);
         }
         if(isset($data['user_id']) && $data['user_id']>0){
-            $email_check = $this->User_model->check_email(array('email' => $data['email'],'id'=>$data['user_id']));//echo $this->db->last_query();exit;
-            if(!empty($email_check)){
-                $result = array('status'=>FALSE,'error'=>array('email' => $this->lang->line('email_duplicate')),'data'=>'');
-                $this->response($result, REST_Controller::HTTP_OK);
+            if( $data['user_role_id']!=4){
+                $email_check = $this->User_model->check_email(array('email' => $data['email'],'id'=>$data['user_id']));//echo $this->db->last_query();exit;
+                if(!empty($email_check)){
+                    $result = array('status'=>FALSE,'error'=>array('email' => $this->lang->line('email_duplicate')),'data'=>'');
+                    $this->response($result, REST_Controller::HTTP_OK);
+                }
             }
         }else{
-            $email_check = $this->User_model->check_email(array('email' => $data['email']));
-            if(!empty($email_check)){
-                $result = array('status'=>FALSE,'error'=>array('email' => $this->lang->line('email_duplicate')),'data'=>'');
-                $this->response($result, REST_Controller::HTTP_OK);
+            if( $data['user_role_id']!=4){
+                $email_check = $this->User_model->check_email(array('email' => $data['email']));
+                if(!empty($email_check)){
+                    $result = array('status'=>FALSE,'error'=>array('email' => $this->lang->line('email_duplicate')),'data'=>'');
+                    $this->response($result, REST_Controller::HTTP_OK);
+                }
             }
         }
         // print_r($sudent_data_insert);exit;
@@ -135,7 +142,7 @@ class User extends REST_Controller
         // print_r($user_data);exit;
         if(isset($data['user_role_id']) && $data['user_role_id']==4){
             $student_data=array(
-                'school_id'=>isset($data['school_id'])?$data['school_id'] :0,
+                'school_id'=>!empty($data['school_id'])?$data['school_id'] :0,
                 'franchise_id'=>isset($data['franchise_id'])?$data['franchise_id'] :2,
                 'nationality'=>isset($data['nationality'])?$data['nationality'] :null,
                 'place_of_birth'=>isset($data['place_of_birth'])?$data['place_of_birth'] :null,
@@ -150,11 +157,15 @@ class User extends REST_Controller
                 'franchise_fee_id'=>isset($data['fee_structure'])?$data['fee_structure'] : '',
                 'status'=>isset($data['status'])?$data['status'] :'1',
                 'relation_with_student'=>isset($data['relation'])?$data['relation'] :'',
-                'occupation'=>isset($data['occupation'])?$data['occupation'] :''
+                'occupation'=>isset($data['occupation'])?$data['occupation'] :'',
+                'school_name_text'=>isset($data['school_name'])?$data['school_name'] :'',
+                'lead_source'=>isset($data['lead_source'])?$data['lead_source'] :''
+                
+
 
             );
         }
-        // print_r($student_data);exit;
+        // print_r(json_encode($data));exit;
         if(isset($data['user_id']) && $data['user_id']>0){
             $user_data['updated_by'] = !empty($this->session_user_id)?$this->session_user_id:'0';
             $user_data['updated_on'] = currentDate();

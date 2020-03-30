@@ -203,7 +203,7 @@ class Invoice extends REST_Controller
         $franchise_name=str_replace(" ","",$student_data[0]['franchise_code']);
         $month=date("m");
         $year=date("Y");
-        $update_student=$this->User_model->update_data('student',array('next_invoice_date'=>$next_invoice_date),array('id'=>$data['student_id']));
+        $update_student=$this->User_model->update_data('student',array('next_invoice_date'=>!empty($next_invoice_date)?$next_invoice_date:''),array('id'=>$data['student_id']));
         $invoice_insert=$this->User_model->insert_data('student_invoice',$invoice_data);
         //  MIN/test/March/2020/00
          $id=str_pad($invoice_insert,6,"0",STR_PAD_LEFT);

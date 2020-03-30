@@ -82,7 +82,7 @@ class User extends REST_Controller
 
         if(isset($data['user_role_id']) && $data['user_role_id']==4){
             // $this->form_validator->add_rules('school_id', array('required' => $this->lang->line('school_req')));
-            $this->form_validator->add_rules('grade', array('required' => $this->lang->line('grade_req')));
+            // $this->form_validator->add_rules('grade', array('required' => $this->lang->line('grade_req')));
             // $this->form_validator->add_rules('parent_name', array('required' => $this->lang->line('parent_req')));
             // $this->form_validator->add_rules('fee_structure', array('required' => $this->lang->line('franchise_fee_id_req')));
             // $this->form_validator->add_rules('date_of_birth', array('required' => $this->lang->line('date_of_birth_req')));
@@ -110,7 +110,7 @@ class User extends REST_Controller
             $this->response($result, REST_Controller::HTTP_OK);
         }
         if(isset($data['user_id']) && $data['user_id']>0){
-            if( $data['user_role_id']!=4){
+            if(!empty($data['email'])){
                 $email_check = $this->User_model->check_email(array('email' => $data['email'],'id'=>$data['user_id']));//echo $this->db->last_query();exit;
                 if(!empty($email_check)){
                     $result = array('status'=>FALSE,'error'=>array('email' => $this->lang->line('email_duplicate')),'data'=>'');
@@ -118,7 +118,7 @@ class User extends REST_Controller
                 }
             }
         }else{
-            if( $data['user_role_id']!=4){
+            if(!empty($data['email'])){
                 $email_check = $this->User_model->check_email(array('email' => $data['email']));
                 if(!empty($email_check)){
                     $result = array('status'=>FALSE,'error'=>array('email' => $this->lang->line('email_duplicate')),'data'=>'');

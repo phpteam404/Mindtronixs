@@ -779,7 +779,7 @@ class User_model extends CI_Model
         // $this->db->where_in('sm.status',array(0,1)); 
 
         if(isset($data['franchise_id']) && $data['franchise_id']>0){
-            $this->db->where('sm.franchise_id',$data['franchise_id']);
+            $this->db->where('s.franchise_id',$data['franchise_id']);
         }
         if(isset($data['school_id']) && $data['school_id']>0){
             $this->db->where('sm.id',$data['school_id']);

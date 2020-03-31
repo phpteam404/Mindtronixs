@@ -571,13 +571,7 @@ class User extends REST_Controller
        $student_info=$this->User_model->getStudentList($data);//echo $this->db->last_query();exit;//this model is used to get the student data
        $student_id=$this->User_model->check_record_selected('id  as student_id,franchise_fee_id,','student',array('user_id'=>$data['user_id']));
        $get_last_invoice_amount=$this->User_model->getLastInvoiceamount(array('student_id'=>$student_id[0]['student_id']));
-       if($student_id[0]['student_id']==0 && $student_id[0]['franchise_fee_id']==0 && empty($get_last_invoice_amount)){
-            $invoice_button_status='true';
-       }
-       else{
-        $invoice_button_status='false';
-       }
-       $result = array('status'=>TRUE, 'message' =>$this->lang->line('success'), 'data'=>array('data'=>$student_info['data'],'last_invoice_amount'=>!empty($get_last_invoice_amount[0]['last_invoice_amount'])?$get_last_invoice_amount[0]['last_invoice_amount']:0,'student_history'=>'student_history','invoice_button_status'=>$invoice_button_status));
+       $result = array('status'=>TRUE, 'message' =>$this->lang->line('success'), 'data'=>array('data'=>$student_info['data'],'last_invoice_amount'=>!empty($get_last_invoice_amount[0]['last_invoice_amount'])?$get_last_invoice_amount[0]['last_invoice_amount']:0,'student_history'=>'student_history'));
        $this->response($result, REST_Controller::HTTP_OK);
     }
      

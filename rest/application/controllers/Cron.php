@@ -27,7 +27,7 @@ class Cron extends CI_Controller
         WHERE s.status=1
         AND s.next_invoice_date = CURDATE()
         AND s.subscription_status = 1
-        AND s.school_id!=0
+        AND s.school_id=0
         AND s.franchise_fee_id!=0';
         $insert_rows=$this->User_model->custom_query_affected_rows($query1);
         $query2='UPDATE student s 
@@ -42,7 +42,7 @@ class Cron extends CI_Controller
                 WHERE s.status=1
                 AND s.subscription_status = 1
                 AND s.next_invoice_date = CURDATE()
-                AND s.school_id!=0
+                AND s.school_id=0
                 AND s.franchise_fee_id!=0';
         $update_rows=$this->User_model->custom_query_affected_rows($query2);
         print_r($insert_rows);

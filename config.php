@@ -2,7 +2,7 @@
 error_reporting(E_ALL ^ E_DEPRECATED);
 ini_set('display_errors','1');
 ini_set('memory_limit','256M');
-define('ENV','PRASAD');
+define('ENV','PROD');
 $base_host = "http://192.168.0.12/Mindtronics_test/";
 define('WEB_BASE_URL', $base_host);
 define('REST_API_URL', $base_host.'rest/');
@@ -18,7 +18,7 @@ define('SITE_ACCESS_TOKEN_EXPIRY',1800);//in seconds
 define('SEND_GRID_API_KEY', '');//new code
 define('SEND_GRID_FROM_EMAIL', 'no-reply@mindtronix.com');
 define('SEND_GRID_FROM_NAME', 'Mindtronix');
-define('DOCUMENT_PATH', 'http://192.168.0.63/Mindtronixs/rest/uploads/');
+define('DOCUMENT_PATH', 'http://192.168.100.14/Mindtronixs/rest/uploads/');
 define('MONTHLY_TERM_KEY', 'monthly');
 define('QUARTERYL_TERM_KEY', 'quarterly');
 define('ANNUAL_TERM_KEY', 'annual');

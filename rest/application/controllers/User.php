@@ -312,6 +312,10 @@ class User extends REST_Controller
         foreach($modules as $m=>$module){
             $update_data[$m]['id']=$module['module_access_id'];
             $update_data[$m]['is_access_status']=$module['is_access_status'];    
+            $update_data[$m]['create']=$module['create'];    
+            $update_data[$m]['edit']=$module['edit'];    
+            $update_data[$m]['view']=$module['view'];    
+            $update_data[$m]['delete']=$module['delete'];
         }
         $is_update=$this->User_model->update_data_batch('module_access',$update_data,'id');//echo $this->db->last_query();exit;
         if(isset($is_update)){

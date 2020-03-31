@@ -773,7 +773,7 @@ class User_model extends CI_Model
         $this->db->join('master_child mc4','s.mother_tongue=mc4.id AND mc4.master_id=8','left');
         $this->db->join('fee_master fm','s.franchise_fee_id=fm.id','left');
         $this->db->join('school_master sm','s.school_id=sm.id','left');
-        $this->db->join('franchise f','sm.franchise_id =f.id','left');
+        $this->db->join('franchise f','s.franchise_id =f.id','left');
         $this->db->where('u.user_role_id','4');
         $this->db->where_in('u.user_status',array(0,1));
         // $this->db->where_in('sm.status',array(0,1)); 

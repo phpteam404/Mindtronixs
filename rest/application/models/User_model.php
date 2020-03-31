@@ -756,7 +756,7 @@ class User_model extends CI_Model
         if(isset($data['type']) && $data['type']=='edit'){//this condition for prepopulate the student details and list the student details
             $this->db->select('u.id as user_id,s.id as student_id,u.franchise_id,u.first_name as student_name,u.email as contact_email,u.phone_no,u.last_login,u.user_status as status,f.name as franchise_name,CONCAT(mc2.child_name,"-",mc2.id) as grade,IFNULL(`sm`.`name`,s.school_name_text) as `school_name`');
             if(!empty($data['user_id'])){
-                $this->db->select('s.place_of_birth,u.address,s.date_of_birth,CONCAT(mc.child_name,",",mc.id) as blood_group,CONCAT(mc1.child_name,"-",mc1.id) as relation,CONCAT(mc3.child_name,"-",mc3.id) as nationality,CONCAT(mc4.child_name,"-",mc4.id) as mother_tongue,s.parent as parent_name,u.phone_no as home_phone_no,s.mobile_phone1 as mobile_phone,s.mobile_phone2,s.occupation,s.history_of_illness, CONCAT(sm.name, "-", sm.id) as school_id,CONCAT(fm.name,"-",fm.id,"-",fm.amount,"-",fm.tax,"-",fm.discount) as fee_structure,');
+                $this->db->select('s.place_of_birth,u.address,s.date_of_birth,CONCAT(mc.child_name,",",mc.id) as blood_group,CONCAT(mc1.child_name,"-",mc1.id) as relation,CONCAT(mc3.child_name,"-",mc3.id) as nationality,CONCAT(mc4.child_name,"-",mc4.id) as mother_tongue,s.parent as parent_name,u.phone_no as home_phone_no,s.mobile_phone1 as mobile_phone,s.mobile_phone2,s.occupation,s.history_of_illness, CONCAT(sm.name, "-", sm.id) as school_id,CONCAT(fm.name,"-",fm.id,"-",fm.amount,"-",fm.tax,"-",fm.discount) as fee_structure,s.lead_source');
             }
         }
         if(isset($data['type']) && $data['type']=='view'){//this condition for get the data for student info service

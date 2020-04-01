@@ -971,6 +971,16 @@ if (!function_exists('getTableHeads')) {
                         array('field'=> 'status', 'header'=> 'Status','alias'=>'status' )
                     );
                     break;
+                case 'school_invoice_list':
+                    return array(
+                        array('field'=> 'invoice_number', 'header'=> 'Invoice #','alias'=>'invoice_number'),
+                        array('field'=>'school_name', 'header'=> 'School Name','alias'=>'school_name' ),
+                        array('field'=> 'frachise_name', 'header'=> 'Franchise Name','alias'=>'frachise_name' ),
+                        array('field'=> 'invoice_date', 'header'=> 'Invoice Date','alias'=>'invoice_date' ),
+                        array('field'=> 'amount', 'header'=> 'Amount','alias'=>'amount' ),
+                        array('field'=> 'status', 'header'=> 'Status','alias'=>'status' )
+                    );
+                    break;
 
         }
 

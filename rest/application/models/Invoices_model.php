@@ -75,7 +75,9 @@ class Invoices_model extends CI_Model
         // if(!empty($data['franchise_id'])){
         //     $this->db->where('franchise_id',$data['franchise_id']);
         // }
-        $this->db->where('si.invoice_type',1);
+        if(!empty($data['status'])){
+            $this->db->where('si.invoice_type',$data['status']);
+        }
         if(!empty($data['payment_status'])){
             $this->db->where('payment_status',$data['payment_status']);
         }
@@ -153,7 +155,7 @@ class Invoices_model extends CI_Model
         return $query->result_array();
     }
     public function getSchoolInvoiceList($data=null){
-        $this->db->select('si.invoice_number,sm.`name` as school_name,f.`name` as frachise_name,si.amount,DATE_FORMAT(si.invoice_date, "%Y-%m-%d") as invoice_date');
+        $this->db->select('si.id as school_invoice_id,si.invoice_number,sm.`name` as school_name,f.`name` as frachise_name,si.amount,DATE_FORMAT(si.invoice_date, "%Y-%m-%d") as invoice_date,mc.child_name as status');
         $this->db->from('student_invoice si');
         $this->db->join('school_master sm','si.school_id=sm.id');
         $this->db->join('franchise f','sm.franchise_id=f.id');

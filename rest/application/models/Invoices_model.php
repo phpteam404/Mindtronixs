@@ -155,7 +155,7 @@ class Invoices_model extends CI_Model
         return $query->result_array();
     }
     public function getSchoolInvoiceList($data=null){
-        $this->db->select('si.id as school_invoice_id,si.invoice_number,sm.`name` as school_name,f.`name` as frachise_name,si.amount,DATE_FORMAT(si.invoice_date, "%Y-%m-%d") as invoice_date,mc.child_name as status');
+        $this->db->select('si.id as school_invoice_id,si.invoice_number,sm.`name` as school_name,f.`name` as frachise_name,si.amount,DATE_FORMAT(si.invoice_date, "%Y-%m-%d") as invoice_date,mc.child_name as status,si.paid_date');
         $this->db->from('student_invoice si');
         $this->db->join('school_master sm','si.school_id=sm.id');
         $this->db->join('franchise f','sm.franchise_id=f.id');
@@ -179,9 +179,12 @@ class Invoices_model extends CI_Model
         if(!empty($data['franchise_id'])){
             $this->db->where('si.franchise_id',$data['franchise_id']);
         }
-        if(empty($data['from_date']) && empty($data['to_date']) && empty($data['status_id']) && empty($data['month'])){
-            $this->db->where('MONTH(si.invoice_date)', date('m')); //For current month
-            $this->db->where('YEAR(si.invoice_date)', date('Y')); // For current year
+        // if(empty($data['from_date']) && empty($data['to_date']) && empty($data['status_id']) && empty($data['month'] && empty($data[]))){
+        //     $this->db->where('MONTH(si.invoice_date)', date('m')); //For current month
+        //     $this->db->where('YEAR(si.invoice_date)', date('Y')); // For current year
+        // }
+        if(!empty($data['school_invoice_id'])){
+            $this->db->where('si.id',$data['school_invoice_id']);
         }
         if(!empty($data['month'])){
             $this->db->like('si.invoice_date', $data['month'], 'both');

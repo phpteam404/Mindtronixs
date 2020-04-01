@@ -36,6 +36,8 @@ class Invoices_model extends CI_Model
             $this->db->where('u.first_name like "%'.$data['search_key'].'%" or u.last_name like "%'.$data['search_key'].'%" or CONCAT(u.first_name,\' \',u.last_name) like "%'.$data['search_key'].'%" or u.email like "%'.$data['search_key'].'%"  or u.phone_no like "%'.$data['search_key'].'%"or si.invoice_number like "%'.$data['search_key'].'%"');
             $this->db->group_end();
         }
+        
+        $this->db->where('si.invoice_type',1);
         if(!empty($data['from_date']) && !empty($data['to_date'])){
             $this->db->where('si.invoice_date between "'.$data['from_date'].'" and "'.$data['to_date'].'"');
         }
@@ -73,6 +75,7 @@ class Invoices_model extends CI_Model
         // if(!empty($data['franchise_id'])){
         //     $this->db->where('franchise_id',$data['franchise_id']);
         // }
+        $this->db->where('si.invoice_type',1);
         if(!empty($data['payment_status'])){
             $this->db->where('payment_status',$data['payment_status']);
         }
@@ -134,5 +137,62 @@ class Invoices_model extends CI_Model
         }
         $query = $this->db->get();
         return $query->result_array();
+    }
+
+    public function getSchoolData($data=null){
+        $this->db->select('sm.school_code,f.name as franchise_name,sm.franchise_id,f.franchise_code');
+        $this->db->from('school_master sm');
+        $this->db->join('franchise f','sm.franchise_id=f.id');
+        if(!empty($data['school_id'])){
+            $this->db->where('sm.id',$data['school_id']);
+        }
+        if(!empty($data['status'])){
+            $this->db->where('sm.status',$data['status']);
+        }
+        $query = $this->db->get();
+        return $query->result_array();
+    }
+    public function getSchoolInvoiceList($data=null){
+        $this->db->select('si.invoice_number,sm.`name` as school_name,f.`name` as frachise_name,si.amount,DATE_FORMAT(si.invoice_date, "%Y-%m-%d") as invoice_date');
+        $this->db->from('student_invoice si');
+        $this->db->join('school_master sm','si.school_id=sm.id');
+        $this->db->join('franchise f','sm.franchise_id=f.id');
+        $this->db->join('master_child mc','si.payment_status=mc.id AND mc.master_id=23','left');
+        $this->db->where('si.invoice_type',2);
+        if(isset($data['search_key']))
+        {
+            $this->db->group_start();
+            $this->db->like('si.invoice_number', $data['search_key'], 'both');
+            $this->db->or_like('sm.name', $data['search_key'], 'both');
+            $this->db->or_like('f.name', $data['search_key'], 'both');
+            $this->db->or_like('si.amount', $data['search_key'], 'both');
+            $this->db->group_end();
+        }
+        if(!empty($data['from_date']) && !empty($data['to_date'])){
+            $this->db->where('si.invoice_date between "'.$data['from_date'].'" and "'.$data['to_date'].'"');
+        }
+        if(!empty($data['status_id'])){
+            $this->db->where('si.payment_status',$data['status_id']);
+        }
+        if(!empty($data['franchise_id'])){
+            $this->db->where('si.franchise_id',$data['franchise_id']);
+        }
+        if(empty($data['from_date']) && empty($data['to_date']) && empty($data['status_id']) && empty($data['month'])){
+            $this->db->where('MONTH(si.invoice_date)', date('m')); //For current month
+            $this->db->where('YEAR(si.invoice_date)', date('Y')); // For current year
+        }
+        if(!empty($data['month'])){
+            $this->db->like('si.invoice_date', $data['month'], 'both');
+        }
+        if(isset($data['sort']) && isset($data['order']))
+            $this->db->order_by($data['sort'],$data['order']);
+        else
+        $this->db->order_by('si.id','desc');
+        $all_clients_count_db=clone $this->db;
+        $all_clients_count = $all_clients_count_db->get()->num_rows();
+        if(isset($data['start']) && $data['number']!='')
+            $this->db->limit($data['number'],$data['start']);
+        $query = $this->db->get();
+        return array('total_records' => $all_clients_count,'data' => $query->result_array());
     }
 }

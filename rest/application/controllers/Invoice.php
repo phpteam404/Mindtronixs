@@ -210,7 +210,8 @@ class Invoice extends REST_Controller
             'discount_amount'=>$student_data[0]['discount_amount'],
             'tax_amount'=>$student_data[0]['tax_amount'],
             'due_date'=>date('Y-m-d', strtotime($date .'+'.$student_data[0]['due_days'].'days')),
-            'created_on'=>CurrentDate()
+            'created_on'=>CurrentDate(),
+            'invoice_type'=>1
         );
         $franchise_name=str_replace(" ","",$student_data[0]['franchise_code']);
         $month=date("m");
@@ -231,5 +232,86 @@ class Invoice extends REST_Controller
             $this->response($result, REST_Controller::HTTP_OK);
          }
     }
+
+    public function generateSchoolInvoice_post(){//this function is used to generate school invoice
+        $data=$this->input->post();
+        if(empty($data)){
+            $result = array('status'=>FALSE,'error'=>$this->lang->line('invalid_data'),'data'=>'1');
+            $this->response($result, REST_Controller::HTTP_OK);
+        }
+        $this->form_validator->add_rules('school_id', array('required'=>$this->lang->line('school_id_req')));
+        $this->form_validator->add_rules('amount', array('required'=>$this->lang->line('amount_req')));
+
+        $validated = $this->form_validator->validate($data);
+        if($validated != 1)
+        {
+            $result = array('status'=>FALSE,'error'=>$validated,'data'=>'');
+            $this->response($result, REST_Controller::HTTP_OK);
+        }
+
+
+        $schooldata=$this->Invoices_model->getSchoolData(array('school_id'=>$data['school_id']));
+        $tax=!empty($data['tax'])?$data['tax']:0;
+        $discount=!empty($data['discount'])?$data['discount']:0;
+        $tax_amount=$data['amount']*$tax/100;
+        $discount_amount=$data['amount']*$discount/100;
+        $total_amount=($data['amount']-$discount_amount)+$tax_amount;
+        $school_invoice_data=array(
+            'school_id'=>$data['school_id'],
+            'franchise_id'=>!empty($schooldata[0]['franchise_id'])?$schooldata[0]['franchise_id']:0,
+            'school_manual_invoice_id'=>!empty($data['school_manual_invoice_id'])?$data['school_manual_invoice_id']:'',
+            'school_invoice_description'=>!empty($data['school_invoice_description'])?$data['school_invoice_description']:'',
+            'amount'=>$data['amount'],
+            'tax'=>$tax,
+            'discount'=>$discount,
+            'tax_amount'=>$tax_amount,
+            'discount_amount'=>$discount_amount,
+            'total_amount'=>$total_amount,
+            'invoice_date'=>currentDate(),
+            'created_by'=>!empty($this->session_user_id)?$this->session_user_id:'0',
+            'created_on'=>currentDate(),
+            'invoice_type'=>2
+        );
+        $insert_id=$this->User_model->insert_data('student_invoice',$school_invoice_data);
+        $school_code=str_replace(" ","",$schooldata[0]['school_code']);
+        $franchise_code=str_replace(" ","",$schooldata[0]['franchise_code']);
+        $id=str_pad($insert_id,6,"0",STR_PAD_LEFT);
+        // MIN/test/March/2020/00
+        $student_invoice_number='MIN/'.$franchise_code.'/'.$school_code.'/'.date("Y").'/'.date("m").'/'.$id;
+        $this->User_model->update_data('student_invoice',array('invoice_number'=>$student_invoice_number),array('id'=>$insert_id));
+        if(!empty($insert_id)){
+            $result = array('status'=>TRUE, 'message' =>$this->lang->line('school_invoice_generate'), 'data'=>array('data'=>$insert_id));
+            $this->response($result, REST_Controller::HTTP_OK);
+         }
+         else{
+            $result = array('status'=>FALSE,'error'=>$this->lang->line('invalid_data'),'data'=>'');
+            $this->response($result, REST_Controller::HTTP_OK);
+         }
+
+    }
+    // public function schoolInvoiceList(){
+    //     if($this->session_user_info->user_role_id==2){
+    //         $data['franchise_id']=$this->session_user_info->franchise_id;
+    //     }
+    //     $invoice_amount=$this->Invoices_model->getAmount($data);
+    //     $data['payment_status']=97;//to get collected amount  pass the payment status id is 97
+    //     $collected_amount=$this->Invoices_model->getAmount($data);
+    //     unset($data['payment_status']);
+    //     $data['payment_status']=98;//to get the due amount pass the payment status id as 98
+    //     $due_amount=$this->Invoices_model->getAmount($data);
+    //     unset($data['payment_status']);
+    //     $student_invoice_list=$this->Invoices_model->getSchoolInvoiceList($data);//echo $this->db->last_query();exit;
+    //     $total_invoices_amount=!empty($invoice_amount[0]['total_amount'])?$invoice_amount[0]['total_amount']:0;
+    //     $total_collected_amount=!empty($collected_amount[0]['total_amount'])?$collected_amount[0]['total_amount']:0;
+    //     $due_amount=!empty($due_amount[0]['total_amount'])?$due_amount[0]['total_amount']:0;
+    //     $invoices_count=!empty($invoice_amount[0]['count'])?(int)$invoice_amount[0]['count']:0;
+    //     for ($i = 0; $i <= 5; $i++) 
+    //     {
+    //        $months[$i]['label'] = date("M Y", strtotime( date( 'Y-m-01' )." -$i months"));
+    //        $months[$i]['value'] = date("Y-m", strtotime( date( 'Y-m-01' )." -$i months"));
+        
+    //     }
+    //     $result = array('status'=>TRUE, 'message' => $this->lang->line('success'),'data'=>array('data' =>$student_invoice_list['data'],'total_records' =>$student_invoice_list['total_records'],'total_invoices_amount'=>$total_invoices_amount,'total_collected_amount'=>$total_collected_amount,'invoices_count'=>$invoices_count,'due_amount'=>$due_amount,'last_six_months'=>$months,'table_headers'=>getTableHeads('student_invoice_list')));
+    // }
 
 }

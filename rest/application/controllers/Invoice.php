@@ -312,7 +312,7 @@ class Invoice extends REST_Controller
             $data['payment_status']=98;//to get the due amount pass the payment status id as 98
             $due_amount=$this->Invoices_model->getAmount($data);
             unset($data['payment_status']);
-            $school_invoice_list=$this->Invoices_model->getSchoolInvoiceList($data);echo $this->db->last_query();exit;
+            $school_invoice_list=$this->Invoices_model->getSchoolInvoiceList($data);//echo $this->db->last_query();exit;
             $total_invoices_amount=!empty($invoice_amount[0]['total_amount'])?$invoice_amount[0]['total_amount']:0;
             $total_collected_amount=!empty($collected_amount[0]['total_amount'])?$collected_amount[0]['total_amount']:0;
             $due_amount=!empty($due_amount[0]['total_amount'])?$due_amount[0]['total_amount']:0;

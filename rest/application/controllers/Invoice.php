@@ -105,7 +105,7 @@ class Invoice extends REST_Controller
              $result = array('status'=>FALSE,'error'=>$this->lang->line('invalid_data'),'data'=>'1');
              $this->response($result, REST_Controller::HTTP_OK);
          }
-         $this->form_validator->add_rules('student_invoice_id', array('required'=>$this->lang->line('student_invoice_id_req')));
+        //  $this->form_validator->add_rules('student_invoice_id', array('required'=>$this->lang->line('student_invoice_id_req')));
          $this->form_validator->add_rules('status', array('required'=>$this->lang->line('payment_status_req')));
         //  $this->form_validator->add_rules('payment_type', array('required'=>$this->lang->line('payment_type_req')));
 
@@ -116,7 +116,8 @@ class Invoice extends REST_Controller
              $this->response($result, REST_Controller::HTTP_OK);
          }
          $update_data=array(
-             'student_invoice_id'=>$data['student_invoice_id'],
+             'student_invoice_id'=>!empty($data['student_invoice_id'])?$data['student_invoice_id']:'0',
+             'school_invoice_id'=>!empty($data['school_invoice_id'])?$data['school_invoice_id']:'0',
              'payment_status'=>$data['status'],
              'payment_type'=>isset($data['payment_type'])?$data['payment_type']:'',
              'comments'=>!empty($data['comments'])?$data['comments']:'',
@@ -124,7 +125,7 @@ class Invoice extends REST_Controller
              'update_on'=>currentDate(),
             );
          $histor_update=$this->User_model->insert_data('student_invoice_payment_history',$update_data);
-         $student_invoice_update=$this->User_model->update_data('student_invoice',array('payment_status'=>$data['status'],'payment_mode'=>isset($data['payment_type'])?$data['payment_type']:'','paid_date'=>$data['status']==97?currentDate():'','update_on'=>currentDate(),'update_by'=>$this->session_user_info->user_id),array('id'=>$data['student_invoice_id']));
+         $student_invoice_update=$this->User_model->update_data('student_invoice',array('payment_status'=>$data['status'],'payment_mode'=>isset($data['payment_type'])?$data['payment_type']:'','paid_date'=>$data['status']==97?currentDate():'','update_on'=>currentDate(),'update_by'=>$this->session_user_info->user_id),array('id'=>!empyt($data['student_invoice_id'])?$data['student_invoice_id']:$data['school_invoice_id']));
          if(isset($histor_update) && $student_invoice_update){
             $result = array('status'=>TRUE, 'message' =>$this->lang->line('update_payment_status'), 'data'=>array('data'=>''));
             $this->response($result, REST_Controller::HTTP_OK);

@@ -20,7 +20,7 @@ class Cron extends CI_Controller
         $this->db->query($query);
         $query1='
         INSERT INTO  student_invoice (invoice_number,franchise_id,student_id,amount,tax,total_amount,franchise_fee_id,invoice_date,discount,discount_amount,tax_amount,created_on,created_by,due_date)
-        SELECT CONCAT("MIN/",f.franchise_code,"/",YEAR(CURDATE()),"/",DATE_FORMAT(CURDATE(),"%m"),"/",@a:=LPAD(@a+1, 6, 0)) invoice_number,f.id franchise_id,s.id student_id,fm.amount,fm.tax,(fm.amount-(fm.amount*fm.discount/100)+(fm.amount*fm.tax/100)) as total_amount,s.franchise_fee_id as franchise_fee_id,CURRENT_DATE()invoice_date,fm.discount,TRIM((fm.amount*fm.discount/100))+0 as discount_amount,TRIM(fm.amount*fm.tax/100)+0 as tax_amount,CURRENT_DATE() as created_on, 1 as created_by,DATE_ADD(CURDATE(), INTERVAL fm.due_days DAY) as due_date
+        SELECT CONCAT("MIN/",f.franchise_code,"/",YEAR(CURDATE()),"/",DATE_FORMAT(CURDATE(),"%m"),"/",@a:=LPAD(@a+1, 6, 0)) invoice_number,f.id franchise_id,s.id student_id,fm.amount,fm.tax,((fm.amount+(s.remaining_invoice_days*(fm.amount/30)))-((fm.amount+(s.remaining_invoice_days*(fm.amount/30)))*fm.discount/100)+((fm.amount+(s.remaining_invoice_days*(fm.amount/30)))*fm.tax/100)) as total_amount,s.franchise_fee_id as franchise_fee_id,CURRENT_DATE()invoice_date,fm.discount,TRIM(((fm.amount+(s.remaining_invoice_days*(fm.amount/30)))*fm.discount/100))+0 as discount_amount,TRIM((fm.amount+(s.remaining_invoice_days*(fm.amount/30)))*fm.tax/100)+0 as tax_amount,CURRENT_DATE() as created_on, 1 as created_by,DATE_ADD(CURDATE(), INTERVAL fm.due_days DAY) as due_date
         FROM student s
         LEFT JOIN franchise f ON s.franchise_id = f.id
         LEFT JOIN fee_master fm ON s.franchise_fee_id = fm.id
@@ -38,7 +38,7 @@ class Cron extends CI_Controller
                 WHEN mc.child_key="'.MONTHLY_TERM_KEY.'" THEN DATE_ADD(s.next_invoice_date, INTERVAL +1 MONTH)
                 WHEN mc.child_key="'.QUARTERYL_TERM_KEY.'" THEN DATE_ADD(s.next_invoice_date, INTERVAL +3 MONTH) 
                 WHEN mc.child_key="'.ANNUAL_TERM_KEY.'" THEN DATE_ADD(s.next_invoice_date, INTERVAL +12 MONTH)
-                END
+                END,remaining_invoice_days=0
                 WHERE s.status=1
                 AND s.subscription_status = 1
                 AND s.next_invoice_date = CURDATE()

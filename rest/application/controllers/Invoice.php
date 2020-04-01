@@ -64,9 +64,9 @@ class Invoice extends REST_Controller
                 $due_amount=$this->Invoices_model->getAmount($data);
                 unset($data['payment_status']);
                 $student_invoice_list=$this->Invoices_model->getStudentInvoiceList($data);//echo $this->db->last_query();exit;
-                $total_invoices_amount=!empty($invoice_amount[0]['total_amount'])?(int)$invoice_amount[0]['total_amount']:0;
-                $total_collected_amount=!empty($collected_amount[0]['total_amount'])?(int)$collected_amount[0]['total_amount']:0;
-                $due_amount=!empty($due_amount[0]['total_amount'])?(int)$due_amount[0]['total_amount']:0;
+                $total_invoices_amount=!empty($invoice_amount[0]['total_amount'])?$invoice_amount[0]['total_amount']:0;
+                $total_collected_amount=!empty($collected_amount[0]['total_amount'])?$collected_amount[0]['total_amount']:0;
+                $due_amount=!empty($due_amount[0]['total_amount'])?$due_amount[0]['total_amount']:0;
                 $invoices_count=!empty($invoice_amount[0]['count'])?(int)$invoice_amount[0]['count']:0;
                 for ($i = 0; $i <= 5; $i++) 
                 {
@@ -146,41 +146,53 @@ class Invoice extends REST_Controller
              $result = array('status'=>FALSE,'error'=>$validated,'data'=>'');
              $this->response($result, REST_Controller::HTTP_OK);
          }
-         $student_data=$this->Invoices_model->getStudentInvoicedData($data);//print_r($student_data);exit;
+         $student_data=$this->Invoices_model->getStudentInvoicedData($data);//echo $this->db->last_query();exit;//print_r($student_data);exit;
         $date=date("Y-m-d");
         $day=date("d");
         if(!empty($student_data[0]['term'])){
             $term_type=$this->User_model->getTermTypeKey(array('term_id'=>$student_data[0]['term']));
             if($term_type[0]['child_key']==QUARTERYL_TERM_KEY){ //if term is quarterly plan then generate quarterly invoice date
-                if($day==1){
+                if($day<=10){
                      $next_invoice_date= date('Y-m-01', strtotime($date .'+3 month'));
+                     $remaining_days='0';
                 }
                 else{
                      $next_invoice_date= date('Y-m-01', strtotime($date .'+4 month'));
+                     $remaining_days='0';
+
                 }
             }
             if($term_type[0]['child_key']==MONTHLY_TERM_KEY){//if term is  monthly plan then generate monthly invoice date
-                if($day==1){
+                if($day<=10){
                      $next_invoice_date= date('Y-m-01', strtotime($date .'+1 month'));
+                     $remaining_days='0';
                 }
                 else{
                      $next_invoice_date= date('Y-m-01', strtotime($date .'+2 month'));
+                     $curren_date=date_create(date("Y-m-d"));
+                     $end_of_month_date=date_create(date("Y-m-t"));
+                     $diff_days=date_diff($curren_date,$end_of_month_date);
+                     $remaining_days='0';
                 }
             }
             if($term_type[0]['child_key']==ANNUAL_TERM_KEY){//if  yearly plan then generate yearly invoice date
-                if($day==1){
+                if($day<=10){
                      $next_invoice_date= date('Y-m-01', strtotime($date .'+12 month'));
+                     $remaining_days='0';
                 }
                 else{
                      $next_invoice_date= date('Y-m-01', strtotime($date .'+13 month'));
+                     $remaining_days='0';
                 }
             }
             if($term_type[0]['child_key']==HALFYEARLY_TERM_KEY){//if term is  halfyearly  plan then generate halfyearly invoice date
-                if($day==1){
+                if($day<=10){
                      $next_invoice_date= date('Y-m-01', strtotime($date .'+6 month'));
+                     $remaining_days='0';
                 }
                 else{
                      $next_invoice_date= date('Y-m-01', strtotime($date .'+7 month'));
+                     $remaining_days='0';
                 }
             }
         }
@@ -203,7 +215,7 @@ class Invoice extends REST_Controller
         $franchise_name=str_replace(" ","",$student_data[0]['franchise_code']);
         $month=date("m");
         $year=date("Y");
-        $update_student=$this->User_model->update_data('student',array('next_invoice_date'=>!empty($next_invoice_date)?$next_invoice_date:''),array('id'=>$data['student_id']));
+        $update_student=$this->User_model->update_data('student',array('next_invoice_date'=>!empty($next_invoice_date)?$next_invoice_date:'','remaining_invoice_days'=>!empty($remaining_days)?$remaining_days:0),array('id'=>$data['student_id']));
         $invoice_insert=$this->User_model->insert_data('student_invoice',$invoice_data);
         //  MIN/test/March/2020/00
          $id=str_pad($invoice_insert,6,"0",STR_PAD_LEFT);

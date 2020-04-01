@@ -174,8 +174,11 @@ class User extends REST_Controller
             if(isset($data['user_role_id']) && $data['user_role_id']==4){
                 $student_data['updated_by']=!empty($this->session_user_id)?$this->session_user_id:'0';
                 $student_data['updated_on']=currentDate();
-                $next_invoice_date=$this->getInvoiceDate($student_data['franchise_fee_id']);
-                $student_data['next_invoice_date']=$next_invoice_date;
+                if(!empty($student_data['franchise_fee_id'])){
+                    $next_invoice_date=$this->getInvoiceDate($student_data['franchise_fee_id']);
+                }
+                $student_data['next_invoice_date']=!empty($next_invoice_date['next_invoice_date'])?$next_invoice_date['next_invoice_date']:'';
+                $student_data['remaining_invoice_days']=!empty($next_invoice_date['days'])?$next_invoice_date['days']:0;
                 $student_data['subscription_status']=1;
                 $this->User_model->update_data('student',$student_data,array('user_id'=>$data['user_id']));
                 $this->User_model->update_data('user',array('user_status'=>$data['status']),array('id'=>$data['user_id']));
@@ -202,15 +205,18 @@ class User extends REST_Controller
                 $student_data['created_by']=!empty($this->session_user_id)?$this->session_user_id:'0';
                 $student_data['created_on']=currentDate();
                 $student_data['user_id']=$is_insert;
-                $next_invoice_date=$this->getInvoiceDate($student_data['franchise_fee_id']);
-                $student_data['next_invoice_date']=$next_invoice_date;
+                if(!empty($student_data['franchise_fee_id'])){
+                    $next_invoice_date=$this->getInvoiceDate($student_data['franchise_fee_id']);
+                }
+                $student_data['next_invoice_date']=!empty($next_invoice_date['next_invoice_date'])?$next_invoice_date['next_invoice_date']:'';
+                $student_data['remaining_invoice_days']=!empty($next_invoice_date['days'])?$next_invoice_date['days']:0;
                 $student_data['subscription_status']=1;
                 $student_id=$this->User_model->insertdata('student',$student_data);//echo $this->db->last_query();exit;
                 $message="Student created successfully.";
 
             }
             if($is_insert>0){
-                $result = array('status'=>TRUE, 'message' => $this->lang->line('user_add'), 'data'=>array('data' => $is_insert));
+                $result = array('status'=>TRUE, 'message' => $message, 'data'=>array('data' => $is_insert));
                 $this->response($result, REST_Controller::HTTP_OK);   
             }else{
                 $result = array('status'=>FALSE,'error'=>array('message'=>$this->lang->line('invalid_data')),'data'=>'');
@@ -748,37 +754,50 @@ class User extends REST_Controller
         $date=date("Y-m-d");
         $day=date("d");
         $term_type=$this->User_model->getTermTypeKey(array('fee_master_id'=>$franchise_fee_id));
+        // print_r($term_type);exit;
         if(!empty($term_type[0]['child_key'])){
             if($term_type[0]['child_key']==MONTHLY_TERM_KEY){
-                if($day==1){
-                    return $next_invoice_date= date('Y-m-01', strtotime($date .'+1 month'));
+                if($day<=10){
+                     $next_invoice_date= date('Y-m-01', strtotime($date .'+1 month'));
+                     return array('next_invoice_date'=>$next_invoice_date,'days'=>'0');
                 }
                 else{
-                    return $next_invoice_date= date('Y-m-01', strtotime($date .'+2 month'));
+                    $curren_date=date_create(date("Y-m-d"));
+                    $end_of_month_date=date_create(date("Y-m-t"));
+                    $diff_days=date_diff($curren_date,$end_of_month_date);//it will return the no of days b/w current and endof month day 
+                    $next_invoice_date= date('Y-m-01', strtotime($date .'+2 month'));
+                    return array('days'=>$diff_days->days,'next_invoice_date'=>$next_invoice_date);
                 }
             }
             if($term_type[0]['child_key']==HALFYEARLY_TERM_KEY){
-                if($day==1){
-                    return $next_invoice_date= date('Y-m-01', strtotime($date .'+6 month'));
+                if($day<=10){
+                     $next_invoice_date= date('Y-m-01', strtotime($date .'+6 month'));
+                     return array('next_invoice_date'=>$next_invoice_date,'days'=>'0');
                 }
                 else{
-                    return $next_invoice_date= date('Y-m-01', strtotime($date .'+7 month')); 
+                   
+                    $next_invoice_date= date('Y-m-01', strtotime($date .'+7 month')); 
+                    return array('next_invoice_date'=>$next_invoice_date,'days'=>'0');
                 }
             }
             if($term_type[0]['child_key']==QUARTERYL_TERM_KEY){
-                if($day==1){
-                    return $next_invoice_date= date('Y-m-01', strtotime($date .'+3 month'));
+                if($day<=10){
+                     $next_invoice_date= date('Y-m-01', strtotime($date .'+3 month'));
+                     return array('next_invoice_date'=>$next_invoice_date,'days'=>'0');
                 }
                 else{
-                    return $next_invoice_date= date('Y-m-01', strtotime($date .'+4 month'));
+                     $next_invoice_date= date('Y-m-01', strtotime($date .'+4 month'));
+                     return array('next_invoice_date'=>$next_invoice_date,'days'=>'0');
                 }
             }
             if($term_type[0]['child_key']==ANNUAL_TERM_KEY){
-                if($day==1){
-                    return $next_invoice_date= date('Y-m-01', strtotime($date .'+12 month'));
+                if($day<=10){
+                     $next_invoice_date= date('Y-m-01', strtotime($date .'+12 month'));
+                     return array('next_invoice_date'=>$next_invoice_date,'days'=>'0');
                 }
                 else{
-                    return $next_invoice_date= date('Y-m-01', strtotime($date .'+13 month'));
+                     $next_invoice_date= date('Y-m-01', strtotime($date .'+13 month'));
+                     return array('next_invoice_date'=>$next_invoice_date,'days'=>'0');
                 }
             }
         }

@@ -32,7 +32,7 @@ class Franchise_model extends CI_Model
         $this->db->join('master_child mc1','f.state=mc1.id AND mc1.master_id=13','left');
         $this->db->join('master_child mc2','f.country=mc2.id AND mc2.master_id=12','left');
         if(isset($data['franchise_id']) && $data['franchise_id'] > 0){
-            $this->db->select('f.franchise_contacts,f.website_address,f.owner_name,f.address,CONCAT(mc1.child_name,"-",mc1.id) as state,CONCAT(mc2.child_name,"-",mc2.id) as country,CONCAT(mc.child_name,"-",mc.id)  as city,f.landmark,f.pincode');
+            $this->db->select('f.website_address,f.owner_name,f.address,CONCAT(mc1.child_name,"-",mc1.id) as state,CONCAT(mc2.child_name,"-",mc2.id) as country,CONCAT(mc.child_name,"-",mc.id)  as city,f.landmark,f.pincode');
             // $this->db->join('franchise_fee af','a.id = af.franchise_id','');
             // $this->db->join('fee_master fm','fm.id = af.fee_master_id','');
             $this->db->where('f.id',$data['franchise_id']);
@@ -134,7 +134,7 @@ class Franchise_model extends CI_Model
     }
     public function getFranchiseInfo($data)//this function is used for get franchise information
     {
-        $this->db->select('f.id as franchise_id,f.name as franchise_name, f.franchise_code,f.website_address,mc.child_name as country,mc1.child_name as state,mc2.child_name as city,f.landmark,f.email,f.pincode,f.primary_contact as contact_number,f.owner_name,f.franchise_contacts,if(f.status=1,"active","inactive") as status,f.address');
+        $this->db->select('f.id as franchise_id,f.name as franchise_name, f.franchise_code,f.website_address,mc.child_name as country,mc1.child_name as state,mc2.child_name as city,f.landmark,f.email,f.pincode,f.primary_contact as contact_number,f.owner_name,if(f.status=1,"active","inactive") as status,f.address');
         $this->db->from('franchise f');
         $this->db->join('master_child mc','f.country=mc.id and mc.master_id=12','left');
         $this->db->join('master_child mc1','f.state=mc1.id and mc1.master_id=13','left');

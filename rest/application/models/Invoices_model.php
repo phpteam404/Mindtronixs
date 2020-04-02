@@ -108,7 +108,7 @@ class Invoices_model extends CI_Model
             $this->db->where('si.student_id',$data['student_id']);
         }
         if(!empty($data['student_invoice_id'])){
-            $this->db->select('si.id as student_invoice_id,si.student_is');
+            $this->db->select('si.id as student_invoice_id,si.student_id');
             $this->db->where_not_in('si.id',array($data['student_invoice_id']));
         }
         if(!empty($data['school_id'])){

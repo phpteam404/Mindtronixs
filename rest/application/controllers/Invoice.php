@@ -19,7 +19,6 @@ class Invoice extends REST_Controller
         $getLoggedUserId=$this->User_model->getLoggedUserId();
         $this->session_user_id=$getLoggedUserId[0]['id'];
         $this->session_user_info=$this->User_model->getUserInfo(array('user_id'=>$this->session_user_id));
-        //print_r($this->session_user_info->id_user); exit;       
     }
 
     public function studentInvoiceList_get(){//this service is used to get student invoices
@@ -31,19 +30,7 @@ class Invoice extends REST_Controller
             $student_invoice_info=$this->Invoices_model->getStudentInvoiceList($data);//print_r($student_invoice_info['data'][0]);exit;
             
             if(!empty($student_invoice_info['data'][0] && $student_invoice_info['data'][0]['payment_status']==98 ||$student_invoice_info['data'][0]['payment_status']==100)){//if payment status= 98 then it is consider as invoice payment status in Due,similarly 100 then it is OverDue
-                // $date=date("Y-m-d");
-                // if($student_invoice_info['data'][0]['term']==19){//if term  value is 19 then we consider as Monthly plan in fee master
-                //     $due_date= date('Y-m-d', strtotime($student_invoice_info['data'][0]['next_invoice_date'] .'-10 day')); //this is due date that return before 10 days
-                // }
-                // if($student_invoice_info['data'][0]['term']==21){//if term  value is 19 then we consider as halfyearly plan in fee master
-                //     $due_date= date('Y-m-d', strtotime($student_invoice_info['data'][0]['next_invoice_date'] .'-1 month')); 
-                // }
-                // if($student_invoice_info['data'][0]['term']==20){//if term  value is 19 then we consider as Quarterly plan in fee master
-                //     $due_date= date('Y-m-d', strtotime($student_invoice_info['data'][0]['next_invoice_date'] .'-15 day')); 
-                // }
-                // if($student_invoice_info['data'][0]['term']==22){//if term  value is 19 then we consider as Yearly plan in fee master
-                //     $due_date= date('Y-m-d', strtotime($student_invoice_info['data'][0]['next_invoice_date'] .'-2 month')); 
-                // }
+                
                 $due_date=$student_invoice_info['data'][0]['due_date']?$student_invoice_info['data'][0]['due_date']:'';
                 $result = array('status'=>TRUE, 'message' => $this->lang->line('success'),'data'=>array('data' =>$student_invoice_info['data'],'due_date'=>!empty($due_date)?$due_date:'','student_invoice_payment_history'=>$student_invoice_payment_history));
             } 
@@ -64,7 +51,7 @@ class Invoice extends REST_Controller
                 $data['payment_status']=98;//to get the due amount pass the payment status id as 98
                 $due_amount=$this->Invoices_model->getAmount($data);
                 unset($data['payment_status']);
-                $student_invoice_list=$this->Invoices_model->getStudentInvoiceList($data);//echo $this->db->last_query();exit;
+                $student_invoice_list=$this->Invoices_model->getStudentInvoiceList($data);
                 $total_invoices_amount=!empty($invoice_amount[0]['total_amount'])?$invoice_amount[0]['total_amount']:0;
                 $total_collected_amount=!empty($collected_amount[0]['total_amount'])?$collected_amount[0]['total_amount']:0;
                 $due_amount=!empty($due_amount[0]['total_amount'])?$due_amount[0]['total_amount']:0;
@@ -87,14 +74,13 @@ class Invoice extends REST_Controller
             $result = array('status'=>FALSE,'error'=>$this->lang->line('invalid_data'),'data'=>'1');
             $this->response($result, REST_Controller::HTTP_OK);
         }
-        // $this->form_validator->add_rules('student_id', array('required'=>$this->lang->line('student_id_req')));
         $validated = $this->form_validator->validate($data);
         if($validated != 1)
         {
             $result = array('status'=>FALSE,'error'=>$validated,'data'=>'');
             $this->response($result, REST_Controller::HTTP_OK);
         }
-        $previous_invoice_data=$this->Invoices_model->getPreviousStudentInvoice($data);//echo $this->db->last_query();exit;
+        $previous_invoice_data=$this->Invoices_model->getPreviousStudentInvoice($data);
         $result = array('status'=>TRUE, 'message' => $this->lang->line('success'),'data'=>array('data' =>!empty($previous_invoice_data)?$previous_invoice_data:array()));
         $this->response($result, REST_Controller::HTTP_OK);
     }
@@ -105,10 +91,7 @@ class Invoice extends REST_Controller
              $result = array('status'=>FALSE,'error'=>$this->lang->line('invalid_data'),'data'=>'1');
              $this->response($result, REST_Controller::HTTP_OK);
          }
-        //  $this->form_validator->add_rules('student_invoice_id', array('required'=>$this->lang->line('student_invoice_id_req')));
          $this->form_validator->add_rules('status', array('required'=>$this->lang->line('payment_status_req')));
-        //  $this->form_validator->add_rules('payment_type', array('required'=>$this->lang->line('payment_type_req')));
-
          $validated = $this->form_validator->validate($data);
          if($validated != 1)
          {
@@ -221,11 +204,9 @@ class Invoice extends REST_Controller
         $year=date("Y");
         $update_student=$this->User_model->update_data('student',array('next_invoice_date'=>!empty($next_invoice_date)?$next_invoice_date:'','remaining_invoice_days'=>!empty($remaining_days)?$remaining_days:0),array('id'=>$data['student_id']));
         $invoice_insert=$this->User_model->insert_data('student_invoice',$invoice_data);
-        //  MIN/test/March/2020/00
          $id=str_pad($invoice_insert,6,"0",STR_PAD_LEFT);
         $invoice_number="MIN/".$franchise_name."/".$year."/".$month."/".$id;
         $this->User_model->update_data('student_invoice',array('invoice_number'=>$invoice_number),array('id'=>$invoice_insert));
-        // print_r($invoice_number);exit;
         if(!empty($invoice_insert)){
             $result = array('status'=>TRUE, 'message' =>$this->lang->line('invoice_generate'), 'data'=>array('data'=>$invoice_insert));
             $this->response($result, REST_Controller::HTTP_OK);
@@ -279,7 +260,6 @@ class Invoice extends REST_Controller
         $school_code=str_replace(" ","",$schooldata[0]['school_code']);
         $franchise_code=str_replace(" ","",$schooldata[0]['franchise_code']);
         $id=str_pad($insert_id,6,"0",STR_PAD_LEFT);
-        // MIN/test/March/2020/00
         $student_invoice_number='MIN/'.$franchise_code.'/'.$school_code.'/'.date("Y").'/'.date("m").'/'.$id;
         $this->User_model->update_data('student_invoice',array('invoice_number'=>$student_invoice_number),array('id'=>$insert_id));
         if(!empty($insert_id)){
@@ -296,8 +276,8 @@ class Invoice extends REST_Controller
         $data=$this->input->get();
         if(isset($data['school_invoice_id'])){
             $data['status']=2;
-            $school_invoice_list=$this->Invoices_model->getSchoolInvoiceList($data);//echo $this->db->last_query();exit;
-            $school_invoice_payment_history=$this->Invoices_model->getStudentPaymentHistory(array('school_invoice_id'=>$data['school_invoice_id']));//echo $this->db->last_query();exit;
+            $school_invoice_list=$this->Invoices_model->getSchoolInvoiceList($data);
+            $school_invoice_payment_history=$this->Invoices_model->getStudentPaymentHistory(array('school_invoice_id'=>$data['school_invoice_id']));
             $school_invoice_payment_history=!empty( $school_invoice_payment_history)?$school_invoice_payment_history:array();
             $result = array('status'=>TRUE, 'message' => $this->lang->line('success'),'data'=>array('data' =>$school_invoice_list['data'],'school_invoice_payment_history'=>$school_invoice_payment_history));
         }
@@ -307,14 +287,14 @@ class Invoice extends REST_Controller
                 $data['franchise_id']=$this->session_user_info->franchise_id;
             }
             $data['status']=2;//for school invoice
-            $invoice_amount=$this->Invoices_model->getAmount($data);//echo $this->db->last_query();exit;
+            $invoice_amount=$this->Invoices_model->getAmount($data);
             $data['payment_status']=97;//to get collected amount  pass the payment status id is 97
             $collected_amount=$this->Invoices_model->getAmount($data);
             unset($data['payment_status']);
             $data['payment_status']=98;//to get the due amount pass the payment status id as 98
             $due_amount=$this->Invoices_model->getAmount($data);
             unset($data['payment_status']);
-            $school_invoice_list=$this->Invoices_model->getSchoolInvoiceList($data);//echo $this->db->last_query();exit;
+            $school_invoice_list=$this->Invoices_model->getSchoolInvoiceList($data);
             $total_invoices_amount=!empty($invoice_amount[0]['total_amount'])?$invoice_amount[0]['total_amount']:0;
             $total_collected_amount=!empty($collected_amount[0]['total_amount'])?$collected_amount[0]['total_amount']:0;
             $due_amount=!empty($due_amount[0]['total_amount'])?$due_amount[0]['total_amount']:0;

@@ -124,15 +124,17 @@ class Invoices_model extends CI_Model
         
     }
     public function getStudentPaymentHistory($data=null){
-        $this->db->select('sih.student_invoice_id,concat(u.first_name," ",u.last_name) as updated_by,mc.child_key as status,mc1.child_key as payment_type,comments,DATE_FORMAT(sih.update_on,"%Y-%m-%d") updated_on');
+        $this->db->select('concat(u.first_name," ",u.last_name) as updated_by,mc.child_key as status,mc1.child_key as payment_type,comments,DATE_FORMAT(sih.update_on,"%Y-%m-%d") updated_on');
         $this->db->from('student_invoice_payment_history sih');
         $this->db->join('user u','sih.updated_by =u.id','left');
         $this->db->join('master_child mc','sih.payment_status=mc.id AND mc.master_id=23','left');
         $this->db->join(' master_child mc1',' sih.payment_type=mc1.id AND mc1.master_id=24','left');
         if(!empty($data['student_invoice_id'])){
+            $this->db->select('sih.student_invoice_id');
             $this->db->where('sih.student_invoice_id',$data['student_invoice_id']);
         }
         if(!empty($data['school_invoice_id'])){
+            $this->db->select('sih.school_invoice_id');
             $this->db->where('sih.school_invoice_id',$data['school_invoice_id']);
         }
         $this->db->order_by('sih.id','desc');
@@ -166,7 +168,7 @@ class Invoices_model extends CI_Model
         return $query->result_array();
     }
     public function getSchoolInvoiceList($data=null){
-        $this->db->select('si.id as school_invoice_id,si.invoice_number,sm.`name` as school_name,f.`name` as frachise_name,si.total_amount as amount,DATE_FORMAT(si.invoice_date, "%Y-%m-%d") as invoice_date,mc.child_name as status,si.paid_date,si.school_id');
+        $this->db->select('si.id as school_invoice_id,si.invoice_number,sm.`name` as school_name,f.`name` as frachise_name,si.total_amount as amount,DATE_FORMAT(si.invoice_date, "%Y-%m-%d") as invoice_date,mc.child_name as status,si.school_id,if(si.paid_date="0000-00-00 00:00:00","",si.paid_date) as `paid_date`');
         $this->db->from('student_invoice si');
         $this->db->join('school_master sm','si.school_id=sm.id');
         $this->db->join('franchise f','sm.franchise_id=f.id');
@@ -190,10 +192,10 @@ class Invoices_model extends CI_Model
         if(!empty($data['franchise_id'])){
             $this->db->where('si.franchise_id',$data['franchise_id']);
         }
-        // if(empty($data['from_date']) && empty($data['to_date']) && empty($data['status_id']) && empty($data['month'] && empty($data[]))){
-        //     $this->db->where('MONTH(si.invoice_date)', date('m')); //For current month
-        //     $this->db->where('YEAR(si.invoice_date)', date('Y')); // For current year
-        // }
+        if(empty($data['from_date']) && empty($data['to_date']) && empty($data['status_id']) && empty($data['month']) && empty($data['school_invoice_id'])){
+            $this->db->where('MONTH(si.invoice_date)', date('m')); //For current month
+            $this->db->where('YEAR(si.invoice_date)', date('Y')); // For current year
+        }
         if(!empty($data['school_invoice_id'])){
             $this->db->where('si.id',$data['school_invoice_id']);
         }

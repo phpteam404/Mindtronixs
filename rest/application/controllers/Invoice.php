@@ -43,6 +43,11 @@ class Invoice extends REST_Controller
                 if($this->session_user_info->user_role_id==2){
                     $data['franchise_id']=$this->session_user_info->franchise_id;
                 }
+                if($this->session_user_info->user_role_id==4){
+                    $data['student_id']=$this->session_user_info->franchise_id;
+                    $student_id=$this->User_model->check_record_selected('id as student_id','student',array('user_id'=>$this->session_user_info->user_id));
+                    $data['student_id']=$student_id[0]['student_id'];
+                }
                 $data['status']=1;
                 $invoice_amount=$this->Invoices_model->getAmount($data);
                 $data['payment_status']=97;//to get collected amount  pass the payment status id is 97
@@ -109,7 +114,7 @@ class Invoice extends REST_Controller
              'update_on'=>currentDate(),
             );
          $histor_update=$this->User_model->insert_data('student_invoice_payment_history',$update_data);
-         $student_invoice_update=$this->User_model->update_data('student_invoice',array('payment_status'=>$data['status'],'payment_mode'=>isset($data['payment_type'])?$data['payment_type']:'','paid_date'=>$data['status']==97?currentDate():'','update_on'=>currentDate(),'update_by'=>$this->session_user_info->user_id),array('id'=>!empty($data['student_invoice_id'])?$data['student_invoice_id']:$data['school_invoice_id']));
+         $student_invoice_update=$this->User_model->update_data('student_invoice',array('payment_status'=>$data['status'],'payment_mode'=>isset($data['payment_type'])?$data['payment_type']:'','paid_date'=>$data['status']==97?currentDate():'','update_on'=>currentDate(),'update_by'=>$this->session_user_info->user_id,'paid_amount'=>!empty($data['paid_amount'])?$data['paid_amount']:0),array('id'=>!empty($data['student_invoice_id'])?$data['student_invoice_id']:$data['school_invoice_id']));
          if(isset($histor_update) && $student_invoice_update){
             $result = array('status'=>TRUE, 'message' =>$this->lang->line('update_payment_status'), 'data'=>array('data'=>''));
             $this->response($result, REST_Controller::HTTP_OK);
@@ -197,7 +202,8 @@ class Invoice extends REST_Controller
             'tax_amount'=>$student_data[0]['tax_amount'],
             'due_date'=>date('Y-m-d', strtotime($date .'+'.$student_data[0]['due_days'].'days')),
             'created_on'=>CurrentDate(),
-            'invoice_type'=>1
+            'invoice_type'=>1,
+            'paid_amount'=>0
         );
         $franchise_name=str_replace(" ","",$student_data[0]['franchise_code']);
         $month=date("m");
@@ -254,7 +260,8 @@ class Invoice extends REST_Controller
             'invoice_date'=>date("Y-m-d"),
             'created_by'=>!empty($this->session_user_id)?$this->session_user_id:'0',
             'created_on'=>currentDate(),
-            'invoice_type'=>2
+            'invoice_type'=>2,
+            'paid_amount'=>0
         );
         $insert_id=$this->User_model->insert_data('student_invoice',$school_invoice_data);
         $school_code=str_replace(" ","",$schooldata[0]['school_code']);

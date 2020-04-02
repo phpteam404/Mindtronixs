@@ -968,6 +968,7 @@ if (!function_exists('getTableHeads')) {
                         array('field'=> 'email', 'header'=> 'Email','alias'=>'email' ),
                         array('field'=> 'invoice_date', 'header'=> 'Invoice Date','alias'=>'invoice_date' ),
                         array('field'=> 'amount', 'header'=> 'Amount','alias'=>'amount' ),
+                        array('field'=> 'paid_amount', 'header'=> 'Paid Amount','alias'=>'paid_amount' ),
                         array('field'=> 'status', 'header'=> 'Status','alias'=>'status' )
                     );
                     break;
@@ -978,6 +979,7 @@ if (!function_exists('getTableHeads')) {
                         array('field'=> 'frachise_name', 'header'=> 'Franchise Name','alias'=>'frachise_name' ),
                         array('field'=> 'invoice_date', 'header'=> 'Invoice Date','alias'=>'invoice_date' ),
                         array('field'=> 'amount', 'header'=> 'Amount','alias'=>'amount' ),
+                        array('field'=> 'paid_amount', 'header'=> 'Paid Amount','alias'=>'paid_amount' ),
                         array('field'=> 'status', 'header'=> 'Status','alias'=>'status' )
                     );
                     break;

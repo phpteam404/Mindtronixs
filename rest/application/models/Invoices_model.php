@@ -19,7 +19,7 @@ class Invoices_model extends CI_Model
 
     }
     public function getStudentInvoiceList($data=null){
-            $this->db->select('si.id as student_invoice_id,replace(si.invoice_number," ","") as invoice_number,concat(u.first_name," ",u.last_name) as student_name,u.phone_no ,u.email as email,si.invoice_date,TRIM(si.total_amount)+0 as amount,mc.child_name as status,si.franchise_id,s.id as student_id');
+            $this->db->select('si.id as student_invoice_id,replace(si.invoice_number," ","") as invoice_number,concat(u.first_name," ",u.last_name) as student_name,u.phone_no ,u.email as email,si.invoice_date,TRIM(si.total_amount)+0 as amount,mc.child_name as status,si.franchise_id,s.id as student_id,if(si.paid_amount="","0",si.paid_amount) as paid_amount');
             if(!empty($data['student_invoice_id'])){
                 $this->db->select('fm.name as fee_structure,fm.term,si.payment_status,DATE_FORMAT(s.created_on, "%Y-%m-%d") as member_since,s.id as student_id,s.next_invoice_date,si.due_date,si.paid_date');
             }
@@ -53,6 +53,9 @@ class Invoices_model extends CI_Model
         }
         if(!empty($data['student_invoice_id'])){
             $this->db->where('si.id',$data['student_invoice_id']);
+        }
+        if(!empty($data['student_id'])){
+            $this->db->where('si.student_id',$data['student_id']);
         }
         if(!empty($data['month'])){
             $this->db->like('si.invoice_date', $data['month'], 'both');
@@ -168,7 +171,7 @@ class Invoices_model extends CI_Model
         return $query->result_array();
     }
     public function getSchoolInvoiceList($data=null){
-        $this->db->select('si.id as school_invoice_id,si.invoice_number,sm.`name` as school_name,f.`name` as frachise_name,si.total_amount as amount,DATE_FORMAT(si.invoice_date, "%Y-%m-%d") as invoice_date,mc.child_name as status,si.school_id,if(si.paid_date="0000-00-00 00:00:00","",si.paid_date) as `paid_date`');
+        $this->db->select('si.id as school_invoice_id,si.invoice_number,sm.`name` as school_name,f.`name` as frachise_name,si.total_amount as amount,DATE_FORMAT(si.invoice_date, "%Y-%m-%d") as invoice_date,mc.child_name as status,si.school_id,if(si.paid_date="0000-00-00 00:00:00","",si.paid_date) as `paid_date`,if(si.paid_amount="0","0",si.paid_amount) as paid_amount');
         $this->db->from('student_invoice si');
         $this->db->join('school_master sm','si.school_id=sm.id');
         $this->db->join('franchise f','sm.franchise_id=f.id');

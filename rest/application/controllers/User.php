@@ -353,23 +353,23 @@ class User extends REST_Controller
     //    print_r($modules);exit;
         if(count($modules)>0){
             $access = true;
-            // $access=array(
-            //     'create'=>(int)$modules[0]['create'],
-            //     'edit'=>(int)$modules[0]['edit'],
-            //     'view'=>(int)$modules[0]['view'],
-            //     'delete'=>(int)$modules[0]['delete']
-            // );
+            $role_access=array(
+                'create'=>(int)$modules[0]['create'],
+                'edit'=>(int)$modules[0]['edit'],
+                'view'=>(int)$modules[0]['view'],
+                'delete'=>(int)$modules[0]['delete']
+            );
         }
         else{
             $access = false;
-            // $access=array(
-            //     'create'=>0,
-            //     'create'=>0,
-            //     'create'=>0,
-            //     'create'=>0
-            // );
+            $role_access=array(
+                'create'=>0,
+                'create'=>0,
+                'create'=>0,
+                'create'=>0
+            );
         }
-        $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>array('access'=>$access));
+        $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>array('access'=>$access,'role_access'=>$role_access));
         $this->response($result, REST_Controller::HTTP_OK);
         
     }

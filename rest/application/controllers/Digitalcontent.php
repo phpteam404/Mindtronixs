@@ -338,6 +338,83 @@ class Digitalcontent extends REST_Controller
         }
         
     }
+    public function mapContentToFranchise_post(){
+        $data=$this->input->post();
+        if(empty($data)){
+            $result = array('status'=>FALSE,'error'=>$this->lang->line('invalid_data'),'data'=>'');
+            $this->response($result, REST_Controller::HTTP_OK);
+        }
+        $this->form_validator->add_rules('content_id', array('required'=>$this->lang->line('digital_content_management_id_req')));
+        $validated = $this->form_validator->validate($data);
+        if($validated != 1){
+            $result = array('status'=>FALSE,'error'=>$validated,'data'=>'');
+            $this->response($result, REST_Controller::HTTP_OK);
+        }
+        // Deleting the past content mappings
+        $this->User_model->delete_data('content_maping',array('content_id' => $data['content_id']));
+
+        // Explodeing comma separated into arrys.
+        $data['exclude_franchise'] = explode(',',$data['exclude_franchise']);
+        $data['exclude_school'] = explode(',',$data['exclude_school']);
+
+        // echo '<pre>'.print_r($data);
+        // Finding the Max count of arrays
+        $max_array_size = max(count($data['exclude_franchise']),count($data['exclude_school']));
+
+        // Appending with 0's if the array sizes are differnt each other
+        if(count($data['exclude_school']) < $max_array_size)
+            $data['exclude_school'] = array_pad($data['exclude_school'],$max_array_size,0);
+        if(count($data['exclude_franchise']) < $max_array_size)
+            $data['exclude_franchise'] = array_pad($data['exclude_franchise'],$max_array_size,0);
+
+        $insert_batch_array = array();
+        foreach($data['exclude_franchise'] as $k => $v){
+            // Preparing insert batch array
+            $insert_batch_array[$k] = array(
+                'content_id' => $data['content_id'],
+                'all_franchise' => isset($data['all_franchise'])?$data['all_franchise']:0,
+                'exclude_franchise' => $data['exclude_franchise'][$k],
+                'all_schools' => isset($data['all_schools'])?$data['all_schools']:0,
+                'exclude_school' => $data['exclude_school'][$k],
+                'created_by' => $this->session_user_id,
+                'created_on' => CurrentDate()
+            );
+        }
+        $url_insert=$this->User_model->insertbatch('content_maping',$insert_batch_array);
+
+        $result = array('status'=>TRUE, 'message' => $this->lang->line('content_mapping_saved'), 'data'=>[]);
+        $this->response($result, REST_Controller::HTTP_OK);
+    }
+
+    public function mapContentToFranchise_get(){
+        $data=$this->input->get();
+        if(empty($data)){
+            $result = array('status'=>FALSE,'error'=>$this->lang->line('invalid_data'),'data'=>'');
+            $this->response($result, REST_Controller::HTTP_OK);
+        }
+        $this->form_validator->add_rules('content_id', array('required'=>$this->lang->line('digital_content_management_id_req')));
+        $validated = $this->form_validator->validate($data);
+        if($validated != 1){
+            $result = array('status'=>FALSE,'error'=>$validated,'data'=>'');
+            $this->response($result, REST_Controller::HTTP_OK);
+        }
+        $result = $this->User_model->check_record('content_maping',array('content_id'=>$data['content_id']));
+        $response = array('all_franchise'=>0,'all_schools'=>0,'content_id'=>0,'exclude_franchise'=>0,'exclude_school'=>0);
+        $exclude_franchise = $exclude_school = array();
+        foreach($result as $k => $v){
+            $response['all_franchise'] = $v['all_franchise'];
+            $response['all_schools'] = $v['all_schools'];
+            $response['content_id'] = $v['content_id'];
+            $exclude_franchise[] = $v['exclude_franchise'];
+            $exclude_school[] = $v['exclude_school'];
+        }
+        $response['exclude_franchise'] = implode(',',$exclude_franchise);
+        $response['exclude_school'] = implode(',',$exclude_school);
+
+        $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>$response);
+        $this->response($result, REST_Controller::HTTP_OK);
+    }
+    
     function addDigitalContentUrls($content_id,$urls){
         $list_urls=explode(",",$urls);
         foreach($list_urls as $k=>$v){
@@ -349,8 +426,8 @@ class Digitalcontent extends REST_Controller
                 'module_type'=>'url'
             );
         }
-       $url_insert=$this->User_model->insertbatch('documents',$insert_batch_array);
+       $url_insert=$this->User_model->insertbatch('content_maping',$insert_batch_array);
        return $url_insert;
     }
-
+    
 }

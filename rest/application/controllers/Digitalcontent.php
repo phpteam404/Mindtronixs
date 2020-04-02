@@ -411,7 +411,7 @@ class Digitalcontent extends REST_Controller
         $response['exclude_franchise'] = implode(',',array_diff($exclude_franchise,array(0)));
         $response['exclude_school'] = implode(',',array_diff($exclude_school,array(0)));
 
-        $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>$response);
+        $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>array($response));
         $this->response($result, REST_Controller::HTTP_OK);
     }
 

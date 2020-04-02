@@ -383,6 +383,8 @@ $lang['activate_in_next_review_req'] = "Activation status is required.";
 
 
 /* Mindtroix */
+
+$lang['content_mapping_saved'] = 'Content Mapping Saved';
 $lang['franchise_id_req'] = 'franchise id required';
 $lang['success'] = 'Success';
 $lang['ticket_desc'] = 'Ticket description required';

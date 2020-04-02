@@ -530,6 +530,7 @@ class User extends REST_Controller
         // print_r($student_list);exit;
         foreach($student_list['data'] as $k=>$v){
             if(!empty($data['user_id'])){
+                // print_r($v);exit;
                 $student_list['data'][$k]['blood_group']=getObjOnIdOfBloodGroup($v['blood_group'],!empty($v['blood_group'])?true:false);//getting the bloodgroup dropdown object values 
                 $student_list['data'][$k]['relation']=getObjOnId($v['relation'],!empty($v['relation'])?true:false);
                 $student_list['data'][$k]['grade']=getObjOnId($v['grade'],!empty($v['grade'])?true:false);//getting object  of  dropdown grade field
@@ -538,7 +539,12 @@ class User extends REST_Controller
                 $student_list['data'][$k]['fee_structure']=getMultipeObjOnId($v['fee_structure'],!empty($v['fee_structure'])?true:false);
                 $student_list['data'][$k]['status']=getStatusObj($v['status'],!empty($v['status'])?true:false);
                 // $student_list['data'][$k]['date_of_birth']=date('Y-m-d', strtotime($v['date_of_birth']));
-                $student_list['data'][$k]['school_id']=getObjOnId($v['school_id'],!empty($v['school_id'])?true:false);
+                if($v['type_school_id']==0){
+                    $student_list['data'][$k]['school_name']=$v['school_name_text'];
+                }
+                else{
+                    $student_list['data'][$k]['school_id']=getObjOnId($v['school_id'],!empty($v['school_id'])?true:false);
+                }
 
 
 

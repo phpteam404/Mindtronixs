@@ -426,7 +426,7 @@ class Digitalcontent extends REST_Controller
                 'module_type'=>'url'
             );
         }
-       $url_insert=$this->User_model->insertbatch('content_maping',$insert_batch_array);
+       $url_insert=$this->User_model->insertbatch('documents',$insert_batch_array);
        return $url_insert;
     }
     

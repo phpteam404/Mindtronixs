@@ -87,7 +87,7 @@ class Invoice extends REST_Controller
             $result = array('status'=>FALSE,'error'=>$this->lang->line('invalid_data'),'data'=>'1');
             $this->response($result, REST_Controller::HTTP_OK);
         }
-        $this->form_validator->add_rules('student_id', array('required'=>$this->lang->line('student_id_req')));
+        // $this->form_validator->add_rules('student_id', array('required'=>$this->lang->line('student_id_req')));
         $validated = $this->form_validator->validate($data);
         if($validated != 1)
         {
@@ -115,6 +115,7 @@ class Invoice extends REST_Controller
              $result = array('status'=>FALSE,'error'=>$validated,'data'=>'');
              $this->response($result, REST_Controller::HTTP_OK);
          }
+        //  print_r($data);exit;
          $update_data=array(
              'student_invoice_id'=>!empty($data['student_invoice_id'])?$data['student_invoice_id']:'0',
              'school_invoice_id'=>!empty($data['school_invoice_id'])?$data['school_invoice_id']:'0',
@@ -296,7 +297,7 @@ class Invoice extends REST_Controller
         if(isset($data['school_invoice_id'])){
             $data['status']=2;
             $school_invoice_list=$this->Invoices_model->getSchoolInvoiceList($data);//echo $this->db->last_query();exit;
-            $school_invoice_payment_history=$this->Invoices_model->getStudentPaymentHistory(array('student_invoice_id'=>$data['school_invoice_id']));//echo $this->db->last_query();exit;
+            $school_invoice_payment_history=$this->Invoices_model->getStudentPaymentHistory(array('school_invoice_id'=>$data['school_invoice_id']));//echo $this->db->last_query();exit;
             $school_invoice_payment_history=!empty( $school_invoice_payment_history)?$school_invoice_payment_history:array();
             $result = array('status'=>TRUE, 'message' => $this->lang->line('success'),'data'=>array('data' =>$school_invoice_list['data'],'school_invoice_payment_history'=>$school_invoice_payment_history));
         }

@@ -110,6 +110,12 @@ class Invoices_model extends CI_Model
         if(!empty($data['student_invoice_id'])){
             $this->db->where_not_in('si.id',array($data['student_invoice_id']));
         }
+        if(!empty($data['school_id'])){
+            $this->db->where('si.school_id',$data['school_id']);
+        }
+        if(!empty($data['school_invoice_id'])){
+            $this->db->where_not_in('si.id',array($data['school_invoice_id']));
+        }
         $this->db->order_by('si.id','desc');
         $query = $this->db->get();
         return $query->result_array();
@@ -123,6 +129,9 @@ class Invoices_model extends CI_Model
         $this->db->join(' master_child mc1',' sih.payment_type=mc1.id AND mc1.master_id=24','left');
         if(!empty($data['student_invoice_id'])){
             $this->db->where('sih.student_invoice_id',$data['student_invoice_id']);
+        }
+        if(!empty($data['school_invoice_id'])){
+            $this->db->where('sih.school_invoice_id',$data['school_invoice_id']);
         }
         $this->db->order_by('sih.id','desc');
         $query = $this->db->get();
@@ -155,7 +164,7 @@ class Invoices_model extends CI_Model
         return $query->result_array();
     }
     public function getSchoolInvoiceList($data=null){
-        $this->db->select('si.id as school_invoice_id,si.invoice_number,sm.`name` as school_name,f.`name` as frachise_name,si.amount,DATE_FORMAT(si.invoice_date, "%Y-%m-%d") as invoice_date,mc.child_name as status,si.paid_date');
+        $this->db->select('si.id as school_invoice_id,si.invoice_number,sm.`name` as school_name,f.`name` as frachise_name,si.total_amount,DATE_FORMAT(si.invoice_date, "%Y-%m-%d") as invoice_date,mc.child_name as status,si.paid_date,si.school_id');
         $this->db->from('student_invoice si');
         $this->db->join('school_master sm','si.school_id=sm.id');
         $this->db->join('franchise f','sm.franchise_id=f.id');

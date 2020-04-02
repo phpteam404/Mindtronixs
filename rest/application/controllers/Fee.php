@@ -16,10 +16,10 @@ class Fee extends REST_Controller
         $getLoggedUserId=$this->User_model->getLoggedUserId();
         $this->session_user_id=$getLoggedUserId[0]['id'];
         $this->session_user_info=$this->User_model->getUserInfo(array('user_id'=>$this->session_user_id));
-        if(!in_array($this->session_user_info->user_role_id,array(1,2,3,4))){
-            $result = array('status'=>FALSE, 'error' =>array('message'=>$this->lang->line('permission_not_allowed')), 'data'=>'');
-            $this->response($result, REST_Controller::HTTP_OK);
-        }
+        // if(!in_array($this->session_user_info->user_role_id,array(1,2,3,4))){
+        //     $result = array('status'=>FALSE, 'error' =>array('message'=>$this->lang->line('permission_not_allowed')), 'data'=>'');
+        //     $this->response($result, REST_Controller::HTTP_OK);
+        // }
        
     }
 

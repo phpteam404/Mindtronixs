@@ -183,7 +183,7 @@ class User_model extends CI_Model
         if(!empty($data['dropdown'])){
             $this->db->select('user_role_name as label, CAST(id AS SIGNED) as value')->from('user_role');
             // $this->db->where('role_level != 1');
-            $this->db->where_not_in('role_level', array('1','5'));
+            $this->db->where_not_in('role_level', array('1','5','9'));
 
         }
         else{
@@ -608,14 +608,16 @@ class User_model extends CI_Model
         if(isset($data['user_role_id']) && $data['user_role_id']>0){
             $this->db->where('ma.user_role_id',$data['user_role_id']);
         }
+        if(isset($data['only_menu']) && is_array($data['only_menu'])){
+            $this->db->where_in('ap.is_menu',$data['only_menu']);
+        }
         if(isset($data['type']) && $data['type']=='menu'){
-            $this->db->where('ma.is_access_status',1);
+            $this->db->where('ma.view',1);
             $this->db->order_by('ap.module_order','asc');
-
         }
         if(isset($data['module_url']) && $data['module_url']!=''){
             $this->db->where('ap.module_url',$data['module_url']);
-            $this->db->where('ma.is_access_status',1);
+            $this->db->where('ma.view',1);
         }
         // else{
         //     $this->db->where('ap.is_menu',0);  

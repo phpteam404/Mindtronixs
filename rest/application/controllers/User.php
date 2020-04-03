@@ -287,7 +287,7 @@ class User extends REST_Controller
         $data = $this->input->get();
         $modules=array();
         if(!isset($data['dropdown'])){
-            $modules= $this->User_model->menuList(array('user_role_id'=>!empty($data['user_role_id'])?$data['user_role_id']:1));//echo $this->db->last_query();exit;
+            $modules= $this->User_model->menuList(array('only_menu'=>array(1,2),'user_role_id'=>!empty($data['user_role_id'])?$data['user_role_id']:1));//echo $this->db->last_query();exit;
             // foreach($modules as $mk => $mv){
             //     $modules[$mk]['create'] = (int)$mv['create'];
             //     $modules[$mk]['edit'] = (int)$mv['edit'];

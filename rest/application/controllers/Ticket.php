@@ -282,7 +282,7 @@ class Ticket extends REST_Controller
         // print_r($data);exit;
         $data['user_role_id']=$this->session_user_info->user_role_id;
         $data['user_id']=$this->session_user_info->user_id;
-        if(in_array($data['user_role_id'],array('1','4','5'))){//display tickets only specific user only
+        if(in_array($data['user_role_id'],array('1','4'))){//display tickets only specific user only
             $ticket_list=$this->Ticket_model->getTickets($data);//echo $this->db->last_query();exit;
         }
         else{

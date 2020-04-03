@@ -51,14 +51,14 @@ class Invoice extends REST_Controller
                 $data['status']=1;
                 $invoice_amount=$this->Invoices_model->getAmount($data);
                 $data['payment_status']=97;//to get collected amount  pass the payment status id is 97
-                $collected_amount=$this->Invoices_model->getAmount($data);
+                $collected_amount=$this->Invoices_model->getAmount($data);//print_r($collected_amount);exit;
                 unset($data['payment_status']);
                 $data['payment_status']=98;//to get the due amount pass the payment status id as 98
                 $due_amount=$this->Invoices_model->getAmount($data);
                 unset($data['payment_status']);
                 $student_invoice_list=$this->Invoices_model->getStudentInvoiceList($data);
                 $total_invoices_amount=!empty($invoice_amount[0]['total_amount'])?$invoice_amount[0]['total_amount']:0;
-                $total_collected_amount=!empty($collected_amount[0]['total_amount'])?$collected_amount[0]['total_amount']:0;
+                $total_collected_amount=!empty($collected_amount[0]['paid_amount'])?$collected_amount[0]['paid_amount']:0;
                 $due_amount=!empty($due_amount[0]['total_amount'])?$due_amount[0]['total_amount']:0;
                 $invoices_count=!empty($invoice_amount[0]['count'])?(int)$invoice_amount[0]['count']:0;
                 for ($i = 0; $i <= 5; $i++) 
@@ -296,14 +296,14 @@ class Invoice extends REST_Controller
             $data['status']=2;//for school invoice
             $invoice_amount=$this->Invoices_model->getAmount($data);
             $data['payment_status']=97;//to get collected amount  pass the payment status id is 97
-            $collected_amount=$this->Invoices_model->getAmount($data);
+            $collected_amount=$this->Invoices_model->getAmount($data);//echo $this->db->last_query();exit;
             unset($data['payment_status']);
             $data['payment_status']=98;//to get the due amount pass the payment status id as 98
             $due_amount=$this->Invoices_model->getAmount($data);
             unset($data['payment_status']);
             $school_invoice_list=$this->Invoices_model->getSchoolInvoiceList($data);
             $total_invoices_amount=!empty($invoice_amount[0]['total_amount'])?$invoice_amount[0]['total_amount']:0;
-            $total_collected_amount=!empty($collected_amount[0]['total_amount'])?$collected_amount[0]['total_amount']:0;
+            $total_collected_amount=!empty($collected_amount[0]['paid_amount'])?$collected_amount[0]['paid_amount']:0;
             $due_amount=!empty($due_amount[0]['total_amount'])?$due_amount[0]['total_amount']:0;
             $invoices_count=!empty($invoice_amount[0]['count'])?(int)$invoice_amount[0]['count']:0;
             for ($i = 0; $i <= 5; $i++) 

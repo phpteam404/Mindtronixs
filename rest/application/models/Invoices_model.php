@@ -82,18 +82,21 @@ class Invoices_model extends CI_Model
             $this->db->where('si.invoice_type',$data['status']);
         }
         if(!empty($data['payment_status'])){
+            if($data['payment_status']==97){
+                $this->db->select('SUM(si.paid_amount) as paid_amount');
+            }
             $this->db->where('payment_status',$data['payment_status']);
         }
-        if(!empty($data['from_date']) && !empty($data['to_date'])){
-            $this->db->where('si.invoice_date between "'.$data['from_date'].'" and "'.$data['to_date'].'"');
-        }
-        if(!empty($data['status_id'])){
-            $this->db->where('si.payment_status',$data['status_id']);
-        }
-        if(!empty($data['franchise_id'])){
-            $this->db->where('si.franchise_id',$data['franchise_id']);
-        }
-        if(empty($data['from_date']) && empty($data['to_date']) && empty($data['status_id']) && empty($data['month'])){
+        // if(!empty($data['from_date']) && !empty($data['to_date'])){
+        //     $this->db->where('si.invoice_date between "'.$data['from_date'].'" and "'.$data['to_date'].'"');
+        // }
+        // if(!empty($data['status_id'])){
+        //     $this->db->where('si.payment_status',$data['status_id']);
+        // }
+        // if(!empty($data['franchise_id'])){
+        //     $this->db->where('si.franchise_id',$data['franchise_id']);
+        // }
+        if(empty($data['month'])){
             $this->db->where('MONTH(si.invoice_date)', date('m')); //For current month
             $this->db->where('YEAR(si.invoice_date)', date('Y')); // For current year
         }
@@ -172,6 +175,9 @@ class Invoices_model extends CI_Model
     }
     public function getSchoolInvoiceList($data=null){
         $this->db->select('si.id as school_invoice_id,si.invoice_number,sm.`name` as school_name,f.`name` as frachise_name,si.total_amount as amount,DATE_FORMAT(si.invoice_date, "%Y-%m-%d") as invoice_date,mc.child_name as status,si.school_id,if(si.paid_date="0000-00-00 00:00:00","",si.paid_date) as `paid_date`,if(si.paid_amount="0","0",si.paid_amount) as paid_amount');
+        if(!empty($data['school_invoice_id'])){
+            $this->db->select('si.school_invoice_description');
+        }
         $this->db->from('student_invoice si');
         $this->db->join('school_master sm','si.school_id=sm.id');
         $this->db->join('franchise f','sm.franchise_id=f.id');

@@ -122,6 +122,9 @@ class Master extends REST_Controller
             }
             
         }
+        if($data['master_key']=='invoice_status' && isset($data['invoice_update'])){
+            $data['master_ids']=array(97,100);
+        }
         $result = $this->Master_model->getMaster($data);//echo $this->db->last_query();exit;
         if(isset($data['dropdown']) && $data['dropdown']!=''){
             foreach($result['data'] as $k => $v){

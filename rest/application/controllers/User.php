@@ -683,7 +683,6 @@ class User extends REST_Controller
     // }
     public function updateProfile_post(){
         $data=$this->input->post();
-        // print_r($data);exit;
         $data['user_id']=!empty($data['user_id'])?$data['user_id']:$this->session_user_info->user_id;
         if(!empty($data['first_name'])  || !empty($data['phone_no'])){
             $upadate_data=array(
@@ -691,9 +690,7 @@ class User extends REST_Controller
                 'last_name'=>!empty($data['last_name'])?$data['last_name']:'',
                 'phone_no'=>!empty($data['phone_no'])?$data['phone_no']:''
             );
-            // print_r($upadate_data);exit;
               $check_phone_no=$this->User_model->check_not_in('user',array('phone_no'=>$data['phone_no']),array('id'=>$data['user_id']));
-            //   if($check_email)
               if(!empty($check_phone_no)){
                   $result = array('status'=>FALSE,'error'=>array('message'=>$this->lang->line('phono_duplicate')),'data'=>'');
                   $this->response($result, REST_Controller::HTTP_OK);
@@ -704,8 +701,7 @@ class User extends REST_Controller
                 $this->response($result, REST_Controller::HTTP_OK);
              }
         }  
-       if(!empty($data['old_password'])){
-        //    print_r($data);exit;
+        if(!empty($data['old_password'])){
              $check_password=$this->User_model->check_record('user',array('id'=>$data['user_id']));
             // //  print_r(md5($data['old_password']));
             //  print_r($check_password[0]['password']);exit;
@@ -742,7 +738,7 @@ class User extends REST_Controller
         }
     }
     public function profileInfo_get(){
-        $data=$this->input->post();
+        $data=$this->input->get();
         $data['user_id']=!empty($data['user_id'])?$data['user_id']:$this->session_user_info->user_id;
         $profile_data=$this->User_model->getProfileInfo($data);//echo $this->db->last_query();exit;
         if(!empty($profile_data)){

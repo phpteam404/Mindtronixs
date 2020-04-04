@@ -93,9 +93,9 @@ class Invoices_model extends CI_Model
         // if(!empty($data['status_id'])){
         //     $this->db->where('si.payment_status',$data['status_id']);
         // }
-        // if(!empty($data['franchise_id'])){
-        //     $this->db->where('si.franchise_id',$data['franchise_id']);
-        // }
+        if(!empty($data['franchise_id'])){
+            $this->db->where('si.franchise_id',$data['franchise_id']);
+        }
         if(empty($data['month'])){
             $this->db->where('MONTH(si.invoice_date)', date('m')); //For current month
             $this->db->where('YEAR(si.invoice_date)', date('Y')); // For current year
@@ -110,19 +110,32 @@ class Invoices_model extends CI_Model
         $this->db->select('si.invoice_number,si.invoice_date,si.amount,mc.child_key as status');
         $this->db->from('student_invoice si');
         $this->db->join('master_child mc','mc ON si.payment_status=mc.id AND mc.master_id=23','left');
-        if(!empty($data['student_id'])){
-            $this->db->where('si.student_id',$data['student_id']);
-        }
+        // if(!empty($data['student_id'])){
+        //     $this->db->where('si.student_id',$data['student_id']);
+        // }
         if(!empty($data['student_invoice_id'])){
             $this->db->select('si.id as student_invoice_id,si.student_id');
             $this->db->where_not_in('si.id',array($data['student_invoice_id']));
+            $this->db->where('si.invoice_type',1);
         }
         if(!empty($data['school_id'])){
             $this->db->where('si.school_id',$data['school_id']);
         }
+        if(!empty($data['student_id'])){
+            $this->db->where('si.student_id',$data['student_id']);
+        }
+        if(!empty($data['franchise_id'])){
+            $this->db->where('si.franchise_id',$data['franchise_id']);
+        }
         if(!empty($data['school_invoice_id'])){
             $this->db->select('si.id as school_invoice_id,si.school_id');
             $this->db->where_not_in('si.id',array($data['school_invoice_id']));
+            $this->db->where('si.invoice_type',2);
+        }
+        if(!empty($data['franchise_invoice_id'])){
+            $this->db->select('si.id as franchise_invoice_id,si.franchise_id');
+            $this->db->where_not_in('si.id',array($data['franchise_invoice_id']));
+            $this->db->where('si.invoice_type',3);
         }
         $this->db->order_by('si.id','desc');
         $query = $this->db->get();
@@ -142,6 +155,10 @@ class Invoices_model extends CI_Model
         if(!empty($data['school_invoice_id'])){
             $this->db->select('sih.school_invoice_id');
             $this->db->where('sih.school_invoice_id',$data['school_invoice_id']);
+        }
+        if(!empty($data['franchise_invoice_id'])){
+            $this->db->select('sih.franchise_invoice_id');
+            $this->db->where('sih.franchise_invoice_id',$data['franchise_invoice_id']);
         }
         $this->db->order_by('sih.id','desc');
         $query = $this->db->get();
@@ -207,6 +224,56 @@ class Invoices_model extends CI_Model
         }
         if(!empty($data['school_invoice_id'])){
             $this->db->where('si.id',$data['school_invoice_id']);
+        }
+        if(!empty($data['month'])){
+            $this->db->like('si.invoice_date', $data['month'], 'both');
+        }
+        if(isset($data['sort']) && isset($data['order']))
+            $this->db->order_by($data['sort'],$data['order']);
+        else
+        $this->db->order_by('si.id','desc');
+        $all_clients_count_db=clone $this->db;
+        $all_clients_count = $all_clients_count_db->get()->num_rows();
+        if(isset($data['start']) && $data['number']!='')
+            $this->db->limit($data['number'],$data['start']);
+        $query = $this->db->get();
+        return array('total_records' => $all_clients_count,'data' => $query->result_array());
+    }
+    public function getFrachiseInvoiceList($data=null){
+        $this->db->select('si.id as franchise_invoice_id, si.invoice_number,f.name as franchise_name,f.email,f.primary_contact,si.total_amount as amount
+        ,si.invoice_date,si.franchise_id');
+        if(!empty($data['franchise_invoice_id'])){
+            $this->db->select('if(si.paid_date="0000-00-00 00:00:00","",si.paid_date) as `paid_date`,if(si.paid_amount="0","0",si.paid_amount) as paid_amount');
+        }
+        $this->db->from('student_invoice si');
+        $this->db->join('franchise f','si.franchise_id=f.id');
+        $this->db->join('master_child mc','si.payment_status=mc.id AND mc.master_id=23','left');
+        $this->db->where('si.invoice_type',3);
+        if(isset($data['search_key']))
+        {
+            $this->db->group_start();
+            $this->db->like('si.invoice_number', $data['search_key'], 'both');
+            $this->db->or_like('f.name', $data['search_key'], 'both');
+            $this->db->or_like('f.email', $data['search_key'], 'both');
+            $this->db->or_like('f.primary_contact', $data['search_key'], 'both');
+            $this->db->or_like('si.amount', $data['search_key'], 'both');
+            $this->db->group_end();
+        }
+        if(!empty($data['from_date']) && !empty($data['to_date'])){
+            $this->db->where('si.invoice_date between "'.$data['from_date'].'" and "'.$data['to_date'].'"');
+        }
+        if(!empty($data['status_id'])){
+            $this->db->where('si.payment_status',$data['status_id']);
+        }
+        if(!empty($data['franchise_id'])){
+            $this->db->where('si.franchise_id',$data['franchise_id']);
+        }
+        if(empty($data['from_date']) && empty($data['to_date']) && empty($data['status_id']) && empty($data['month']) && empty($data['school_invoice_id'])){
+            $this->db->where('MONTH(si.invoice_date)', date('m')); //For current month
+            $this->db->where('YEAR(si.invoice_date)', date('Y')); // For current year
+        }
+        if(!empty($data['franchise_invoice_id'])){
+            $this->db->where('si.id',$data['franchise_invoice_id']);
         }
         if(!empty($data['month'])){
             $this->db->like('si.invoice_date', $data['month'], 'both');

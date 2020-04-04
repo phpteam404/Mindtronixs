@@ -14,8 +14,6 @@ class Cron extends CI_Controller
     }
 
     public function studentinvoicegeneration(){
-        //invoice_generation_status // From insert query
-        //1 as invoice_generation_status // From Select query
         $query  =   "SET @a=0"; 
         $this->db->query($query);
         $query1='
@@ -29,7 +27,25 @@ class Cron extends CI_Controller
         AND s.subscription_status = 1
         AND s.school_id=0
         AND s.franchise_fee_id!=0';
-        $insert_rows=$this->User_model->custom_query_affected_rows($query1);
+        
+        $student_invoiced_rows=$this->User_model->custom_query_affected_rows($query1);
+        $query_b  =   "SET @b=0"; 
+        $this->db->query($query_b);
+        $query3='INSERT student_invoice(amount,franchise_id,invoice_number,royal_amount,invoice_date,invoice_type,created_on,tax,tax_amount,total_amount)
+        SELECT SUM(si.total_amount) as amount,si.franchise_id, CONCAT("MIN/",f.name,"/",YEAR(CURDATE()),"/",DATE_FORMAT(CURDATE(),"%m"),"/",@b:=LPAD(@b+1, 6, 0)) invoice_number,(SUM(si.total_amount)*'.FRACHISE_PERCENTAGE.'/100) as royal_amount,si.invoice_date,3 as invoice_type,CURRENT_DATE as created_on ,'.FRACHISE_TAX_PERCENTAGE.' as tax,(SUM(si.total_amount)*'.FRACHISE_TAX_PERCENTAGE.'/100) as tax_amount,((SUM(si.total_amount)*'.FRACHISE_PERCENTAGE.'/100)+(SUM(si.total_amount)*'.FRACHISE_TAX_PERCENTAGE.'/100)) as total_amount
+        FROM student_invoice si
+        LEFT JOIN student s ON si.student_id=s.id
+        LEFT JOIN franchise f ON si.franchise_id = f.id
+        WHERE si.invoice_type=1
+        AND s.next_invoice_date = CURDATE()
+        AND s.subscription_status = 1
+        AND s.school_id=0
+        AND s.franchise_fee_id!=0
+        GROUP BY si.franchise_id
+        ORDER BY si.id
+        ';
+        $frachise_invoice_rows=$this->User_model->custom_query_affected_rows($query3);
+
         $query2='UPDATE student s 
         LEFT JOIN fee_master fm ON s.franchise_fee_id=fm.id
         LEFT JOIN master_child mc ON fm.term=mc.id AND mc.master_id=11
@@ -45,9 +61,10 @@ class Cron extends CI_Controller
                 AND s.school_id=0
                 AND s.franchise_fee_id!=0';
         $update_rows=$this->User_model->custom_query_affected_rows($query2);
-        print_r($insert_rows);
+        print_r($student_invoiced_rows);
+        print_r($frachise_invoice_rows);
         print_r($update_rows);
-        if($insert_rows>0){
+        if($insert_rows>0 && $frachise_invoice_rows>0){
             echo 'Invoice generated Successfully';
         }
         else{

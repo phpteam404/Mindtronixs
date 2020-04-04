@@ -554,7 +554,7 @@ class User_model extends CI_Model
             $this->db->select('f.name as franchise_name');
         }
         if(empty($data['user_role_id'])){
-            $this->db->where_in('u.user_role_id',array('2','3','5'));
+            $this->db->where_not_in('u.user_role_id',array('4','1','9'));
         }
         $this->db->from('user u');
         $this->db->join('franchise f','u.franchise_id=f.id','left');

@@ -227,14 +227,10 @@ class User extends REST_Controller
     
     public function getUserList_get(){
         $data = $this->input->get();
-        // $data = tableOptions($data);
-        // print_r($this->session_user_info);exit;
-        if($this->session_user_info->user_role_id==2){
+        if($this->session_user_info->user_role_id==2 || $this->session_user_info->user_role_id==5){
             $data['franchise_id']=$this->session_user_info->franchise_id;
         }
-        // print_r($data);exit;
-        $result=$this->User_model->getuserlist($data);//echo $this->db->last_query();exit;
-        // print_r($result);exit;
+        $result=$this->User_model->getuserlist($data);
         foreach($result['data'] as $k=>$v){
             if(!empty($data['user_id'])){
                 $result['data'][$k]['status']=getStatusObj($v['status']);
@@ -254,8 +250,6 @@ class User extends REST_Controller
             }
             else{
                 $result['data'][$k]['status']=getStatusText($v['status']);
-                // if()
-                // print_r($v);exit;
                 if($v['user_role_id']==5){
                     $result['data'][$k]['franchise_name']='--';
                 }

@@ -107,7 +107,7 @@ class Invoices_model extends CI_Model
         return $query->result_array();
     }
     public function getPreviousStudentInvoice($data=null){
-        $this->db->select('si.invoice_number,si.invoice_date,si.amount,mc.child_key as status');
+        $this->db->select('si.invoice_number,si.invoice_date,si.total_amount,mc.child_key as status');
         $this->db->from('student_invoice si');
         $this->db->join('master_child mc','mc ON si.payment_status=mc.id AND mc.master_id=23','left');
         // if(!empty($data['student_id'])){

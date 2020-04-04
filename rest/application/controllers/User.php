@@ -752,6 +752,27 @@ class User extends REST_Controller
         }
         $this->response($result, REST_Controller::HTTP_OK);
     }
+    public function adminDashboard_get(){
+        $all_tickets = $this->User_model->custom_query('SELECT count(*) all_ticket_count FROM `ticket`');
+        $pending_tickets = $this->User_model->custom_query('SELECT count(*) pending_tickets_count FROM `ticket` WHERE `status` <> 48');
+        $student_invoice_amounts = $this->User_model->custom_query('SELECT ROUND(SUM(total_amount)) total_amount, ROUND(SUM(paid_amount)) collected_amount FROM student_invoice');
+        $data['number'] = 5; $data['start'] = 0;
+        $data['sort'] = 'ticket_id'; $data['order'] = 'DESC';
+        $ticket_list=$this->Ticket_model->getTickets($data);
+        $result_array = array(
+            'ticket' => array(
+                'all_tickets'=> (int)isset($all_tickets[0])?$all_tickets[0]['all_ticket_count']:0,
+                'pending_tickets'=> (int)isset($all_tickets[0])?$pending_tickets[0]['pending_tickets_count']:0
+            ),
+            'student_invoice' => array(
+                'total_amount'=> (int)isset($student_invoice_amounts[0])?$student_invoice_amounts[0]['total_amount']:0,
+                'collected_amount'=> (int)isset($student_invoice_amounts[0])?$student_invoice_amounts[0]['collected_amount']:0
+            ),
+            'ticket_list' => $ticket_list['data']
+        );
+        $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>$result_array,'table_headers'=>getTableHeads('ticket_list'));
+        $this->response($result, REST_Controller::HTTP_OK);
+    }
     function getInvoiceDate($franchise_fee_id){
         $date=date("Y-m-d");
         $day=date("d");

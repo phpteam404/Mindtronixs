@@ -975,7 +975,7 @@ if (!function_exists('getTableHeads')) {
                 case 'franchise_invoice_list':
                     return array(
                         array('field'=> 'invoice_number', 'header'=> 'Invoice #','alias'=>'invoice_number'),
-                        array('field'=> 'frachise_name', 'header'=> 'Franchise Name','alias'=>'frachise_name' ),
+                        array('field'=> 'franchise_name', 'header'=> 'Franchise Name','alias'=>'franchise_name' ),
                         array('field'=>'primary_contact', 'header'=> 'Contact','alias'=>'primary_contact' ),
                         array('field'=>'email', 'header'=> 'Email','alias'=>'email' ),
                         array('field'=> 'invoice_date', 'header'=> 'Invoice Date','alias'=>'invoice_date' ),

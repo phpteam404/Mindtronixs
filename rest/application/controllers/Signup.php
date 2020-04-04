@@ -118,11 +118,7 @@ class Signup extends CI_Controller
             $menu=$this->User_model->menuList(array('user_role_id'=>$result->user_role_id,'type'=>'menu','parent_module_id'=>0,'is_menu'=>1));//echo $this->db->last_query();exit;
             foreach($menu as $k=>$v){
                 $sub_menus=$this->User_model->menuList(array('user_role_id'=>$result->user_role_id,'parent_module_id'=>$v['app_module_id'],'type'=>'menu','is_menu'=>2));
-                if(count($sub_menus) > 0){
-                    $menu[$k]['sub_menus']=$sub_menus;
-                }else{
-                    unset($menu[$k]);
-                }
+                $menu[$k]['sub_menus']=$sub_menus;
         }
         if($result->user_role_id==1 || $result->user_role_id==5){
             $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>array('data' => $result), 'access_token' => $access_token,'menu'=>$menu);

@@ -116,10 +116,26 @@ class Signup extends CI_Controller
         if(isset($result->user_role_id))
             $result->user_role_id=$result->user_role_id;
             $menu=$this->User_model->menuList(array('user_role_id'=>$result->user_role_id,'type'=>'menu','parent_module_id'=>0,'is_menu'=>1));//echo $this->db->last_query();exit;
-            foreach($menu as $k=>$v){
-                $sub_menus=$this->User_model->menuList(array('user_role_id'=>$result->user_role_id,'parent_module_id'=>$v['app_module_id'],'type'=>'menu','is_menu'=>2));
-                $menu[$k]['sub_menus']=$sub_menus;
-        }
+            $new_menu = array();
+            $i = 0;
+            foreach($menu as $k=>$v){ 
+                if($v['app_module_id'] == 3 || $v['app_module_id'] == 9){
+                    $sub_menus=$this->User_model->menuList(array('user_role_id'=>$result->user_role_id,'parent_module_id'=>$v['app_module_id'],'type'=>'menu','is_menu'=>2));
+                    $menu[$k]['sub_menus']=$sub_menus;
+                    // echo '<pre>'.print_r($v);              
+                    // echo '<pre>'.print_r($sub_menus);exit;               
+                    if(count($sub_menus) > 0){
+                        $new_menu[$i] = $v;
+                        $new_menu[$i]['sub_menus']=$sub_menus;
+                        $i++;
+                    }
+                }else{
+                    $new_menu[$i] = $v;
+                    $new_menu[$i]['sub_menus']=[];
+                    $i++;
+                }
+            }
+            $menu = $new_menu;
         if($result->user_role_id==1 || $result->user_role_id==5){
             $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>array('data' => $result), 'access_token' => $access_token,'menu'=>$menu);
                     header('Content-Type: application/json');

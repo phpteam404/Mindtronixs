@@ -29,7 +29,7 @@ class Invoice extends REST_Controller
             $student_invoice_payment_history=!empty( $student_invoice_payment_history)?$student_invoice_payment_history:array();
             $student_invoice_info=$this->Invoices_model->getStudentInvoiceList($data);//print_r($student_invoice_info['data'][0]);exit;
             
-            if(!empty($student_invoice_info['data'][0] && $student_invoice_info['data'][0]['payment_status']==98 ||$student_invoice_info['data'][0]['payment_status']==100)){//if payment status= 98 then it is consider as invoice payment status in Due,similarly 100 then it is OverDue
+            if(!empty($student_invoice_info['data'] && $student_invoice_info['data'][0]['payment_status']==98 ||$student_invoice_info['data'][0]['payment_status']==100)){//if payment status= 98 then it is consider as invoice payment status in Due,similarly 100 then it is OverDue
                 
                 $due_date=$student_invoice_info['data'][0]['due_date']?$student_invoice_info['data'][0]['due_date']:'';
                 $result = array('status'=>TRUE, 'message' => $this->lang->line('success'),'data'=>array('data' =>$student_invoice_info['data'],'due_date'=>!empty($due_date)?$due_date:'','student_invoice_payment_history'=>$student_invoice_payment_history));

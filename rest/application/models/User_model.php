@@ -610,6 +610,7 @@ class User_model extends CI_Model
         }
         if(isset($data['only_menu']) && is_array($data['only_menu'])){
             $this->db->where_in('ap.is_menu',$data['only_menu']);
+            $this->db->where('ma.is_access_status',1);
         }
         if(isset($data['type']) && $data['type']=='menu'){
             $this->db->where('ma.view',1);
@@ -631,6 +632,7 @@ class User_model extends CI_Model
         if(isset($data['is_menu']) && $data['is_menu']!=''){
             $this->db->where('ap.is_menu',$data['is_menu']);
         }
+        $this->db->order_by('ap.module_order','ASC');
         $query = $this->db->get();//echo $this->db->last_query();exit;
         return $query->result_array();
     }

@@ -278,6 +278,18 @@ class Franchise extends REST_Controller
             $inser_id = $this->Franchise_model->addSchool($add);
             // echo ''.$this->db->last_query(); exit;
             if($inser_id >0){
+                $new_password = generatePassword(8);
+                $School_admin = array(
+                    'user_role_id' => 10,
+                    'franchise_id' => $data['franchise_id'],
+                    'first_name' => $data['contact_person'],
+                    'email' => $data['email'],
+                    'phone_no' => $data['phone'],
+                    'password' => md5($new_password),
+                    'created_by' => $this->session_user_id,
+                    'created_on' => currentDate()
+                );
+                $this->User_model->insert_data('user',$School_admin);
                 $result = array('status'=>TRUE, 'message' => $this->lang->line('school_create'), 'data' => $inser_id);
                 $this->response($result, REST_Controller::HTTP_OK);  
             }

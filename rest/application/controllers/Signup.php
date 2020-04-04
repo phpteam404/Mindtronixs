@@ -118,14 +118,18 @@ class Signup extends CI_Controller
             $menu=$this->User_model->menuList(array('user_role_id'=>$result->user_role_id,'type'=>'menu','parent_module_id'=>0,'is_menu'=>1));//echo $this->db->last_query();exit;
             foreach($menu as $k=>$v){
                 $sub_menus=$this->User_model->menuList(array('user_role_id'=>$result->user_role_id,'parent_module_id'=>$v['app_module_id'],'type'=>'menu','is_menu'=>2));
-                $menu[$k]['sub_menus']=$sub_menus;
+                if(count($sub_menus) > 0){
+                    $menu[$k]['sub_menus']=$sub_menus;
+                }else{
+                    unset($menu[$k]);
+                }
         }
         if($result->user_role_id==1 || $result->user_role_id==5){
             $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>array('data' => $result), 'access_token' => $access_token,'menu'=>$menu);
                     header('Content-Type: application/json');
                     echo json_encode($result);exit;  
         }
-        if($result->user_role_id==4){
+        if($result->user_role_id==4 || $result->user_role_id==10){
             if($result->franchise_id==0){
                 $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>array('data' => $result), 'access_token' => $access_token,'menu'=>$menu);
                         header('Content-Type: application/json');

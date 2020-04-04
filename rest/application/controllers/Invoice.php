@@ -353,7 +353,7 @@ class Invoice extends REST_Controller
                $months[$i]['value'] = date("Y-m", strtotime( date( 'Y-m-01' )." -$i months"));
             
             }
-            $result = array('status'=>TRUE, 'message' => $this->lang->line('success'),'data'=>array('data' =>$school_invoice_list['data'],'total_records' =>$school_invoice_list['total_records'],'total_invoices_amount'=>$total_invoices_amount,'total_collected_amount'=>$total_collected_amount,'invoices_count'=>$invoices_count,'due_amount'=>$due_amount,'last_six_months'=>$months,'table_headers'=>getTableHeads('school_invoice_list')));
+            $result = array('status'=>TRUE, 'message' => $this->lang->line('success'),'data'=>array('data' =>$school_invoice_list['data'],'total_records' =>$school_invoice_list['total_records'],'total_invoices_amount'=>$total_invoices_amount,'total_collected_amount'=>$total_collected_amount,'invoices_count'=>$invoices_count,'due_amount'=>$due_amount,'last_six_months'=>$months,'table_headers'=>getTableHeads('franchise_invoice_list')));
         }
         $this->response($result, REST_Controller::HTTP_OK);
     }

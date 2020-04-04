@@ -241,7 +241,7 @@ class Invoices_model extends CI_Model
     }
     public function getFrachiseInvoiceList($data=null){
         $this->db->select('si.id as franchise_invoice_id, si.invoice_number,f.name as franchise_name,f.email,f.primary_contact,si.total_amount as amount
-        ,si.invoice_date,si.franchise_id');
+        ,si.invoice_date,si.franchise_id,mc.child_key as status');
         if(!empty($data['franchise_invoice_id'])){
             $this->db->select('if(si.paid_date="0000-00-00 00:00:00","",si.paid_date) as `paid_date`,if(si.paid_amount="0","0",si.paid_amount) as paid_amount');
         }

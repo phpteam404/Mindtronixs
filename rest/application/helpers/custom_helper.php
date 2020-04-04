@@ -849,15 +849,6 @@ if (!function_exists('getTableHeads')) {
                   array('field'=> 'status', 'header'=> 'Status','alias'=>'status')
                 );
                 break;
-            case 'franchise_invoice_list':
-                return array(
-                  array('field'=> 'name', 'header'=> 'Name' ,'alias'=>'name'),
-                  array('field' => 'phone', 'header'=> 'Phone','alias'=> 'phone'),
-                  array('field'=> 'month', 'header'=> 'Month','alias'=>'month' ),
-                  array('field'=> 'bill', 'header'=> 'Bill' ,'alias'=>'bill'),
-                  array('field'=> 'status', 'header'=> 'Status','alias'=>'status')
-                );
-                break;
             case 'school_mngmt_list' :
                 return array(
                   array('field'=> 'code', 'header'=> 'Code','alias'=>'code' ),
@@ -981,7 +972,7 @@ if (!function_exists('getTableHeads')) {
                         array('field'=> 'status', 'header'=> 'Status','alias'=>'status' )
                     );
                     break;
-                case 'school_invoice_list':
+                case 'franchise_invoice_list':
                     return array(
                         array('field'=> 'invoice_number', 'header'=> 'Invoice #','alias'=>'invoice_number'),
                         array('field'=> 'frachise_name', 'header'=> 'Franchise Name','alias'=>'frachise_name' ),

@@ -126,7 +126,9 @@ class User extends REST_Controller
                 }
             }
         }
-        // print_r($sudent_data_insert);exit;
+        if($this->session_user_info->user_role_id==2 || $this->session_user_info->user_role_id==5 ){
+            $data['franchise_id']=$this->session_user_info->franchise_id;
+        }
         $user_data = array(
             'user_role_id' => isset($data['user_role_id'])?$data['user_role_id']:5,
             'first_name' => !empty($data['student_name'])? $data['student_name']:$data['first_name'],

@@ -47,16 +47,19 @@ class Ticket extends REST_Controller
                         'upload_path' => $path,''
                         ));
                         // $imageName='ticket/'.$imageName;
-                        $ImageMaker =   new ImageFactory();
-                        // Here is just a test landscape sized image
-                        $image_target   =   "uploads/ticket/".$imageName;
-                        // This will save the file to disk. $destination is where the file will save and with what name
-                        if(!is_dir('uploads/ticket/small_images/')){ mkdir('uploads/ticket/small_images/'); }
-                        $small_images_destination    =   "uploads/ticket/small_images/".$imageName ;
-                        $ImageMaker->Thumbnailer($image_target,65,65,$small_images_destination);//this is used to resize image with 65X65 resolution
-                        if(!is_dir('uploads/ticket/medium_images/')){ mkdir('uploads/ticket/medium_images/'); }
-                        $medium_images_destination    =   "uploads/ticket/medium_images/".$imageName ;
-                        $ImageMaker->Thumbnailer($image_target,150,150,$medium_images_destination);//this is used to resize image with 150X150 resolution
+                        $image_extensions=array('gif','jpg','jpeg','png');
+                        if(in_array(pathinfo($_FILES['files']['name'][$i],PATHINFO_EXTENSION),$image_extensions)){
+                            $ImageMaker =   new ImageFactory();
+                            // Here is just a test landscape sized image
+                            $image_target   =   "uploads/ticket/".$imageName;
+                            // This will save the file to disk. $destination is where the file will save and with what name
+                            if(!is_dir('uploads/ticket/small_images/')){ mkdir('uploads/ticket/small_images/'); }
+                            $small_images_destination    =   "uploads/ticket/small_images/".$imageName ;
+                            $ImageMaker->Thumbnailer($image_target,65,65,$small_images_destination);//this is used to resize image with 65X65 resolution
+                            if(!is_dir('uploads/ticket/medium_images/')){ mkdir('uploads/ticket/medium_images/'); }
+                            $medium_images_destination    =   "uploads/ticket/medium_images/".$imageName ;
+                            $ImageMaker->Thumbnailer($image_target,150,150,$medium_images_destination);//this is used to resize image with 150X150 resolution
+                        }
                         $document_id[]=$this->User_model->insertdata('documents',array('document_name'=>!empty($imageName)?$imageName:'','created_by'=>!empty($this->session_user_id)?$this->session_user_id:'0','created_on'=>currentDate(),'module_type'=>'ticket_create','status'=>1));
                 }
                 else
@@ -177,17 +180,20 @@ class Ticket extends REST_Controller
                         'image' => $_FILES['files']['name'][$i],
                         'upload_path' => $path,''
                         ));
-                        $ImageMaker =   new ImageFactory();
-                        // Here is just a test landscape sized image
-                        $image_target   =   "uploads/ticket/".$imageName;
-                        // This will save the file to disk. $destination is where the file will save and with what name
-                        if(!is_dir('uploads/ticket/small_images/')){ mkdir('uploads/ticket/small_images/'); }
-                        $small_images_destination    =   "uploads/ticket/small_images/".$imageName ;
-                        $ImageMaker->Thumbnailer($image_target,65,65,$small_images_destination);//this is used to resize image with 65X65resolution
-                        if(!is_dir('uploads/ticket/medium_images/')){ mkdir('uploads/ticket/medium_images/'); }
-                        $medium_images_destination    =   "uploads/ticket/medium_images/".$imageName ;
-                        $ImageMaker->Thumbnailer($image_target,150,150,$medium_images_destination);//this is used to resize image with 150X150 resolution
-                        // $imageName='ticket/'.$imageName;
+                        $image_extensions=array('gif','jpg','jpeg','png');
+                        if(in_array(pathinfo($_FILES['files']['name'][$i],PATHINFO_EXTENSION),$image_extensions)){ 
+                            $ImageMaker =   new ImageFactory();
+                            // Here is just a test landscape sized image
+                            $image_target   =   "uploads/ticket/".$imageName;
+                            // This will save the file to disk. $destination is where the file will save and with what name
+                            if(!is_dir('uploads/ticket/small_images/')){ mkdir('uploads/ticket/small_images/'); }
+                            $small_images_destination    =   "uploads/ticket/small_images/".$imageName ;
+                            $ImageMaker->Thumbnailer($image_target,65,65,$small_images_destination);//this is used to resize image with 65X65resolution
+                            if(!is_dir('uploads/ticket/medium_images/')){ mkdir('uploads/ticket/medium_images/'); }
+                            $medium_images_destination    =   "uploads/ticket/medium_images/".$imageName ;
+                            $ImageMaker->Thumbnailer($image_target,150,150,$medium_images_destination);//this is used to resize image with 150X150 resolution
+                            // $imageName='ticket/'.$imageName;
+                        }
                         $document_id[]=$this->User_model->insertdata('documents',array('document_name'=>!empty($imageName)?$imageName:'','created_by'=>!empty($this->session_user_id)?$this->session_user_id:'0','created_on'=>currentDate(),'module_type'=>'ticket_chat'));
                 }
                 else

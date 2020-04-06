@@ -194,7 +194,19 @@ class Digitalcontent extends REST_Controller
 
     public function digitalContetList_get(){
         $data=$this->input->get();
-        $content_list=$this->Digitalcontent_model->getContentList($data);//echo $this->db->last_query();exit;
+        if($this->session_user_info->user_role_id==10){
+            $school_id=$this->User_model->check_record('school_master',array('user_id'=>$this->session_user_info->user_id));
+            $data['id_school']=!empty($school_id[0]['id'])?$school_id[0]['id']:0;
+            $exclude_content_ids=$this->Digitalcontent_model->getExcludeContentIds(array('school_id'=>$data['id_school']));
+            $exclude_content_ids = array_column($exclude_content_ids, 'content_id');
+            $data['exclude_content_ids']=!empty($exclude_content_ids)?$exclude_content_ids:0;
+        }
+        if($this->session_user_info->user_role_id==2 || $this->session_user_info->user_role_id==5){
+            $exclude_content_ids=$this->Digitalcontent_model->getExcludeContentIds(array('franchise_id'=>$this->session_user_info->franchise_id));
+            $exclude_content_ids = array_column($exclude_content_ids, 'content_id');
+            $data['exclude_content_ids']=!empty($exclude_content_ids)?$exclude_content_ids:0;
+        }
+        $content_list=$this->Digitalcontent_model->getContentList($data);
         $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>array('data' => $content_list['data'],'total_records'=>$content_list['total_records'],'table_headers'=>getTableHeads('digital_content_management_list')));
         $this->response($result, REST_Controller::HTTP_OK);
         

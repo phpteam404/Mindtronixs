@@ -289,7 +289,8 @@ class Franchise extends REST_Controller
                     'created_by' => $this->session_user_id,
                     'created_on' => currentDate()
                 );
-                $this->User_model->insert_data('user',$School_admin);
+                $user_id=$this->User_model->insert_data('user',$School_admin);
+                $this->User_model->update_data('school_master',array('user_id'=>$user_id),array('id'=>$inser_id));
                 $result = array('status'=>TRUE, 'message' => $this->lang->line('school_create'), 'data' => $inser_id);
                 $this->response($result, REST_Controller::HTTP_OK);  
             }
@@ -396,12 +397,12 @@ class Franchise extends REST_Controller
     }
     
     public function franchiseListForDropDown_get(){
-        if($this->session_user_info->user_role_id==2){
+        if($this->session_user_info->user_role_id==2 || $this->session_user_info->user_role_id==5 || $this->session_user_info->user_role_id==10){
             $data['franchise_id']=$this->session_user_info->franchise_id;
         }
         else{
             $data=null;
-        }
+        }   
        $franchise= $this->Franchise_model->getFranchiseDropdown($data);//echo $this->db->last_query();exit;
        foreach($franchise as $k=>$v){
         $franchise[$k]=getObjOnId($v['franchise_id'],!empty($v['franchise_id'])?true:false);  
@@ -420,6 +421,14 @@ class Franchise extends REST_Controller
         }
         else{
             $data=null;
+        }
+        if($this->session_user_info->user_role_id==2 || $this->session_user_info->user_role_id==5){
+            $data['franchise_id']=$this->session_user_info->franchise_id;
+        }
+        if($this->session_user_info->user_role_id==10){
+            $school_id=$this->User_model->check_record('school_master',array('user_id'=>$this->session_user_info->user_id));
+            $data['school_id']=!empty($school_id[0]['id'])?$school_id[0]['id']:0;
+            $data['franchise_id']=$this->session_user_info->franchise_id;
         }
         $schools= $this->Franchise_model->getschoolDropdown($data);//echo $this->db->last_query();exit;
         foreach($schools as $k=>$v){

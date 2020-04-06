@@ -515,12 +515,14 @@ class User extends REST_Controller
         $data = $this->input->get();
         // $data = tableOptions($data);
         $data['type']='edit';//this key used for filter the select statement
-        if($this->session_user_info->user_role_id==2){
+        if($this->session_user_info->user_role_id==2 || $this->session_user_info->user_role_id==5){
             $data['franchise_id']=$this->session_user_info->franchise_id;
         }
-        // else{
-        //     $data=null;
-        // }
+        if($this->session_user_info->user_role_id==10){
+            $school_id=$this->User_model->check_record('school_master',array('user_id'=>$this->session_user_info->user_id));
+            $data['id_school']=!empty($school_id[0]['id'])?$school_id[0]['id']:0;
+        }
+
         $student_list=$this->User_model->getStudentList($data);//echo $this->db->last_query();exit;
         // print_r($student_list);exit;
         foreach($student_list['data'] as $k=>$v){

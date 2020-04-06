@@ -794,6 +794,9 @@ class User_model extends CI_Model
         if(isset($data['user_id']) && $data['user_id']>0){
             $this->db->where('u.id',$data['user_id']);
         }
+        if(isset($data['id_school']) && $data['id_school']>0){
+            $this->db->where('s.school_id',$data['id_school']);
+        }
         if(isset($data['search_key']) && $data['search_key']!==''){
             $this->db->group_start();
             $this->db->where('u.first_name like "%'.$data['search_key'].'%" or u.last_name like "%'.$data['search_key'].'%" or CONCAT(u.first_name,\' \',u.last_name) like "%'.$data['search_key'].'%" or u.email like "%'.$data['search_key'].'%"  or u.phone_no like "%'.$data['search_key'].'%"or sm.name like "%'.$data['search_key'].'%"or f.name like "%'.$data['search_key'].'%"');

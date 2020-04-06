@@ -29,6 +29,9 @@ class Digitalcontent_model extends CI_Model
             $this->db->or_like('dcm.tags', $data['search_key'],'both');
             $this->db->group_end();
         }
+        if(!empty($data['exclude_content_ids'])){
+            $this->db->where_not_in('dcm.id',$data['exclude_content_ids']);
+        }
         if(!empty($data['sort']) && !empty($data['order']))
         { 
             $this->db->order_by($data['sort'],$data['order']);
@@ -77,6 +80,18 @@ class Digitalcontent_model extends CI_Model
         }
         $this->db->where('d.status','1');
         $this->db->order_by('d.id','desc');
+        $query = $this->db->get();
+        return $query->result_array();
+    }
+    public function getExcludeContentIds($data=null){
+        $this->db->select('content_id');
+        $this->db->from('content_maping cm');
+        if(!empty($data['franchise_id'])){
+            $this->db->where('cm.exclude_franchise',$data['franchise_id']);
+        }
+        if(!empty($data['school_id'])){
+            $this->db->where('cm.exclude_school',$data['school_id']);
+        }
         $query = $this->db->get();
         return $query->result_array();
     }

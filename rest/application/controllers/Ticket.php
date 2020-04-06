@@ -295,7 +295,10 @@ class Ticket extends REST_Controller
         //     $result = array('status'=>FALSE,'error'=>$this->lang->line('permission_not_allowed'),'data'=>'');
         //     $this->response($result, REST_Controller::HTTP_OK);    
         // }
-        $ticket_list=$this->Ticket_model->getTickets($data);
+        if($this->session_user_info->user_role_id==2 || $this->session_user_info->user_role_id==5){
+            $data['franchise_id']=$this->session_user_info->franchise_id;
+        }
+        $ticket_list=$this->Ticket_model->getTickets($data);// echo $this->db->last_query();exit;
         $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>array('data'=>$ticket_list['data'],'total_records'=>$ticket_list['total_records'],'table_headers'=>getTableHeads('ticket_list')));
         $this->response($result, REST_Controller::HTTP_OK);
 

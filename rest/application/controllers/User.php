@@ -234,7 +234,7 @@ class User extends REST_Controller
         foreach($result['data'] as $k=>$v){
             if(!empty($data['user_id'])){
                 $result['data'][$k]['status']=getStatusObj($v['status']);
-                if($v['user_role_id']==5){
+                if($v['user_role_id']==1 || $v['user_role_id']==6 || $v['user_role_id']==7 || $v['user_role_id']==8){
                     $result['data'][$k]['franchise_name']='--';
                 }
                 else{

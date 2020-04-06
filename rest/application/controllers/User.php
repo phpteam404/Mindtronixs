@@ -753,7 +753,8 @@ class User extends REST_Controller
     public function adminDashboard_get(){
         $all_tickets = $this->User_model->custom_query('SELECT count(*) all_ticket_count FROM `ticket`');
         $pending_tickets = $this->User_model->custom_query('SELECT count(*) pending_tickets_count FROM `ticket` WHERE `status` <> 48');
-        $student_invoice_amounts = $this->User_model->custom_query('SELECT ROUND(SUM(total_amount)) total_amount, ROUND(SUM(paid_amount)) collected_amount FROM student_invoice');
+        $student_invoice_amounts = $this->User_model->custom_query('SELECT ROUND(SUM(total_amount)) total_amount, ROUND(SUM(paid_amount)) collected_amount FROM student_invoice WHERE invoice_type = 1');
+        $franchise_invoice_amounts = $this->User_model->custom_query('SELECT ROUND(SUM(total_amount)) total_amount, ROUND(SUM(paid_amount)) collected_amount FROM student_invoice  WHERE invoice_type = 3');
         $data['number'] = 5; $data['start'] = 0;
         $data['sort'] = 'ticket_id'; $data['order'] = 'DESC';
         $ticket_list=$this->Ticket_model->getTickets($data);
@@ -765,6 +766,18 @@ class User extends REST_Controller
             'student_invoice' => array(
                 'total_amount'=> (int)isset($student_invoice_amounts[0])?$student_invoice_amounts[0]['total_amount']:0,
                 'collected_amount'=> (int)isset($student_invoice_amounts[0])?$student_invoice_amounts[0]['collected_amount']:0
+            ),
+            'lc_invoice' => array(
+                'total_amount'=> (int)isset($franchise_invoice_amounts[0])?$franchise_invoice_amounts[0]['total_amount']:0,
+                'collected_amount'=> (int)isset($franchise_invoice_amounts[0])?$franchise_invoice_amounts[0]['collected_amount']:0
+            ),
+            'orders' => array(
+                'all_orders'=> 0,
+                'collected_amount'=> 0
+            ),
+            'students' => array(
+                'all_students'=> 0,
+                'active_students'=> 0
             ),
             'ticket_list' => $ticket_list['data']
         );

@@ -136,7 +136,7 @@ class Signup extends CI_Controller
                 }
             }
             $menu = $new_menu;
-        if($result->user_role_id==1 || $result->user_role_id==5){
+        if($result->user_role_id==1 || $result->user_role_id==6 || $result->user_role_id==7 ||  $result->user_role_id==8 || $result->user_role_id==9){
             $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>array('data' => $result), 'access_token' => $access_token,'menu'=>$menu);
                     header('Content-Type: application/json');
                     echo json_encode($result);exit;  
@@ -160,7 +160,7 @@ class Signup extends CI_Controller
                 } 
             }
         }
-        if($result->user_role_id==3 || $result->user_role_id==2){
+        if($result->user_role_id==3 || $result->user_role_id==2 || $result->user_role_id==4 || $result->user_role_id==5){
             if($result->franchise_id==0){
                 $result = array('status'=>FALSE,'error'=>array('message'=>$this->lang->line('franchise_status_inactive')),'data'=>'');
                 echo json_encode($result);exit;  

@@ -230,7 +230,7 @@ class User extends REST_Controller
         if($this->session_user_info->user_role_id==2 || $this->session_user_info->user_role_id==5){
             $data['franchise_id']=$this->session_user_info->franchise_id;
         }
-        $result=$this->User_model->getuserlist($data);
+        $result=$this->User_model->getuserlist($data);//echo $this->db->last_query();exit;
         foreach($result['data'] as $k=>$v){
             if(!empty($data['user_id'])){
                 $result['data'][$k]['status']=getStatusObj($v['status']);
@@ -249,8 +249,9 @@ class User extends REST_Controller
                 
             }
             else{
+                // print_r( $result);exit;
                 $result['data'][$k]['status']=getStatusText($v['status']);
-                if($v['user_role_id']==5){
+                if($v['user_role_id']==1 || $v['user_role_id']==6 || $v['user_role_id']==7 || $v['user_role_id']==8){
                     $result['data'][$k]['franchise_name']='--';
                 }
                 else{
@@ -642,9 +643,12 @@ class User extends REST_Controller
             if($this->session_user_info->user_role_id==3){
                 $data['created_by']=$this->session_user_info->user_id;
             }
+            if($this->session_user_info->user_role_id==2 || $this->session_user_info->user_role_id==5){
+                $data['franchise_id']=$this->session_user_info->franchise_id;
+            }
             $table_headers=$this->session_user_info->user_role_id==3?getTableHeads('trainer_schedule_list'):getTableHeads('trainer_schedule_list1');
             //print_r(getTableHeads('trainer_schedule_list'));exit;
-            $trainerschedulelist= $this->User_model->getTrainerScheduleList($data); //echo $this->db->last_query();exit;
+            $trainerschedulelist= $this->User_model->getTrainerScheduleList($data);// echo $this->db->last_query();exit;
             foreach($trainerschedulelist['data'] as $k=>$v){
                $trainerschedulelist['data'][$k]['from_time']=date("h:i A", strtotime($v['from_time']));
                 $trainerschedulelist['data'][$k]['to_time']=date("h:i A", strtotime($v['to_time']));

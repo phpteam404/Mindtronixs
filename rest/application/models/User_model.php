@@ -541,16 +541,16 @@ class User_model extends CI_Model
     public function getuserlist($data=null)
     {   
         if(isset($data['user_id']) && $data['user_id']>0){
-            $this->db->select('u.first_name,u.last_name');
+            $this->db->select('u.first_name,u.last_name,ur.user_role_name');
         }
         else{
             $this->db->select('concat(u.first_name," ",u.last_name) as user_name,');
         }
         $this->db->select('u.id as user_id,u.user_role_id,u.email,u.phone_no,f.name as franchise_name,u.user_status as status,CONCAT(ur.user_role_name,"-",ur.id)  as user_role,CONCAT(f.name,"-",f.id) franchise_name');
-        if(isset($data['user_role_id']) && $data['user_role_id']==5){
+        if(isset($data['user_role_id']) && in_array($data['user_role_id'],array('1','6','7','8'))){
             $this->db->select('-- as franchise_name');
         }
-        if(isset($data['user_role_id']) && in_array($data['user_role_id'],array('2','3'))){
+        if(isset($data['user_role_id']) && in_array($data['user_role_id'],array('2','3','5'))){
             $this->db->select('f.name as franchise_name');
         }
         if(empty($data['user_role_id'])){
@@ -838,6 +838,9 @@ class User_model extends CI_Model
         }
         if(!empty($data['created_by'])){
             $this->db->where('ts.created_by',$data['created_by']);
+        }
+        if(!empty($data['franchise_id'])){
+            $this->db->where('u.franchise_id',$data['franchise_id']);
         }
         if(!empty($data['sort']) && !empty($data['order']))
         { 

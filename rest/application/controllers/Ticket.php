@@ -282,13 +282,14 @@ class Ticket extends REST_Controller
         // print_r($data);exit;
         $data['user_role_id']=$this->session_user_info->user_role_id;
         $data['user_id']=$this->session_user_info->user_id;
-        if(in_array($data['user_role_id'],array('1','4'))){//display tickets only specific user only
-            $ticket_list=$this->Ticket_model->getTickets($data);//echo $this->db->last_query();exit;
-        }
-        else{
-            $result = array('status'=>FALSE,'error'=>$this->lang->line('permission_not_allowed'),'data'=>'');
-            $this->response($result, REST_Controller::HTTP_OK);    
-        }
+        // if(in_array($data['user_role_id'],array('1','4'))){//display tickets only specific user only
+        //     $ticket_list=$this->Ticket_model->getTickets($data);//echo $this->db->last_query();exit;
+        // }
+        // else{
+        //     $result = array('status'=>FALSE,'error'=>$this->lang->line('permission_not_allowed'),'data'=>'');
+        //     $this->response($result, REST_Controller::HTTP_OK);    
+        // }
+        $ticket_list=$this->Ticket_model->getTickets($data);
         $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>array('data'=>$ticket_list['data'],'total_records'=>$ticket_list['total_records'],'table_headers'=>getTableHeads('ticket_list')));
         $this->response($result, REST_Controller::HTTP_OK);
 

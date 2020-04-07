@@ -771,8 +771,8 @@ class User extends REST_Controller
             
             $data['number'] = 5; $data['start'] = 0;
             $data['sort'] = 'ticket_id'; $data['order'] = 'DESC';
-            $ticket_list=$this->Ticket_model->getTickets($data);
             $data['status'] = 46;
+            $ticket_list=$this->Ticket_model->getTickets($data);
             $result_array = array(
                 'ticket' => array(
                     'all_tickets'=> (int)isset($all_tickets[0])?$all_tickets[0]['all_ticket_count']:0,
@@ -800,7 +800,7 @@ class User extends REST_Controller
                 ),
                 'ticket_list' => $ticket_list['data']
             );
-            $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>$result_array,'table_headers'=>'');
+            $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>$result_array,'table_headers'=>$ticket_table_headers);
             $this->response($result, REST_Controller::HTTP_OK);
         }else if(in_array($this->session_user_info->user_role_id,array(2,5))){
             //This block is for LcHead, LcOwner

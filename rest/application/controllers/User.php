@@ -755,7 +755,12 @@ class User extends REST_Controller
         $this->response($result, REST_Controller::HTTP_OK);
     }
     public function adminDashboard_get(){
+        //Geting the table heads of tickets table in dashboard and unseting action column
+        $ticket_table_headers = getTableHeads('ticket_list');
+        unset($ticket_table_headers[6]);
+        
         if(in_array($this->session_user_info->user_role_id,array(1,6,7,8))){
+            //this block is for MtxAdmin,MtxContent,MtxSales,MtxAccount
             $all_tickets = $this->User_model->check_record_selected('count(*) all_ticket_count','ticket',false);
             $pending_tickets = $this->User_model->check_record_selected('count(*) pending_tickets_count','ticket','status <> 48');
             $student_invoice_amounts = $this->User_model->check_record_selected('ROUND(SUM(total_amount)) total_amount, ROUND(SUM(paid_amount)) collected_amount','student_invoice',array('invoice_type' => 1));
@@ -766,6 +771,7 @@ class User extends REST_Controller
             $data['number'] = 5; $data['start'] = 0;
             $data['sort'] = 'ticket_id'; $data['order'] = 'DESC';
             $ticket_list=$this->Ticket_model->getTickets($data);
+            $data['status'] = 46;
             $result_array = array(
                 'ticket' => array(
                     'all_tickets'=> (int)isset($all_tickets[0])?$all_tickets[0]['all_ticket_count']:0,
@@ -793,9 +799,10 @@ class User extends REST_Controller
                 ),
                 'ticket_list' => $ticket_list['data']
             );
-            $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>$result_array,'table_headers'=>getTableHeads('ticket_list'));
+            $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>$result_array,'table_headers'=>'');
             $this->response($result, REST_Controller::HTTP_OK);
         }else if(in_array($this->session_user_info->user_role_id,array(2,5))){
+            //This block is for LcHead, LcOwner
             $all_tickets = $this->Ticket_model->getTickets(array('franchise_id' => $this->session_user_info->franchise_id));
             $pending_tickets = $this->Ticket_model->getTickets(array('franchise_id' => $this->session_user_info->franchise_id,'custom_where' => 't.status <> 48'));
             $student_invoice_amounts = $this->User_model->check_record_selected('ROUND(SUM(total_amount)) total_amount, ROUND(SUM(paid_amount)) collected_amount','student_invoice',array('invoice_type' => 1,'franchise_id' => $this->session_user_info->franchise_id));
@@ -810,8 +817,8 @@ class User extends REST_Controller
             $ticket_list=$this->Ticket_model->getTickets($data);
             $result_array = array(
                 'ticket' => array(
-                    'all_tickets'=> count($all_tickets),
-                    'pending_tickets'=> count($pending_tickets)
+                    'all_tickets'=> count($all_tickets['data']),
+                    'pending_tickets'=> count($pending_tickets['data'])
                 ),
                 'student_invoice' => array(
                     'total_amount'=> (int)isset($student_invoice_amounts[0])?$student_invoice_amounts[0]['total_amount']:0,
@@ -835,9 +842,10 @@ class User extends REST_Controller
                 ),
                 'ticket_list' => $ticket_list['data']
             );
-            $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>$result_array,'table_headers'=>getTableHeads('ticket_list'));
+            $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>$result_array,'table_headers'=>$ticket_table_headers);
             $this->response($result, REST_Controller::HTTP_OK);
         }else if(in_array($this->session_user_info->user_role_id,array(10))){
+            //This block is for SchoolAdmin
             $all_tickets = $this->Ticket_model->getTickets(array('school_id' => $this->session_user_info->school_id));
             $pending_tickets = $this->Ticket_model->getTickets(array('school_id' => $this->session_user_info->school_id,'custom_where' => 't.status <> 48'));
             
@@ -853,8 +861,8 @@ class User extends REST_Controller
             $ticket_list=$this->Ticket_model->getTickets($data);
             $result_array = array(
                 'ticket' => array(
-                    'all_tickets'=> count($all_tickets),
-                    'pending_tickets'=> count($pending_tickets)
+                    'all_tickets'=> count($all_tickets['data']),
+                    'pending_tickets'=> count($pending_tickets['data'])
                 ),
                 'student_invoice' => array(
                     'total_amount'=> (int)isset($student_invoice_amounts[0])?$student_invoice_amounts[0]['total_amount']:0,
@@ -878,7 +886,7 @@ class User extends REST_Controller
                 ),
                 'ticket_list' => $ticket_list['data']
             );
-            $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>$result_array,'table_headers'=>getTableHeads('ticket_list'));
+            $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>$result_array,'table_headers'=>$ticket_table_headers);
             $this->response($result, REST_Controller::HTTP_OK);
         }else{
             $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>[]);

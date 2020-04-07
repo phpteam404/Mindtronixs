@@ -183,7 +183,7 @@ class User_model extends CI_Model
         if(!empty($data['dropdown'])){
             $this->db->select('user_role_name as label, CAST(id AS SIGNED) as value')->from('user_role');
             // $this->db->where('role_level != 1');
-            $this->db->where_not_in('role_level', array('1','5','9'));
+            $this->db->where_not_in('role_level', array('1','5','9','10'));
 
         }
         else{

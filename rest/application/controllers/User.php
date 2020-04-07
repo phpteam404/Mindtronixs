@@ -811,8 +811,8 @@ class User extends REST_Controller
             $ticket_list=$this->Ticket_model->getTickets($data);
             $result_array = array(
                 'ticket' => array(
-                    'all_tickets'=> count($all_tickets),
-                    'pending_tickets'=> count($pending_tickets)
+                    'all_tickets'=> count($all_tickets['data']),
+                    'pending_tickets'=> count($pending_tickets['data'])
                 ),
                 'student_invoice' => array(
                     'total_amount'=> (int)isset($student_invoice_amounts[0])?$student_invoice_amounts[0]['total_amount']:0,
@@ -854,8 +854,8 @@ class User extends REST_Controller
             $ticket_list=$this->Ticket_model->getTickets($data);
             $result_array = array(
                 'ticket' => array(
-                    'all_tickets'=> count($all_tickets),
-                    'pending_tickets'=> count($pending_tickets)
+                    'all_tickets'=> count($all_tickets['data']),
+                    'pending_tickets'=> count($pending_tickets['data'])
                 ),
                 'student_invoice' => array(
                     'total_amount'=> (int)isset($student_invoice_amounts[0])?$student_invoice_amounts[0]['total_amount']:0,

@@ -259,6 +259,7 @@ class Franchise extends REST_Controller
             'city'=>$data['city'],
             'pincode'=>$data['pincode']
         );
+        
         if(isset($data['school_id']) && $data['school_id']>0){
             $add['updated_by'] = $this->session_user_id;
             $add['updated_on'] = currentDate();
@@ -282,6 +283,7 @@ class Franchise extends REST_Controller
                 $School_admin = array(
                     'user_role_id' => 10,
                     'franchise_id' => $data['franchise_id'],
+                    'school_id' => $inser_id,
                     'first_name' => $data['contact_person'],
                     'email' => $data['email'],
                     'phone_no' => $data['phone'],

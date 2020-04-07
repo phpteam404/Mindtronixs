@@ -35,11 +35,20 @@ class Ticket_model extends CI_Model
         if(isset($data['user_role_id']) && $data['user_role_id']==4){
             $this->db->where('t.ticket_rised_by',$data['user_id']);
         }
+        if(isset($data['franchise_id'])){
+            $this->db->where('u1.franchise_id',$data['franchise_id']);
+        }
+        if(isset($data['school_id'])){
+            $this->db->where('u1.school_id',$data['school_id']);
+        }
         // if(isset($data['user_role_id']) && $data['user_role_id']==5){
         //     $this->db->where('t.assigned_to',$data['user_id']);
         // }
         if(isset($data['ticket_id']) && $data['ticket_id']>0){
             $this->db->where('t.id',$data['ticket_id']);
+        }
+        if(isset($data['custom_where'])){
+            $this->db->where($data['custom_where']);
         }
         if(isset($data['status'])){
             $this->db->where('t.status',$data['status']);

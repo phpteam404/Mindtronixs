@@ -137,6 +137,7 @@ class User extends REST_Controller
             // 'profile_image' =>isset($data['profile_image'])?$data['profile_image']:'',
             'address'=>isset($data['address'])?$data['address']:'',
             'phone_no'=>isset($data['phone_no'])?$data['phone_no']:'',
+            'school_id'=>!empty($data['school_id'])?$data['school_id'] :0,
             'franchise_id'=>!empty($data['franchise_id'])?$data['franchise_id']:'0'
         );
         // print_r($user_data);exit;
@@ -751,38 +752,135 @@ class User extends REST_Controller
         $this->response($result, REST_Controller::HTTP_OK);
     }
     public function adminDashboard_get(){
-        $all_tickets = $this->User_model->custom_query('SELECT count(*) all_ticket_count FROM `ticket`');
-        $pending_tickets = $this->User_model->custom_query('SELECT count(*) pending_tickets_count FROM `ticket` WHERE `status` <> 48');
-        $student_invoice_amounts = $this->User_model->custom_query('SELECT ROUND(SUM(total_amount)) total_amount, ROUND(SUM(paid_amount)) collected_amount FROM student_invoice WHERE invoice_type = 1');
-        $franchise_invoice_amounts = $this->User_model->custom_query('SELECT ROUND(SUM(total_amount)) total_amount, ROUND(SUM(paid_amount)) collected_amount FROM student_invoice  WHERE invoice_type = 3');
-        $data['number'] = 5; $data['start'] = 0;
-        $data['sort'] = 'ticket_id'; $data['order'] = 'DESC';
-        $ticket_list=$this->Ticket_model->getTickets($data);
-        $result_array = array(
-            'ticket' => array(
-                'all_tickets'=> (int)isset($all_tickets[0])?$all_tickets[0]['all_ticket_count']:0,
-                'pending_tickets'=> (int)isset($all_tickets[0])?$pending_tickets[0]['pending_tickets_count']:0
-            ),
-            'student_invoice' => array(
-                'total_amount'=> (int)isset($student_invoice_amounts[0])?$student_invoice_amounts[0]['total_amount']:0,
-                'collected_amount'=> (int)isset($student_invoice_amounts[0])?$student_invoice_amounts[0]['collected_amount']:0
-            ),
-            'lc_invoice' => array(
-                'total_amount'=> (int)isset($franchise_invoice_amounts[0])?$franchise_invoice_amounts[0]['total_amount']:0,
-                'collected_amount'=> (int)isset($franchise_invoice_amounts[0])?$franchise_invoice_amounts[0]['collected_amount']:0
-            ),
-            'orders' => array(
-                'all_orders'=> 0,
-                'collected_amount'=> 0
-            ),
-            'students' => array(
-                'all_students'=> 0,
-                'active_students'=> 0
-            ),
-            'ticket_list' => $ticket_list['data']
-        );
-        $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>$result_array,'table_headers'=>getTableHeads('ticket_list'));
-        $this->response($result, REST_Controller::HTTP_OK);
+        if(in_array($this->session_user_info->user_role_id,array(1,6,7,8))){
+            $all_tickets = $this->User_model->check_record_selected('count(*) all_ticket_count','ticket',false);
+            $pending_tickets = $this->User_model->check_record_selected('count(*) pending_tickets_count','ticket','status <> 48');
+            $student_invoice_amounts = $this->User_model->check_record_selected('ROUND(SUM(total_amount)) total_amount, ROUND(SUM(paid_amount)) collected_amount','student_invoice',array('invoice_type' => 1));
+            $franchise_invoice_amounts = $this->User_model->check_record_selected('ROUND(SUM(total_amount)) total_amount, ROUND(SUM(paid_amount)) collected_amount','student_invoice',array('invoice_type' => 3));
+            $active_students = $this->User_model->check_record_selected('count(*) active_students','user',array('user_role_id'=>4,'user_status'=>1));
+            $all_students = $this->User_model->check_record_selected('count(*) all_students','user',array('user_role_id'=>4));
+            
+            $data['number'] = 5; $data['start'] = 0;
+            $data['sort'] = 'ticket_id'; $data['order'] = 'DESC';
+            $ticket_list=$this->Ticket_model->getTickets($data);
+            $result_array = array(
+                'ticket' => array(
+                    'all_tickets'=> (int)isset($all_tickets[0])?$all_tickets[0]['all_ticket_count']:0,
+                    'pending_tickets'=> (int)isset($pending_tickets[0])?$pending_tickets[0]['pending_tickets_count']:0
+                ),
+                'student_invoice' => array(
+                    'total_amount'=> (int)isset($student_invoice_amounts[0])?$student_invoice_amounts[0]['total_amount']:0,
+                    'collected_amount'=> (int)isset($student_invoice_amounts[0])?$student_invoice_amounts[0]['collected_amount']:0
+                ),
+                'lc_invoice' => array(
+                    'total_amount'=> (int)isset($franchise_invoice_amounts[0])?$franchise_invoice_amounts[0]['total_amount']:0,
+                    'collected_amount'=> (int)isset($franchise_invoice_amounts[0])?$franchise_invoice_amounts[0]['collected_amount']:0
+                ),
+                'school_invoice' => array(
+                    'total_amount'=> 0,
+                    'collected_amount'=> 0
+                ),
+                'orders' => array(
+                    'all_orders'=> 0,
+                    'collected_amount'=> 0
+                ),
+                'students' => array(
+                    'active_students'=> (int)isset($active_students[0])?$active_students[0]['active_students']:0,
+                    'all_students'=> (int)isset($all_students[0])?$all_students[0]['all_students']:0
+                ),
+                'ticket_list' => $ticket_list['data']
+            );
+            $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>$result_array,'table_headers'=>getTableHeads('ticket_list'));
+            $this->response($result, REST_Controller::HTTP_OK);
+        }else if(in_array($this->session_user_info->user_role_id,array(2,5))){
+            $all_tickets = $this->Ticket_model->getTickets(array('franchise_id' => $this->session_user_info->franchise_id));
+            $pending_tickets = $this->Ticket_model->getTickets(array('franchise_id' => $this->session_user_info->franchise_id,'custom_where' => 't.status <> 48'));
+            $student_invoice_amounts = $this->User_model->check_record_selected('ROUND(SUM(total_amount)) total_amount, ROUND(SUM(paid_amount)) collected_amount','student_invoice',array('invoice_type' => 1,'franchise_id' => $this->session_user_info->franchise_id));
+            $franchise_invoice_amounts = $this->User_model->check_record_selected('ROUND(SUM(total_amount)) total_amount, ROUND(SUM(paid_amount)) collected_amount','student_invoice',array('invoice_type' => 3,'franchise_id' => $this->session_user_info->franchise_id));
+            $active_students = $this->User_model->check_record_selected('count(*) active_students','user',array('franchise_id'=>$this->session_user_info->franchise_id,'user_role_id'=>4,'user_status'=>1));
+            $all_students = $this->User_model->check_record_selected('count(*) inactive_students','user',array('franchise_id'=>$this->session_user_info->franchise_id,'user_role_id'=>4));
+
+            $data['number'] = 5; $data['start'] = 0;
+            $data['sort'] = 'ticket_id'; $data['order'] = 'DESC';
+            $data['franchise_id'] = $this->session_user_info->franchise_id;
+            $data['status'] = 46;
+            $ticket_list=$this->Ticket_model->getTickets($data);
+            $result_array = array(
+                'ticket' => array(
+                    'all_tickets'=> (int)isset($all_tickets[0])?$all_tickets[0]['all_ticket_count']:0,
+                    'pending_tickets'=> (int)isset($all_tickets[0])?$pending_tickets[0]['pending_tickets_count']:0
+                ),
+                'student_invoice' => array(
+                    'total_amount'=> (int)isset($student_invoice_amounts[0])?$student_invoice_amounts[0]['total_amount']:0,
+                    'collected_amount'=> (int)isset($student_invoice_amounts[0])?$student_invoice_amounts[0]['collected_amount']:0
+                ),
+                'lc_invoice' => array(
+                    'total_amount'=> (int)isset($franchise_invoice_amounts[0])?$franchise_invoice_amounts[0]['total_amount']:0,
+                    'collected_amount'=> (int)isset($franchise_invoice_amounts[0])?$franchise_invoice_amounts[0]['collected_amount']:0
+                ),
+                'school_invoice' => array(
+                    'total_amount'=> 0,
+                    'collected_amount'=> 0
+                ),
+                'orders' => array(
+                    'all_orders'=> 0,
+                    'collected_amount'=> 0
+                ),
+                'students' => array(
+                    'active_students'=> (int)isset($active_students[0])?$active_students[0]['active_students']:0,
+                    'all_students'=> (int)isset($all_students[0])?$all_students[0]['all_students']:0
+                ),
+                'ticket_list' => $ticket_list['data']
+            );
+            $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>$result_array,'table_headers'=>getTableHeads('ticket_list'));
+            $this->response($result, REST_Controller::HTTP_OK);
+        }else if(in_array($this->session_user_info->user_role_id,array(10))){
+            $all_tickets = $this->Ticket_model->getTickets(array('school_id' => $this->session_user_info->school_id));
+            $pending_tickets = $this->Ticket_model->getTickets(array('school_id' => $this->session_user_info->school_id,'custom_where' => 't.status <> 48'));
+            
+            $student_invoice_amounts = $this->User_model->check_record_selected('ROUND(SUM(total_amount)) total_amount, ROUND(SUM(paid_amount)) collected_amount','student_invoice',array('invoice_type' => 1,'school_id' => $this->session_user_info->school_id));
+            $school_invoice_amounts = $this->User_model->check_record_selected('ROUND(SUM(total_amount)) total_amount, ROUND(SUM(paid_amount)) collected_amount','student_invoice',array('invoice_type' => 3,'school_id' => $this->session_user_info->school_id));
+            $active_students = $this->User_model->check_record_selected('count(*) active_students','user',array('school_id' => $this->session_user_info->school_id,'user_role_id'=>4,'user_status'=>1));
+            $all_students = $this->User_model->check_record_selected('count(*) all_students','user',array('school_id' => $this->session_user_info->school_id,'user_role_id'=>4));
+
+            $data['number'] = 5; $data['start'] = 0;
+            $data['sort'] = 'ticket_id'; $data['order'] = 'DESC';
+            $data['school_id'] = $this->session_user_info->school_id;
+            $data['status'] = 46;
+            $ticket_list=$this->Ticket_model->getTickets($data);
+            $result_array = array(
+                'ticket' => array(
+                    'all_tickets'=> (int)isset($all_tickets[0])?$all_tickets[0]['all_ticket_count']:0,
+                    'pending_tickets'=> (int)isset($all_tickets[0])?$pending_tickets[0]['pending_tickets_count']:0
+                ),
+                'student_invoice' => array(
+                    'total_amount'=> (int)isset($student_invoice_amounts[0])?$student_invoice_amounts[0]['total_amount']:0,
+                    'collected_amount'=> (int)isset($student_invoice_amounts[0])?$student_invoice_amounts[0]['collected_amount']:0
+                ),
+                'lc_invoice' => array(
+                    'total_amount'=> 0,
+                    'collected_amount'=> 0
+                ),
+                'school_invoice' => array(
+                    'total_amount'=> (int)isset($school_invoice_amounts[0])?$school_invoice_amounts[0]['total_amount']:0,
+                    'collected_amount'=> (int)isset($school_invoice_amounts[0])?$school_invoice_amounts[0]['collected_amount']:0
+                ),
+                'orders' => array(
+                    'all_orders'=> 0,
+                    'collected_amount'=> 0
+                ),
+                'students' => array(
+                    'active_students'=> (int)isset($active_students[0])?$active_students[0]['active_students']:0,
+                    'all_students'=> (int)isset($all_students[0])?$all_students[0]['all_students']:0
+                ),
+                'ticket_list' => $ticket_list['data']
+            );
+            $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>$result_array,'table_headers'=>getTableHeads('ticket_list'));
+            $this->response($result, REST_Controller::HTTP_OK);
+        }else{
+            $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>[]);
+            $this->response($result, REST_Controller::HTTP_OK);
+        }
     }
     function getInvoiceDate($franchise_fee_id){
         $date=date("Y-m-d");

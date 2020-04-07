@@ -802,7 +802,7 @@ class User extends REST_Controller
             $student_invoice_amounts = $this->User_model->check_record_selected('ROUND(SUM(total_amount)) total_amount, ROUND(SUM(paid_amount)) collected_amount','student_invoice',array('invoice_type' => 1,'franchise_id' => $this->session_user_info->franchise_id));
             $franchise_invoice_amounts = $this->User_model->check_record_selected('ROUND(SUM(total_amount)) total_amount, ROUND(SUM(paid_amount)) collected_amount','student_invoice',array('invoice_type' => 3,'franchise_id' => $this->session_user_info->franchise_id));
             $active_students = $this->User_model->check_record_selected('count(*) active_students','user',array('franchise_id'=>$this->session_user_info->franchise_id,'user_role_id'=>4,'user_status'=>1));
-            $all_students = $this->User_model->check_record_selected('count(*) inactive_students','user',array('franchise_id'=>$this->session_user_info->franchise_id,'user_role_id'=>4));
+            $all_students = $this->User_model->check_record_selected('count(*) all_students','user',array('franchise_id'=>$this->session_user_info->franchise_id,'user_role_id'=>4));
 
             $data['number'] = 5; $data['start'] = 0;
             $data['sort'] = 'ticket_id'; $data['order'] = 'DESC';

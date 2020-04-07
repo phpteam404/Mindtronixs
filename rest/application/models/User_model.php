@@ -833,7 +833,8 @@ class User_model extends CI_Model
        $this->db->group_by('ts.id');
        if(isset($data['search_key']) && $data['search_key']!==''){
             $this->db->group_start();
-            $this->db->where('ts.topic like "%'.$data['search_key'].'%"');
+            $this->db->like('ts.topic', $data['search_key'], 'both');
+            $this->db->or_like('f.name', $data['search_key'],'both');
             $this->db->group_end();
         }
         if(!empty($data['trainer_schedule_id'])){

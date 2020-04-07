@@ -299,7 +299,7 @@ class Invoice extends REST_Controller
         }
         else{
 
-            if($this->session_user_info->user_role_id==2 || $this->session_user_info->user_role_id==2){
+            if($this->session_user_info->user_role_id==2 || $this->session_user_info->user_role_id==5){
                 $data['franchise_id']=$this->session_user_info->franchise_id;
             }
             if($this->session_user_info->user_role_id==10){

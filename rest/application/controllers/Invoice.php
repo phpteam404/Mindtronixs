@@ -40,7 +40,7 @@ class Invoice extends REST_Controller
             }
         }
         else{
-                if($this->session_user_info->user_role_id==2){
+                if($this->session_user_info->user_role_id==2 || $this->session_user_info->user_role_id==5){
                     $data['franchise_id']=$this->session_user_info->franchise_id;
                 }
                 if($this->session_user_info->user_role_id==4){
@@ -294,9 +294,14 @@ class Invoice extends REST_Controller
         }
         else{
 
-            if($this->session_user_info->user_role_id==2){
+            if($this->session_user_info->user_role_id==2 || $this->session_user_info->user_role_id==2){
                 $data['franchise_id']=$this->session_user_info->franchise_id;
             }
+            if($this->session_user_info->user_role_id==10){
+                $school_id=$this->User_model->check_record('school_master',array('user_id'=>$this->session_user_info->user_id));
+                $data['school_id']=!empty($school_id[0]['id'])?$school_id[0]['id']:0;
+            }
+
             $data['status']=2;//for school invoice
             $invoice_amount=$this->Invoices_model->getAmount($data);
             $data['payment_status']=97;//to get collected amount  pass the payment status id is 97
@@ -331,7 +336,7 @@ class Invoice extends REST_Controller
         }
         else{
 
-            if($this->session_user_info->user_role_id==2){
+            if($this->session_user_info->user_role_id==2 || $this->session_user_info->user_role_id==5){
                 $data['franchise_id']=$this->session_user_info->franchise_id;
             }
             $data['status']=3;//for franchise invoice

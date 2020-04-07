@@ -126,7 +126,9 @@ class User extends REST_Controller
                 }
             }
         }
-        // print_r($sudent_data_insert);exit;
+        if($this->session_user_info->user_role_id==2 || $this->session_user_info->user_role_id==5 ){
+            $data['franchise_id']=$this->session_user_info->franchise_id;
+        }
         $user_data = array(
             'user_role_id' => isset($data['user_role_id'])?$data['user_role_id']:5,
             'first_name' => !empty($data['student_name'])? $data['student_name']:$data['first_name'],
@@ -235,7 +237,7 @@ class User extends REST_Controller
         foreach($result['data'] as $k=>$v){
             if(!empty($data['user_id'])){
                 $result['data'][$k]['status']=getStatusObj($v['status']);
-                if($v['user_role_id']==5){
+                if($v['user_role_id']==1 || $v['user_role_id']==6 || $v['user_role_id']==7 || $v['user_role_id']==8){
                     $result['data'][$k]['franchise_name']='--';
                 }
                 else{
@@ -516,12 +518,14 @@ class User extends REST_Controller
         $data = $this->input->get();
         // $data = tableOptions($data);
         $data['type']='edit';//this key used for filter the select statement
-        if($this->session_user_info->user_role_id==2){
+        if($this->session_user_info->user_role_id==2 || $this->session_user_info->user_role_id==5){
             $data['franchise_id']=$this->session_user_info->franchise_id;
         }
-        // else{
-        //     $data=null;
-        // }
+        if($this->session_user_info->user_role_id==10){
+            $school_id=$this->User_model->check_record('school_master',array('user_id'=>$this->session_user_info->user_id));
+            $data['id_school']=!empty($school_id[0]['id'])?$school_id[0]['id']:0;
+        }
+
         $student_list=$this->User_model->getStudentList($data);//echo $this->db->last_query();exit;
         // print_r($student_list);exit;
         foreach($student_list['data'] as $k=>$v){

@@ -47,7 +47,7 @@ class Invoices_model extends CI_Model
         if(!empty($data['franchise_id'])){
             $this->db->where('si.franchise_id',$data['franchise_id']);
         }
-        if(empty($data['from_date']) && empty($data['to_date']) && empty($data['status_id']) && empty($data['month']) && empty($data['student_invoice_id']) && empty($data['franchise_id'])){
+        if(empty($data['from_date']) && empty($data['to_date']) && empty($data['status_id']) && empty($data['month']) && empty($data['student_invoice_id'])){
             $this->db->where('MONTH(si.invoice_date)', date('m')); //For current month
             $this->db->where('YEAR(si.invoice_date)', date('Y')); // For current year
         }
@@ -225,6 +225,9 @@ class Invoices_model extends CI_Model
         if(!empty($data['school_invoice_id'])){
             $this->db->where('si.id',$data['school_invoice_id']);
         }
+        if(!empty($data['school_id'])){
+            $this->db->where('si.school_id',$data['school_id']);
+        }
         if(!empty($data['month'])){
             $this->db->like('si.invoice_date', $data['month'], 'both');
         }
@@ -268,7 +271,7 @@ class Invoices_model extends CI_Model
         if(!empty($data['franchise_id'])){
             $this->db->where('si.franchise_id',$data['franchise_id']);
         }
-        if(empty($data['from_date']) && empty($data['to_date']) && empty($data['status_id']) && empty($data['month']) && empty($data['franchise_invoice_id']) && empty($data['franchise_id'])){
+        if(empty($data['from_date']) && empty($data['to_date']) && empty($data['status_id']) && empty($data['month']) && empty($data['franchise_invoice_id'])){
             $this->db->where('MONTH(si.invoice_date)', date('m')); //For current month
             $this->db->where('YEAR(si.invoice_date)', date('Y')); // For current year
         }

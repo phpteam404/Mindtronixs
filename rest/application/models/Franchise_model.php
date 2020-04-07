@@ -200,6 +200,9 @@ class Franchise_model extends CI_Model
         if(!empty($data['franchise_id'])){
         $this->db->where('sm.franchise_id',$data['franchise_id']);
         }
+        if(!empty($data['school_id'])){
+            $this->db->where('sm.id',$data['school_id']);
+        }
         $this->db->where('sm.status','1');
         $query = $this->db->get();//echo $this->db->last_query();exit;
         return $query->result_array();

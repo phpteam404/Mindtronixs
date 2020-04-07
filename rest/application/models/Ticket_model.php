@@ -32,7 +32,8 @@ class Ticket_model extends CI_Model
         $this->db->join('user u1','t.ticket_rised_by=u1.id','left');
         $this->db->join('master_child mc','t.issue_type=mc.id AND mc.master_id=17','left');
         $this->db->join('master_child  mc1','t.status=mc1.id and mc1.master_id=18','left');
-        if(isset($data['user_role_id']) && $data['user_role_id']==4){
+        if(isset($data['user_role_id']) && in_array($data['user_role_id'],array('3','4',))){
+             
             $this->db->where('t.ticket_rised_by',$data['user_id']);
         }
         if(isset($data['franchise_id'])){
@@ -44,6 +45,9 @@ class Ticket_model extends CI_Model
         // if(isset($data['user_role_id']) && $data['user_role_id']==5){
         //     $this->db->where('t.assigned_to',$data['user_id']);
         // }
+        if(!empty($data['franchise_id'])){
+            $this->db->where('u1.franchise_id',$data['franchise_id']);
+        }
         if(isset($data['ticket_id']) && $data['ticket_id']>0){
             $this->db->where('t.id',$data['ticket_id']);
         }

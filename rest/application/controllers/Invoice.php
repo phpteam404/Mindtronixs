@@ -48,6 +48,11 @@ class Invoice extends REST_Controller
                     $student_id=$this->User_model->check_record_selected('id as student_id','student',array('user_id'=>$this->session_user_info->user_id));
                     $data['student_id']=$student_id[0]['student_id'];
                 }
+                if($this->session_user_info->user_role_id==10){
+                    $data['school_id']=!empty($this->session_user_info->school_id)?$this->session_user_info->school_id:0;
+                    $data['franchise_id']=$this->session_user_info->franchise_id;
+                }
+                // print_r($data);exit;
                 $data['status']=1;
                 $invoice_amount=$this->Invoices_model->getAmount($data);
                 $data['payment_status']=97;//to get collected amount  pass the payment status id is 97
@@ -298,8 +303,7 @@ class Invoice extends REST_Controller
                 $data['franchise_id']=$this->session_user_info->franchise_id;
             }
             if($this->session_user_info->user_role_id==10){
-                $school_id=$this->User_model->check_record('school_master',array('user_id'=>$this->session_user_info->user_id));
-                $data['school_id']=!empty($school_id[0]['id'])?$school_id[0]['id']:0;
+                $data['school_id']=!empty($this->session_user_info->school_id)?$this->session_user_info->school_id:0;
             }
 
             $data['status']=2;//for school invoice

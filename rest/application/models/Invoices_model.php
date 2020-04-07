@@ -57,6 +57,9 @@ class Invoices_model extends CI_Model
         if(!empty($data['student_id'])){
             $this->db->where('si.student_id',$data['student_id']);
         }
+        if(!empty($data['school_id'])){
+            $this->db->where('s.school_id',$data['school_id']);
+        }
         if(!empty($data['month'])){
             $this->db->like('si.invoice_date', $data['month'], 'both');
         }
@@ -95,6 +98,12 @@ class Invoices_model extends CI_Model
         // }
         if(!empty($data['franchise_id'])){
             $this->db->where('si.franchise_id',$data['franchise_id']);
+        }
+        if(!empty($data['school_id'])){
+            $this->db->where('si.school_id',$data['school_id']);
+        }
+        if(!empty($data['student_id'])){
+            $this->db->where('si.student_id',$data['student_id']);
         }
         if(empty($data['month'])){
             $this->db->where('MONTH(si.invoice_date)', date('m')); //For current month

@@ -850,7 +850,7 @@ class User extends REST_Controller
             $pending_tickets = $this->Ticket_model->getTickets(array('school_id' => $this->session_user_info->school_id,'custom_where' => 't.status <> 48'));
             
             $student_invoice_amounts = $this->User_model->check_record_selected('ROUND(SUM(total_amount)) total_amount, ROUND(SUM(paid_amount)) collected_amount','student_invoice',array('invoice_type' => 1,'school_id' => $this->session_user_info->school_id));
-            $school_invoice_amounts = $this->User_model->check_record_selected('ROUND(SUM(total_amount)) total_amount, ROUND(SUM(paid_amount)) collected_amount','student_invoice',array('invoice_type' => 3,'school_id' => $this->session_user_info->school_id));
+            $school_invoice_amounts = $this->User_model->check_record_selected('ROUND(SUM(total_amount)) total_amount, ROUND(SUM(paid_amount)) collected_amount','student_invoice',array('invoice_type' => 2,'school_id' => $this->session_user_info->school_id));
             $active_students = $this->User_model->check_record_selected('count(*) active_students','user',array('school_id' => $this->session_user_info->school_id,'user_role_id'=>4,'user_status'=>1));
             $all_students = $this->User_model->check_record_selected('count(*) all_students','user',array('school_id' => $this->session_user_info->school_id,'user_role_id'=>4));
 
@@ -865,8 +865,8 @@ class User extends REST_Controller
                     'pending_tickets'=> count($pending_tickets['data'])
                 ),
                 'student_invoice' => array(
-                    'total_amount'=> (int)isset($student_invoice_amounts[0])?$student_invoice_amounts[0]['total_amount']:0,
-                    'collected_amount'=> (int)isset($student_invoice_amounts[0])?$student_invoice_amounts[0]['collected_amount']:0
+                    'total_amount'=> 0,
+                    'collected_amount'=> 0
                 ),
                 'lc_invoice' => array(
                     'total_amount'=> 0,

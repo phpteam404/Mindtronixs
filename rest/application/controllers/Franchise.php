@@ -285,6 +285,7 @@ class Franchise extends REST_Controller
                     'franchise_id' => $data['franchise_id'],
                     'school_id' => $inser_id,
                     'first_name' => $data['contact_person'],
+                    'last_name'=>'',
                     'email' => $data['email'],
                     'phone_no' => $data['phone'],
                     'password' => md5($new_password),
@@ -428,8 +429,7 @@ class Franchise extends REST_Controller
             $data['franchise_id']=$this->session_user_info->franchise_id;
         }
         if($this->session_user_info->user_role_id==10){
-            $school_id=$this->User_model->check_record('school_master',array('user_id'=>$this->session_user_info->user_id));
-            $data['school_id']=!empty($school_id[0]['id'])?$school_id[0]['id']:0;
+            $data['school_id']=!empty($this->session_user_info->school_id)?$this->session_user_info->school_id:0;
             $data['franchise_id']=$this->session_user_info->franchise_id;
         }
         $schools= $this->Franchise_model->getschoolDropdown($data);//echo $this->db->last_query();exit;

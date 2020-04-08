@@ -362,14 +362,49 @@ class Franchise extends REST_Controller
         }
         // print_r($franchise_info);exit;
         unset($franchise_info[$k]['franchise_contacts']);
-        $no_of_students = $this->User_model->custom_query('SELECT count(DISTINCT(id)) as no_of_students FROM student where school_id!=0 and status=1 and franchise_id = '.$data['franchise_id']);//echo $this->db->last_query();//get the no of students in the franchise
-        $no_of_schools = $this->User_model->custom_query('SELECT count(DISTINCT(id)) as no_of_schools FROM school_master where status=1 and   franchise_id = '.$data['franchise_id']);//echo $this->db->last_query();//get the no of schools in the franchise
-        $no_of_trainers=$this->User_model->check_record('user',array('user_role_id'=>3,'franchise_id'=>$data['franchise_id'],'user_status'=>1));//echo $this->db->last_query();exit;//get the nof of trainers in franchise
-        $student_invoice_amount=0;
-        $student_collected_amount=0;
-        $mindtronix_invoice_amount=0;
-        $mindtronix_collected_amount=0;
-        $result = array('status'=>TRUE, 'message' => $this->lang->line('success'),'data'=>array('data' =>$franchise_info,'no_of_student'=>!empty($no_of_students[0]['no_of_students'])?$no_of_students[0]['no_of_students']:'0','no_of_schools'=>!empty($no_of_schools[0]['no_of_schools'])?$no_of_schools[0]['no_of_schools']:'0','no_of_trainers'=>!empty(count($no_of_trainers))?count($no_of_trainers):'0','student_invoice_amount'=>$student_invoice_amount,'student_collected_amount'=>$student_collected_amount,'mindtronix_invoice_amount'=>$mindtronix_invoice_amount,'mindtronix_collected_amount'=>$mindtronix_collected_amount,'statistics_graph'=>array()));
+        $no_of_students = $this->User_model->custom_query('SELECT count(DISTINCT(id)) as no_of_students FROM student where  status=1 and franchise_id = '.$data['franchise_id']);//get the no of students in the franchise
+        $no_of_schools = $this->User_model->custom_query('SELECT count(DISTINCT(id)) as no_of_schools FROM school_master where status=1 and   franchise_id = '.$data['franchise_id']);//get the no of schools in the franchise
+        $no_of_trainers=$this->User_model->check_record('user',array('user_role_id'=>3,'franchise_id'=>$data['franchise_id'],'user_status'=>1));//get the nof of trainers in franchise
+        $data['month']=!empty($data['month'])?$data['month']:date("Y-m");
+        $student_invoice_amount=$this->Invoices_model->getAmount(array('franchise_id'=>$data['franchise_id'],'month'=>$data['month'],'status'=>1));
+        $student_collected_amount=$this->Invoices_model->getAmount(array('franchise_id'=>$data['franchise_id'],'month'=>$data['month'],'status'=>1,'payment_status'=>97));
+        $student_due_amount=$this->Invoices_model->getAmount(array('franchise_id'=>$data['franchise_id'],'month'=>$data['month'],'status'=>1,'payment_status'=>98));
+        $student_invoice_amount=!empty($student_invoice_amount[0]['total_amount'])?$student_invoice_amount[0]['total_amount']:0;
+        $student_collected_amount=!empty($student_collected_amount[0]['paid_amount'])?$student_collected_amount[0]['paid_amount']:0;
+        $student_due_amount=!empty($student_due_amount[0]['total_amount'])?$student_due_amount[0]['total_amount']:0;
+
+
+
+        $school_invoice_amount=$this->Invoices_model->getAmount(array('franchise_id'=>$data['franchise_id'],'month'=>$data['month'],'status'=>2));
+        $school_collected_amount=$this->Invoices_model->getAmount(array('franchise_id'=>$data['franchise_id'],'month'=>$data['month'],'status'=>2,'payment_status'=>97));
+        $school_due_amount=$this->Invoices_model->getAmount(array('franchise_id'=>$data['franchise_id'],'month'=>$data['month'],'status'=>2,'payment_status'=>98));
+        $school_invoice_amount=!empty($school_invoice_amount[0]['total_amount'])?$school_invoice_amount[0]['total_amount']:0;
+        $school_collected_amount=!empty($school_collected_amount[0]['paid_amount'])?$school_collected_amount[0]['paid_amount']:0;
+        $school_due_amount=!empty($school_due_amount[0]['total_amount'])?$school_due_amount[0]['total_amount']:0;
+
+
+        $mindtronix_invoice_amount=$this->Invoices_model->getAmount(array('franchise_id'=>$data['franchise_id'],'month'=>$data['month'],'status'=>3));
+        $mindtronix_collected_amount=$this->Invoices_model->getAmount(array('franchise_id'=>$data['franchise_id'],'month'=>$data['month'],'status'=>3,'payment_status'=>97));
+        $mindtronix_due_amount=$this->Invoices_model->getAmount(array('franchise_id'=>$data['franchise_id'],'month'=>$data['month'],'status'=>3,'payment_status'=>98));
+        $mindtronix_invoice_amount=!empty($mindtronix_invoice_amount[0]['total_amount'])?$mindtronix_invoice_amount[0]['total_amount']:0;
+        $mindtronix_collected_amount=!empty($mindtronix_collected_amount[0]['paid_amount'])?$mindtronix_collected_amount[0]['paid_amount']:0;
+        $mindtronix_due_amount=!empty($mindtronix_due_amount[0]['total_amount'])?$mindtronix_due_amount[0]['total_amount']:0;
+        for ($i = 0; $i <=2; $i++){
+           $months[$i]['label'] = date("M Y", strtotime( date( 'Y-m-01' )." -$i months"));
+           $months[$i]['value'] = date("Y-m", strtotime( date( 'Y-m-01' )." -$i months"));
+           $graph_months[] = date("M Y", strtotime( date( 'Y-m-01' )." -$i months"));
+           $date = date("M Y", strtotime( date( 'Y-m-01' )." -$i months"));
+          
+        $invoice_amount=$this->Invoices_model->getAmount(array('franchise_id'=>$data['franchise_id'],'month'=>$months[$i]['value'],'status'=>1));
+        $all_invoiced_amount[$i]=!empty($invoice_amount[0]['total_amount'])?$invoice_amount[0]['total_amount']:0;
+        $collected_amount=$this->Invoices_model->getAmount(array('franchise_id'=>$data['franchise_id'],'month'=>$months[$i]['value'],'status'=>1,'payment_status'=>97));
+        $all_collected_amount[$i]=!empty($collected_amount[0]['paid_amount'])?$collected_amount[0]['paid_amount']:0;
+        }
+        $statistics_graph[0]['name']="Collected Amount";
+        $statistics_graph[0]['data']=$all_collected_amount;
+        $statistics_graph[1]['name']="Invoiced Amount";
+        $statistics_graph[1]['data']=$all_invoiced_amount;
+        $result = array('status'=>TRUE, 'message' => $this->lang->line('success'),'data'=>array('data' =>$franchise_info,'no_of_student'=>!empty($no_of_students[0]['no_of_students'])?$no_of_students[0]['no_of_students']:'0','no_of_schools'=>!empty($no_of_schools[0]['no_of_schools'])?$no_of_schools[0]['no_of_schools']:'0','no_of_trainers'=>!empty(count($no_of_trainers))?count($no_of_trainers):'0','student_invoice_amount'=>$student_invoice_amount,'student_collected_amount'=>$student_collected_amount,'student_due_amount'=>$student_due_amount,'mindtronix_invoice_amount'=>$mindtronix_invoice_amount,'mindtronix_collected_amount'=>$mindtronix_collected_amount,'mindtronix_due_amount'=>$mindtronix_due_amount,'school_invoice_amount'=>$school_invoice_amount,'school_collected_amount'=>$school_collected_amount,'school_due_amount'=>$school_due_amount,'statistics_graph'=>$statistics_graph,'drop_down_months'=>$months,'statistics_graph_months'=>$graph_months));
         $this->response($result, REST_Controller::HTTP_OK);
     }
     public function schoolInfo_get()//this function used to get school information  for prepopulated data when edit the school

@@ -76,7 +76,7 @@ class Invoices_model extends CI_Model
     }
     public function getAmount($data=null){
 
-        $this->db->select('SUM(total_amount) as total_amount,count(*) as count');
+        $this->db->select('ROUND(SUM(total_amount)) as total_amount,count(*) as count');
         $this->db->from('student_invoice si');
         // if(!empty($data['franchise_id'])){
         //     $this->db->where('franchise_id',$data['franchise_id']);
@@ -86,7 +86,7 @@ class Invoices_model extends CI_Model
         }
         if(!empty($data['payment_status'])){
             if($data['payment_status']==97){
-                $this->db->select('SUM(si.paid_amount) as paid_amount');
+                $this->db->select('ROUND(SUM(si.paid_amount)) as paid_amount');
             }
             $this->db->where('payment_status',$data['payment_status']);
         }

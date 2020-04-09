@@ -178,7 +178,7 @@ class User_model extends CI_Model
         return $query->result_array();
     }
 
-    public function getUserRoles($data)
+    public function getUserRoles($data=null)
     {
         if(!empty($data['dropdown'])){
             $this->db->select('user_role_name as label, CAST(id AS SIGNED) as value')->from('user_role');
@@ -189,6 +189,9 @@ class User_model extends CI_Model
         else{
             $this->db->select('*')->from('user_role');
             $this->db->where('role_level >','1');
+        }
+        if(!empty($data['user_role_ids'])){
+            $this->db->where_in('id',$data['user_role_ids']);
         }
         $this->db->order_by('role_level','ASC');
         $query = $this->db->get();

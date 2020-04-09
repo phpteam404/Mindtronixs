@@ -337,7 +337,10 @@ class User extends REST_Controller
             // }
 
         }
-        $user_roles= $this->User_model->getUserRoles(array('dropdown'=>isset($data['dropdown'])?true:false));
+        if($this->session_user_info->user_role_id==2 || $this->session_user_info->user_role_id==5){
+            $data['user_role_ids']=array(2,3);
+        }
+        $user_roles= $this->User_model->getUserRoles(array('dropdown'=>isset($data['dropdown'])?true:false,'user_role_ids'=>isset($data['user_role_ids'])?$data['user_role_ids']:array()));
         // echo $this->db->last_query();exit;
         if(isset($data['dropdown'])){
             foreach($user_roles as $k=>$v){

@@ -261,6 +261,12 @@ class User extends REST_Controller
                         if($mail_sent_status==1)
                             $this->Email_model->updateMailer(array('status'=>1,'mailer_id'=>$mailer_id));
                     }
+
+                    //App notification to be saved in Notification table.
+                    $link ='<a style="color: #22bcf2" class="sky-blue" href="'.WEB_BASE_URL . '#/notifications/'.base64_encode($this->session_user_id).'">Here</a>';
+                    $notification_wildcards_replaces['url_link'] = $link;
+                    $notification_message = wildcardreplace($template_configurations['wildcards'],$notification_wildcards_replaces,$template_configurations['application_template_content']);
+                    
                 }
                 $result = array('status'=>TRUE, 'message' => $message, 'data'=>array('data' => $is_insert));
                 $this->response($result, REST_Controller::HTTP_OK);   

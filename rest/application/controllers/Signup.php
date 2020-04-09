@@ -115,27 +115,33 @@ class Signup extends CI_Controller
     
         if(isset($result->user_role_id))
             $result->user_role_id=$result->user_role_id;
-            $menu=$this->User_model->menuList(array('user_role_id'=>$result->user_role_id,'type'=>'menu','parent_module_id'=>0,'is_menu'=>1));//echo $this->db->last_query();exit;
-            $new_menu = array();
-            $i = 0;
-            foreach($menu as $k=>$v){ 
-                if($v['app_module_id'] == 3 || $v['app_module_id'] == 9){
-                    $sub_menus=$this->User_model->menuList(array('user_role_id'=>$result->user_role_id,'parent_module_id'=>$v['app_module_id'],'type'=>'menu','is_menu'=>2));
-                    $menu[$k]['sub_menus']=$sub_menus;
-                    // echo '<pre>'.print_r($v);              
-                    // echo '<pre>'.print_r($sub_menus);exit;               
-                    if(count($sub_menus) > 0){
-                        $new_menu[$i] = $v;
-                        $new_menu[$i]['sub_menus']=$sub_menus;
-                        $i++;
-                    }
-                }else{
+        $menu=$this->User_model->menuList(array('user_role_id'=>$result->user_role_id,'type'=>'menu','parent_module_id'=>0,'is_menu'=>1));//echo $this->db->last_query();exit;
+        $new_menu = array();
+        $i = 0;
+        foreach($menu as $k=>$v){ 
+            if($v['app_module_id'] == 3 || $v['app_module_id'] == 9){
+                $sub_menus=$this->User_model->menuList(array('user_role_id'=>$result->user_role_id,'parent_module_id'=>$v['app_module_id'],'type'=>'menu','is_menu'=>2));
+                $menu[$k]['sub_menus']=$sub_menus;
+                // echo '<pre>'.print_r($v);              
+                // echo '<pre>'.print_r($sub_menus);exit;               
+                if(count($sub_menus) > 0){
                     $new_menu[$i] = $v;
-                    $new_menu[$i]['sub_menus']=[];
+                    $new_menu[$i]['sub_menus']=$sub_menus;
                     $i++;
                 }
+            }else{
+                $new_menu[$i] = $v;
+                $new_menu[$i]['sub_menus']=[];
+                $i++;
             }
-            $menu = $new_menu;
+        }
+        $menu = $new_menu;
+        //Assigning LC Name, School name in login response.
+            $check_franchise=$this->User_model->check_record('franchise',array('id'=>$result->franchise_id));
+            $check_school=$this->User_model->check_record('school_master',array('id'=>$result->school_id));
+            $result->lc_name = isset($check_franchise[0])?$check_franchise[0]['name']:'';
+            $result->school_name = isset($check_school[0])?$check_school[0]['name']:'';
+
         if($result->user_role_id==1 || $result->user_role_id==6 || $result->user_role_id==7 ||  $result->user_role_id==8 || $result->user_role_id==9){
             $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>array('data' => $result), 'access_token' => $access_token,'menu'=>$menu);
                     header('Content-Type: application/json');

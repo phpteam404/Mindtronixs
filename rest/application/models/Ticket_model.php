@@ -32,7 +32,7 @@ class Ticket_model extends CI_Model
         $this->db->join('user u1','t.ticket_rised_by=u1.id','left');
         $this->db->join('master_child mc','t.issue_type=mc.id AND mc.master_id=17','left');
         $this->db->join('master_child  mc1','t.status=mc1.id and mc1.master_id=18','left');
-        if(isset($data['user_role_id']) && in_array($data['user_role_id'],array('3','4',))){
+        if(isset($data['user_role_id']) && in_array($data['user_role_id'],array('3','4'))){
              
             $this->db->where('t.ticket_rised_by',$data['user_id']);
         }

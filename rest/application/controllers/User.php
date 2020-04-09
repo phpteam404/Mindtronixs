@@ -262,9 +262,18 @@ class User extends REST_Controller
                     }
 
                     //App notification to be saved in Notification table.
-                    $link ='<a style="color: #22bcf2" class="sky-blue" href="'.WEB_BASE_URL . '#/notifications/'.base64_encode($this->session_user_id).'">Here</a>';
+                    $link ='<a style="color: #22bcf2" class="sky-blue" href="'.WEB_BASE_URL . '#/notifications/'.base64_encode($is_insert).'">Here</a>';
                     $notification_wildcards_replaces['url_link'] = $link;
                     $notification_message = wildcardreplace($template_configurations['wildcards'],$notification_wildcards_replaces,$template_configurations['application_template_content']);
+                    $this->Email_model->addNotification(array(
+                        'assigned_to' => $is_insert,
+                        'notification_template' => $notification_message,
+                        'notification_link' => $link,
+                        'notification_comments' => 'Welcome to Mindtronix',
+                        'notification_type' => 'app',
+                        'created_date_time' => currentDate(),
+                        'module_type' => 'user'
+                    ));
                     
                 }
                 $result = array('status'=>TRUE, 'message' => $message, 'data'=>array('data' => $is_insert));
@@ -826,16 +835,16 @@ class User extends REST_Controller
             $ticket_list=$this->Ticket_model->getTickets($data);
             $result_array = array(
                 'ticket' => array(
-                    'all_tickets'=> (int)isset($all_tickets[0])?$all_tickets[0]['all_ticket_count']:0,
-                    'pending_tickets'=> (int)isset($pending_tickets[0])?$pending_tickets[0]['pending_tickets_count']:0
+                    'all_tickets'=> isset($all_tickets[0])?(int)$all_tickets[0]['all_ticket_count']:0,
+                    'pending_tickets'=> isset($pending_tickets[0])?(int)$pending_tickets[0]['pending_tickets_count']:0
                 ),
                 'student_invoice' => array(
-                    'total_amount'=> (int)isset($student_invoice_amounts[0])?$student_invoice_amounts[0]['total_amount']:0,
-                    'collected_amount'=> (int)isset($student_invoice_amounts[0])?$student_invoice_amounts[0]['collected_amount']:0
+                    'total_amount'=> isset($student_invoice_amounts[0])?(int)$student_invoice_amounts[0]['total_amount']:0,
+                    'collected_amount'=> isset($student_invoice_amounts[0])?(int)$student_invoice_amounts[0]['collected_amount']:0
                 ),
                 'lc_invoice' => array(
-                    'total_amount'=> (int)isset($franchise_invoice_amounts[0])?$franchise_invoice_amounts[0]['total_amount']:0,
-                    'collected_amount'=> (int)isset($franchise_invoice_amounts[0])?$franchise_invoice_amounts[0]['collected_amount']:0
+                    'total_amount'=> isset($franchise_invoice_amounts[0])?(int)$franchise_invoice_amounts[0]['total_amount']:0,
+                    'collected_amount'=> isset($franchise_invoice_amounts[0])?(int)$franchise_invoice_amounts[0]['collected_amount']:0
                 ),
                 'school_invoice' => array(
                     'total_amount'=> 0,
@@ -846,8 +855,8 @@ class User extends REST_Controller
                     'collected_amount'=> 0
                 ),
                 'students' => array(
-                    'active_students'=> (int)isset($active_students[0])?$active_students[0]['active_students']:0,
-                    'all_students'=> (int)isset($all_students[0])?$all_students[0]['all_students']:0
+                    'active_students'=> isset($active_students[0])?(int)$active_students[0]['active_students']:0,
+                    'all_students'=> isset($all_students[0])?(int)$all_students[0]['all_students']:0
                 ),
                 'ticket_list' => $ticket_list['data']
             );
@@ -873,12 +882,12 @@ class User extends REST_Controller
                     'pending_tickets'=> count($pending_tickets['data'])
                 ),
                 'student_invoice' => array(
-                    'total_amount'=> (int)isset($student_invoice_amounts[0])?$student_invoice_amounts[0]['total_amount']:0,
-                    'collected_amount'=> (int)isset($student_invoice_amounts[0])?$student_invoice_amounts[0]['collected_amount']:0
+                    'total_amount'=> isset($student_invoice_amounts[0])?(int)$student_invoice_amounts[0]['total_amount']:0,
+                    'collected_amount'=> isset($student_invoice_amounts[0])?(int)$student_invoice_amounts[0]['collected_amount']:0
                 ),
                 'lc_invoice' => array(
-                    'total_amount'=> (int)isset($franchise_invoice_amounts[0])?$franchise_invoice_amounts[0]['total_amount']:0,
-                    'collected_amount'=> (int)isset($franchise_invoice_amounts[0])?$franchise_invoice_amounts[0]['collected_amount']:0
+                    'total_amount'=> isset($franchise_invoice_amounts[0])?(int)$franchise_invoice_amounts[0]['total_amount']:0,
+                    'collected_amount'=> isset($franchise_invoice_amounts[0])?(int)$franchise_invoice_amounts[0]['collected_amount']:0
                 ),
                 'school_invoice' => array(
                     'total_amount'=> 0,
@@ -889,8 +898,8 @@ class User extends REST_Controller
                     'collected_amount'=> 0
                 ),
                 'students' => array(
-                    'active_students'=> (int)isset($active_students[0])?$active_students[0]['active_students']:0,
-                    'all_students'=> (int)isset($all_students[0])?$all_students[0]['all_students']:0
+                    'active_students'=> isset($active_students[0])?(int)$active_students[0]['active_students']:0,
+                    'all_students'=> isset($all_students[0])?(int)$all_students[0]['all_students']:0
                 ),
                 'ticket_list' => $ticket_list['data']
             );
@@ -925,16 +934,16 @@ class User extends REST_Controller
                     'collected_amount'=> 0
                 ),
                 'school_invoice' => array(
-                    'total_amount'=> (int)isset($school_invoice_amounts[0])?$school_invoice_amounts[0]['total_amount']:0,
-                    'collected_amount'=> (int)isset($school_invoice_amounts[0])?$school_invoice_amounts[0]['collected_amount']:0
+                    'total_amount'=> isset($school_invoice_amounts[0])?(int)$school_invoice_amounts[0]['total_amount']:0,
+                    'collected_amount'=> isset($school_invoice_amounts[0])?(int)$school_invoice_amounts[0]['collected_amount']:0
                 ),
                 'orders' => array(
                     'all_orders'=> 0,
                     'collected_amount'=> 0
                 ),
                 'students' => array(
-                    'active_students'=> (int)isset($active_students[0])?$active_students[0]['active_students']:0,
-                    'all_students'=> (int)isset($all_students[0])?$all_students[0]['all_students']:0
+                    'active_students'=> isset($active_students[0])?(int)$active_students[0]['active_students']:0,
+                    'all_students'=> isset($all_students[0])?(int)$all_students[0]['all_students']:0
                 ),
                 'ticket_list' => $ticket_list['data']
             );
@@ -945,6 +954,54 @@ class User extends REST_Controller
             $this->response($result, REST_Controller::HTTP_OK);
         }
     }
+
+    public function notification_get(){
+        $data = $this->input->get();
+        if(empty($data)){
+            $result = array('status'=>FALSE,'error'=>$this->lang->line('invalid_data'),'data'=>'');
+            $this->response($result, REST_Controller::HTTP_OK);
+        }  
+        $this->form_validator->add_rules('notification_status', array('required' => $this->lang->line('notification_status_req')));
+        // $this->form_validator->add_rules('module_url', array('required' => $this->lang->line('module_url_req')));
+        $validated = $this->form_validator->validate($data);    
+        if($validated != 1)
+        {
+            $result = array('status'=>FALSE,'error'=>$validated,'data'=>'');
+            $this->response($result, REST_Controller::HTTP_OK);
+        }
+        if(strtolower($data['notification_status']) == 'all')
+            unset($data['notification_status']);
+            
+        if(isset($data['number'])){
+            if($data['number'] == 10)
+                $this->User_model->update_data('notification',array('notification_status'=>'read'),array('assigned_to'=>$this->session_user_id));
+        }
+        $data['user_id'] = $this->session_user_id;
+        $result = $this->Email_model->getNotifications($data); 
+        $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>$result);
+        $this->response($result, REST_Controller::HTTP_OK);
+    }
+
+    public function updateNotification_post(){
+        $data = $this->input->get();
+        if(empty($data)){
+            $result = array('status'=>FALSE,'error'=>$this->lang->line('invalid_data'),'data'=>'');
+            $this->response($result, REST_Controller::HTTP_OK);
+        }  
+        $this->form_validator->add_rules('id_notification', array('required' => $this->lang->line('id_notification_req')));
+        $validated = $this->form_validator->validate($data);    
+        if($validated != 1)
+        {
+            $result = array('status'=>FALSE,'error'=>$validated,'data'=>'');
+            $this->response($result, REST_Controller::HTTP_OK);
+        }
+
+        $this->Email_model->updateNotification(array('id_notification'=>$data['id_notification'],'notification_status'=>'read'));
+
+        $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>$result);
+        $this->response($result, REST_Controller::HTTP_OK);
+    }
+
     function getInvoiceDate($franchise_fee_id){
         $date=date("Y-m-d");
         $day=date("d");

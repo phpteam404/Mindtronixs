@@ -80,4 +80,78 @@ class Email_model extends CI_Model
         }
     }
 
+    public function addNotification($data)
+    {
+        $this->db->insert('notification', $data);
+        return $this->db->insert_id();
+    }
+
+    public function getNotifications($data)
+    {
+        $this->db->select('*');
+        $this->db->from('notification n');
+        if(isset($data['user_id']))
+            $this->db->where('n.assigned_to',$data['user_id']);
+        if(isset($data['module_id']))
+            $this->db->where('n.module_id',$data['module_id']);
+        if(isset($data['module_type']))
+            $this->db->where('n.module_type',$data['module_type']);
+            
+        //$this->db->where('n.notification_type !=','notification');
+        if(isset($data['notification_status']))
+            $this->db->where('n.notification_status',strtolower($data['notification_status']));
+        if(isset($data['search_key']) && $data['search_key']!=''){
+            // $this->db->where("(CONCAT(u.first_name, \" \", u.last_name) LIKE '%".$data['search_key']."%' || n.notification_type LIKE '%".$data['search_key']."%' || ar.approval_name LIKE '%".$data['search_key']."%' || n.notification_subject LIKE '%".$data['search_key']."%')");
+        }        
+        $this->db->where('status','1');
+        $this->db->order_by('n.id_notification','DESC');
+
+        $all_clients_count_db=clone $this->db;
+        $all_clients_count = $all_clients_count_db->get()->num_rows();
+
+        if(isset($data['start']) && $data['number']!='')
+            $this->db->limit($data['number'],$data['start']);
+        $query = $this->db->get();
+        return array('total_records' => $all_clients_count,'data' => $query->result_array());        
+    }
+
+    public function getNotificationsCount($data)
+    {
+        $this->db->select('count(*) as total');
+        $this->db->from('notification n');
+        $this->db->join('user u','n.assigned_by=u.id_user','left');
+        if(isset($data['user_id']))
+            $this->db->where('n.assigned_to',$data['user_id']);
+        if(isset($data['module_id']))
+            $this->db->where('n.module_id',$data['module_id']);
+        if(isset($data['module_type']))
+            $this->db->where('n.module_type',$data['module_type']);
+        if(isset($data['notification_status']))
+            $this->db->where('n.notification_status',$data['notification_status']);
+        if(isset($data['filter']))
+        {
+            if($data['filter'] == 'new')
+                $this->db->where('n.notification_status','unread');
+            if($data['filter'] == 'workflow' || $data['filter'] == 'meeting')
+                $this->db->where('n.notification_type',$data['filter']);
+            elseif($data['filter'] == 'task' || $data['filter'] == 'alert')
+                $this->db->where('n.notification_type',$data['filter']);
+
+        }
+        //$this->db->where('n.notification_type !=','notification');
+
+        if(isset($data['search_key']) && $data['search_key']!=''){
+            $this->db->where("(CONCAT(u.first_name, \" \", u.last_name) LIKE '%".$data['search_key']."%' || n.notification_type LIKE '%".$data['search_key']."%' || ar.approval_name LIKE '%".$data['search_key']."%' || n.notification_subject LIKE '%".$data['search_key']."%')");
+        }
+        $this->db->where('notification_status !=','deleted');
+        $query = $this->db->get();
+        //echo $this->db->last_query(); exit;
+        return $query->result_array();
+    }
+
+    public function updateNotification($data)
+    {
+        $this->db->where('id_notification', $data['id_notification']);
+        $this->db->update('notification', $data);
+    }
 }

@@ -144,6 +144,9 @@ class User_model extends CI_Model
         $this->db->from('user u');
         if(isset($data['id']) && $data['id']!=0 && $data['id']!='')
             $this->db->where('u.id!=',$data['id']);
+        if(!empty($data['school_id'])){
+            $this->db->where('u.school_id!=',$data['school_id']);
+        }
         $this->db->where('u.email',addslashes($data['email']));
         $this->db->where_in('user_status',array(0,1));
         $query = $this->db->get();

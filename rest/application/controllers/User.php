@@ -218,19 +218,33 @@ class User extends REST_Controller
 
             }
             if($is_insert>0){
+
+                if(in_array($data['user_role_id'],array(2,3,4,5))){
+                    $learning_center_name=$this->User_model->check_record_selected('name as learning_center_name','franchise',array('id'=>$data['franchise_id']));
+                    $learning_center_name=!empty($learning_center_name[0]['learning_center_name'])?$learning_center_name[0]['learning_center_name']:'';
+                    if($data['user_role_id']==4){
+                        if($data['school_id']>0){
+                            $school_name=$this->User_model->Check_record_selected('name as school_name','school_master',array('id'=>$data['school_id']));
+                            $school_name=!empty($school_name[0]['school_name'])?$school_name[0]['school_name']:'';
+                        }
+                        else{
+                            $school_name=$student_data['school_name_text'];
+                        }
+                    }
+                }
                 $template_configurations=$this->Email_model->EmailTemplateList(array('language_id' =>1,'module_key'=>'USER_CREATION'));
                 if($template_configurations['total_records']>0){
                     $template_configurations=$template_configurations['data'][0];
                     $wildcards=$template_configurations['wildcards'];
                     $wildcards_replaces=array();
                     $wildcards_replaces['name']=$user_data['first_name']." ".$user_data['last_name'];
-                    $wildcards_replaces['Learning_center_name']=$learning_center_name;
-                    $wildcards_replaces['school_name']=!empty($school_name)?$school_name:'';
+                    $wildcards_replaces['Learning_center_name']=!empty($learning_center_name)?"Learning Center: ".$learning_center_name:'';
+                    $wildcards_replaces['school_name']=!empty($school_name)?"School Name: ".$school_name:'';
                     $wildcards_replaces['logo']='/assets/img/logo.png';
                     $wildcards_replaces['email']=!empty($data['email'])?$data['email']:'';
                     // $wildcards_replaces['role']='Lc Admin';
-                    $wildcards_replaces['password']=!empty($data['password'])?md5($data['password']):'';
-                    // $wildcards_replaces['year'] = date("Y");
+                    $wildcards_replaces['password']=!empty($data['password'])?$data['password']:'';
+                    $wildcards_replaces['year'] = date("Y");
                     $wildcards_replaces['url']=WEB_BASE_URL.'html';
                     $body = wildcardreplace($wildcards,$wildcards_replaces,$template_configurations['template_content']);
                     $subject = wildcardreplace($wildcards,$wildcards_replaces,$template_configurations['template_subject']);

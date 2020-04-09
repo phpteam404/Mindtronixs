@@ -275,6 +275,7 @@ class User extends REST_Controller
         $data = $this->input->get();
         if($this->session_user_info->user_role_id==2 || $this->session_user_info->user_role_id==5){
             $data['franchise_id']=$this->session_user_info->franchise_id;
+            $data['user_role_ids']=array(2,3);
         }
         $result=$this->User_model->getuserlist($data);//echo $this->db->last_query();exit;
         foreach($result['data'] as $k=>$v){

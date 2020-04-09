@@ -406,9 +406,9 @@ class Franchise extends REST_Controller
            $date = date("M Y", strtotime( date( 'Y-m-01' )." -$i months"));
           
         $invoice_amount=$this->Invoices_model->getAmount(array('franchise_id'=>$data['franchise_id'],'month'=>$months[$i]['value'],'status'=>1));
-        $all_invoiced_amount[$i]=!empty($invoice_amount[0]['total_amount'])?$invoice_amount[0]['total_amount']:0;
+        $all_invoiced_amount[$i]=!empty($invoice_amount[0]['total_amount'])?(int)$invoice_amount[0]['total_amount']:0;
         $collected_amount=$this->Invoices_model->getAmount(array('franchise_id'=>$data['franchise_id'],'month'=>$months[$i]['value'],'status'=>1,'payment_status'=>97));
-        $all_collected_amount[$i]=!empty($collected_amount[0]['paid_amount'])?$collected_amount[0]['paid_amount']:0;
+        $all_collected_amount[$i]=!empty($collected_amount[0]['paid_amount'])?(int)$collected_amount[0]['paid_amount']:0;
         }
         $statistics_graph[0]['name']="Collected Amount";
         $statistics_graph[0]['data']=$all_collected_amount;

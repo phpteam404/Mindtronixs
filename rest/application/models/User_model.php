@@ -568,6 +568,9 @@ class User_model extends CI_Model
         if(isset($data['franchise_id']) && $data['franchise_id']>0){
             $this->db->where('u.franchise_id',$data['franchise_id']);
         }
+        if(!empty($data['user_role_ids'])){
+            $this->db->where_in('u.user_role_id',$data['user_role_ids']);
+        }
         if(!empty($data['user_id'])){
             $this->db->where('u.id',$data['user_id']);
         }

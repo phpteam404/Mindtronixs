@@ -263,6 +263,11 @@ class Franchise extends REST_Controller
         if(isset($data['school_id']) && $data['school_id']>0){
             $add['updated_by'] = $this->session_user_id;
             $add['updated_on'] = currentDate();
+            $email_check = $this->User_model->check_email(array('email' => $data['email'],'school_id'=>$data['school_id']));
+            if(!empty($email_check)){
+                $result = array('status'=>FALSE,'error'=>array('email' => $this->lang->line('email_duplicate')),'data'=>'');
+                $this->response($result, REST_Controller::HTTP_OK);
+            }
             $update = $this->User_model->update_data('school_master',$add,array('id'=>$data['school_id']));
             if($update>0){
                 // 'user_role_id' => 10,
@@ -287,7 +292,11 @@ class Franchise extends REST_Controller
             $add['created_on'] = currentDate();
             $add['created_by'] = $this->session_user_id;
             $inser_id = $this->Franchise_model->addSchool($add);
-            // echo ''.$this->db->last_query(); exit;
+            $email_check = $this->User_model->check_email(array('email' => $data['email']));
+            if(!empty($email_check)){
+                $result = array('status'=>FALSE,'error'=>array('email' => $this->lang->line('email_duplicate')),'data'=>'');
+                $this->response($result, REST_Controller::HTTP_OK);
+            }
             if($inser_id >0){
                 $new_password = generatePassword(8);
                 $School_admin = array(

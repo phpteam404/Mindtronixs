@@ -168,7 +168,6 @@ class User extends REST_Controller
 
             );
         }
-        // print_r(json_encode($data));exit;
         if(isset($data['user_id']) && $data['user_id']>0){
             $user_data['updated_by'] = !empty($this->session_user_id)?$this->session_user_id:'0';
             $user_data['updated_on'] = currentDate();
@@ -224,13 +223,13 @@ class User extends REST_Controller
                     $template_configurations=$template_configurations['data'][0];
                     $wildcards=$template_configurations['wildcards'];
                     $wildcards_replaces=array();
-                    $wildcards_replaces['name']='Saiprasad';
-                    $wildcards_replaces['franchise_name']='TSS';
-                    $wildcards_replaces['school_name']='Gouthami High School';
+                    $wildcards_replaces['name']=$user_data['first_name']." ".$user_data['last_name'];
+                    $wildcards_replaces['Learning_center_name']=$learning_center_name;
+                    $wildcards_replaces['school_name']=!empty($school_name)?$school_name:'';
                     $wildcards_replaces['logo']='/assets/img/logo.png';
-                    $wildcards_replaces['email']='saiprasad.b@thresholsoft.com';
-                    $wildcards_replaces['role']='Lc Admin';
-                    $wildcards_replaces['password']='The@12345';
+                    $wildcards_replaces['email']=!empty($data['email'])?$data['email']:'';
+                    // $wildcards_replaces['role']='Lc Admin';
+                    $wildcards_replaces['password']=!empty($data['password'])?md5($data['password']):'';
                     // $wildcards_replaces['year'] = date("Y");
                     $wildcards_replaces['url']=WEB_BASE_URL.'html';
                     $body = wildcardreplace($wildcards,$wildcards_replaces,$template_configurations['template_content']);
@@ -244,10 +243,10 @@ class User extends REST_Controller
                     $to=$data['email'];
                     $to_name=$data['first_name'].' '.$data['last_name'];
                     $mailer_data['mail_from_name']=$from_name;
-                    $mailer_data['mail_to_name']='SaiPrasad';
-                    $mailer_data['mail_to_user_id']=222;
+                    $mailer_data['mail_to_name']=$user_data['first_name']." ".$user_data['last_name'];
+                    $mailer_data['mail_to_user_id']=$is_insert;
                     $mailer_data['mail_from']=$from;
-                    $mailer_data['mail_to']='saiprasad.b@thresholdsoft.com';
+                    $mailer_data['mail_to']=$data['email'];
                     $mailer_data['mail_subject']=$subject;
                     $mailer_data['mail_message']=$body;
                     $mailer_data['status']=0;
@@ -257,7 +256,7 @@ class User extends REST_Controller
                     //echo '<pre>';print_r($customer_logo);exit;
                     $mailer_id=$this->Email_model->addMailer($mailer_data);
                     if($mailer_data['is_cron']==0) {
-                        $mail_sent_status=sendmail('saiprasad.b@thresholdsoft.com',$subject,$body);                        
+                        $mail_sent_status=sendmail($data['email'],$subject,$body);                        
                         if($mail_sent_status==1)
                             $this->Email_model->updateMailer(array('status'=>1,'mailer_id'=>$mailer_id));
                     }
@@ -281,7 +280,7 @@ class User extends REST_Controller
         $data = $this->input->get();
         if($this->session_user_info->user_role_id==2 || $this->session_user_info->user_role_id==5){
             $data['franchise_id']=$this->session_user_info->franchise_id;
-            $data['user_role_ids']=array(2,3);
+            $data['user_role_ids']=array(2,3,10);
         }
         $result=$this->User_model->getuserlist($data);//echo $this->db->last_query();exit;
         foreach($result['data'] as $k=>$v){

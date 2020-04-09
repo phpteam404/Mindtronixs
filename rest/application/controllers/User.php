@@ -949,6 +949,50 @@ class User extends REST_Controller
             );
             $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>$result_array,'table_headers'=>$ticket_table_headers);
             $this->response($result, REST_Controller::HTTP_OK);
+        }else if(in_array($this->session_user_info->user_role_id,array(4))){
+            //This block is for Student / Parent
+            $all_tickets = $this->Ticket_model->getTickets(array('user_id' => $this->session_user_id,'user_role_id'=>$this->session_user_info->user_role_id));
+            $pending_tickets = $this->Ticket_model->getTickets(array('user_id' => $this->session_user_id,'user_role_id'=>$this->session_user_info->user_role_id,'custom_where' => 't.status <> 48'));
+            
+            $student_invoice_amounts = $this->User_model->check_record_selected('ROUND(SUM(total_amount)) total_amount, ROUND(SUM(paid_amount)) collected_amount','student_invoice',array('invoice_type' => 1,'school_id' => $this->session_user_info->school_id));
+            $school_invoice_amounts = $this->User_model->check_record_selected('ROUND(SUM(total_amount)) total_amount, ROUND(SUM(paid_amount)) collected_amount','student_invoice',array('invoice_type' => 2,'school_id' => $this->session_user_info->school_id));
+            $active_students = $this->User_model->check_record_selected('count(*) active_students','student',array('school_id' => $this->session_user_info->school_id,'status'=>1));
+            $all_students = $this->User_model->check_record_selected('count(*) all_students','student',array('school_id' => $this->session_user_info->school_id));
+
+            $data['number'] = 5; $data['start'] = 0;
+            $data['sort'] = 'ticket_id'; $data['order'] = 'DESC';
+            $data['school_id'] = $this->session_user_info->school_id;
+            $data['status'] = 46;
+            $ticket_list=$this->Ticket_model->getTickets($data);
+            $result_array = array(
+                'ticket' => array(
+                    'all_tickets'=> count($all_tickets['data']),
+                    'pending_tickets'=> count($pending_tickets['data'])
+                ),
+                'student_invoice' => array(
+                    'total_amount'=> 0,
+                    'collected_amount'=> 0
+                ),
+                'lc_invoice' => array(
+                    'total_amount'=> 0,
+                    'collected_amount'=> 0
+                ),
+                'school_invoice' => array(
+                    'total_amount'=> isset($school_invoice_amounts[0])?(int)$school_invoice_amounts[0]['total_amount']:0,
+                    'collected_amount'=> isset($school_invoice_amounts[0])?(int)$school_invoice_amounts[0]['collected_amount']:0
+                ),
+                'orders' => array(
+                    'all_orders'=> 0,
+                    'collected_amount'=> 0
+                ),
+                'students' => array(
+                    'active_students'=> isset($active_students[0])?(int)$active_students[0]['active_students']:0,
+                    'all_students'=> isset($all_students[0])?(int)$all_students[0]['all_students']:0
+                ),
+                'ticket_list' => $ticket_list['data']
+            );
+            $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>$result_array,'table_headers'=>$ticket_table_headers);
+            $this->response($result, REST_Controller::HTTP_OK);
         }else{
             $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>[]);
             $this->response($result, REST_Controller::HTTP_OK);

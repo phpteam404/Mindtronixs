@@ -2,11 +2,10 @@
 
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Sample_mode extends CI_Model
+class Email_model extends CI_Model
 {
     public function __construct(){
         parent::__construct();
-        $this->load->model('Mcommon');
     }
 
     
@@ -24,12 +23,6 @@ class Sample_mode extends CI_Model
             $this->db->where('e.module_key',$data['module_key']);
         if(isset($data['parent_email_template_id']))
             $this->db->where('e.parent_email_template_id',$data['parent_email_template_id']);
-        if(isset($data['search'])){
-            $this->db->group_start();
-            $this->db->like('l.relationship_category_name', $data['search'], 'both');
-            $this->db->or_like('r.relationship_category_quadrant', $data['search'], 'both');
-            $this->db->group_end();
-        }
         /*if(isset($data['search']))
             $this->db->where('(l.relationship_category_name like "%'.$data['search'].'%"
         or r.relationship_category_quadrant like "%'.$data['search'].'%")');*/

@@ -853,7 +853,7 @@ if (!function_exists('getTableHeads')) {
                 return array(
                   array('field'=> 'code', 'header'=> 'Code','alias'=>'code' ),
                   array('field'=> 'name', 'header'=> 'Name','alias'=>'name' ),
-                  array('field'=> 'franchise_name', 'header'=> 'Franchise','alias'=>'franchise_name' ),
+                  array('field'=> 'franchise_name', 'header'=> 'Learning Center','alias'=>'franchise_name' ),
                   array('field'=> 'phone', 'header'=> 'Contact','alias'=>'phone' ),
                   array('field'=> 'email', 'header'=> 'Email' ,'alias'=>'email'),
                   array('field'=> 'no_of_students','header'=> 'No.of Students','alias'=>'no_of_students' ),
@@ -890,7 +890,7 @@ if (!function_exists('getTableHeads')) {
                    array('field' => 'email', 'header' => 'Email', 'alias' => 'email'),
                    array('field' => 'phone_no', 'header' => 'Contact', 'alias' => 'phone_no'),
                    array('field' => 'user_role', 'header' => 'Role', 'alias' => 'user_role'),
-                   array('field' => 'franchise_name', 'header' => 'Franchise', 'alias' => 'franchise_name'),
+                   array('field' => 'franchise_name', 'header' => 'Learning Center', 'alias' => 'franchise_name'),
                    array('field' => 'status', 'header' => 'Status', 'alias' => 'status'),
                    array('field' => 'actions', 'header' => 'Actions', 'alias' => 'actions')
                );
@@ -900,7 +900,7 @@ if (!function_exists('getTableHeads')) {
                     array('field'=> 'student_name', 'header'=> 'Name','alias'=>'student_name'),
                     array('field'=> 'grade', 'header'=>'Grade' ,'alias' =>'grade'),
                     array('field'=> 'school_name', 'header'=> 'School','alias'=>'school_name' ),
-                    array('field'=> 'franchise_name', 'header'=> 'Franchise','alias'=>'franchise_name' ),
+                    array('field'=> 'franchise_name', 'header'=> 'Learning Center','alias'=>'franchise_name' ),
                     array('field'=> 'contact_email', 'header'=> 'Email','alias'=>'contact_email' ),
                     array('field'=> 'phone_no', 'header'=> 'Contact','alias'=>'phone_no' ),
                     array('field'=> 'last_login', 'header'=> 'Last Login','alias' =>'last_login' ),
@@ -929,10 +929,10 @@ if (!function_exists('getTableHeads')) {
                     array('field'=> 'actions', 'header'=> 'Actions','alias'=>'actions' )
                 );
                 break;
-                case 'trainer_schedule_list1':
+            case 'trainer_schedule_list1':
                     return array(
                         array('field'=> 'topic', 'header'=> 'Topic','alias'=>'topic'),
-                        array('field'=> 'franchise_name', 'header'=> 'Franchise','alias'=>'franchise_name'),
+                        array('field'=> 'franchise_name', 'header'=> 'Learning Center','alias'=>'franchise_name'),
                         array('field'=>'date', 'header'=> 'Date','alias'=>'date' ),
                         array('field'=> 'from_time', 'header'=> 'From Time','alias'=>'from_time' ),
                         array('field'=> 'to_time', 'header'=> 'To Time','alias'=>'to_time' ),
@@ -966,7 +966,7 @@ if (!function_exists('getTableHeads')) {
                     return array(
                         array('field'=> 'invoice_number', 'header'=> 'Invoice #','alias'=>'invoice_number'),
                         array('field'=>'school_name', 'header'=> 'School Name','alias'=>'school_name' ),
-                        array('field'=> 'frachise_name', 'header'=> 'Franchise Name','alias'=>'frachise_name' ),
+                        array('field'=> 'frachise_name', 'header'=> 'Learning Center Name','alias'=>'frachise_name' ),
                         array('field'=> 'invoice_date', 'header'=> 'Invoice Date','alias'=>'invoice_date' ),
                         array('field'=> 'amount', 'header'=> 'Amount','alias'=>'amount' ),
                         array('field'=> 'status', 'header'=> 'Status','alias'=>'status' )
@@ -975,7 +975,7 @@ if (!function_exists('getTableHeads')) {
                 case 'franchise_invoice_list':
                     return array(
                         array('field'=> 'invoice_number', 'header'=> 'Invoice #','alias'=>'invoice_number'),
-                        array('field'=> 'franchise_name', 'header'=> 'Franchise','alias'=>'franchise_name' ),
+                        array('field'=> 'franchise_name', 'header'=> 'Learning Center','alias'=>'franchise_name' ),
                         array('field'=>'primary_contact', 'header'=> 'Contact','alias'=>'primary_contact' ),
                         array('field'=>'email', 'header'=> 'Email','alias'=>'email' ),
                         array('field'=> 'invoice_date', 'header'=> 'Invoice Date','alias'=>'invoice_date' ),

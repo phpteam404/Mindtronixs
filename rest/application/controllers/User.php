@@ -1,5 +1,5 @@
 <?php
-
+error_reporting(1);
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 require APPPATH . '/libraries/REST_Controller.php';
@@ -219,6 +219,49 @@ class User extends REST_Controller
 
             }
             if($is_insert>0){
+                $template_configurations=$this->Email_model->EmailTemplateList(array('language_id' =>1,'module_key'=>'USER_CREATION'));
+                if($template_configurations['total_records']>0){
+                    $template_configurations=$template_configurations['data'][0];
+                    $wildcards=$template_configurations['wildcards'];
+                    $wildcards_replaces=array();
+                    $wildcards_replaces['name']='Saiprasad';
+                    $wildcards_replaces['franchise_name']='TSS';
+                    $wildcards_replaces['school_name']='Gouthami High School';
+                    $wildcards_replaces['logo']='/assets/img/logo.png';
+                    $wildcards_replaces['email']='saiprasad.b@thresholsoft.com';
+                    $wildcards_replaces['role']='Lc Admin';
+                    $wildcards_replaces['password']='The@12345';
+                    // $wildcards_replaces['year'] = date("Y");
+                    $wildcards_replaces['url']=WEB_BASE_URL.'html';
+                    $body = wildcardreplace($wildcards,$wildcards_replaces,$template_configurations['template_content']);
+                    $subject = wildcardreplace($wildcards,$wildcards_replaces,$template_configurations['template_subject']);
+                    /*$from_name=SEND_GRID_FROM_NAME;
+                    $from=SEND_GRID_FROM_EMAIL;
+                    $from_name=$cust_admin['name'];
+                    $from=$cust_admin['email'];*/
+                    $from_name=$template_configurations['email_from_name'];
+                    $from=$template_configurations['email_from'];
+                    $to=$data['email'];
+                    $to_name=$data['first_name'].' '.$data['last_name'];
+                    $mailer_data['mail_from_name']=$from_name;
+                    $mailer_data['mail_to_name']='SaiPrasad';
+                    $mailer_data['mail_to_user_id']=222;
+                    $mailer_data['mail_from']=$from;
+                    $mailer_data['mail_to']='saiprasad.b@thresholdsoft.com';
+                    $mailer_data['mail_subject']=$subject;
+                    $mailer_data['mail_message']=$body;
+                    $mailer_data['status']=0;
+                    $mailer_data['send_date']=currentDate();
+                    $mailer_data['is_cron']=0;//0-immediate mail,1-through cron job
+                    $mailer_data['email_template_id']=$template_configurations['id_email_template'];
+                    //echo '<pre>';print_r($customer_logo);exit;
+                    $mailer_id=$this->Email_model->addMailer($mailer_data);
+                    if($mailer_data['is_cron']==0) {
+                        $mail_sent_status=sendmail('saiprasad.b@thresholdsoft.com',$subject,$body);                        
+                        if($mail_sent_status==1)
+                            $this->Email_model->updateMailer(array('status'=>1,'mailer_id'=>$mailer_id));
+                    }
+                }
                 $result = array('status'=>TRUE, 'message' => $message, 'data'=>array('data' => $is_insert));
                 $this->response($result, REST_Controller::HTTP_OK);   
             }else{
@@ -765,8 +808,8 @@ class User extends REST_Controller
             $pending_tickets = $this->User_model->check_record_selected('count(*) pending_tickets_count','ticket','status <> 48');
             $student_invoice_amounts = $this->User_model->check_record_selected('ROUND(SUM(total_amount)) total_amount, ROUND(SUM(paid_amount)) collected_amount','student_invoice',array('invoice_type' => 1));
             $franchise_invoice_amounts = $this->User_model->check_record_selected('ROUND(SUM(total_amount)) total_amount, ROUND(SUM(paid_amount)) collected_amount','student_invoice',array('invoice_type' => 3));
-            $active_students = $this->User_model->check_record_selected('count(*) active_students','user',array('user_role_id'=>4,'user_status'=>1));
-            $all_students = $this->User_model->check_record_selected('count(*) all_students','user',array('user_role_id'=>4));
+            $active_students = $this->User_model->check_record_selected('count(*) active_students','student',array('status'=>1));
+            $all_students = $this->User_model->check_record_selected('count(*) all_students','student',false);
             
             $data['number'] = 5; $data['start'] = 0;
             $data['sort'] = 'ticket_id'; $data['order'] = 'DESC';
@@ -807,8 +850,8 @@ class User extends REST_Controller
             $pending_tickets = $this->Ticket_model->getTickets(array('franchise_id' => $this->session_user_info->franchise_id,'custom_where' => 't.status <> 48'));
             $student_invoice_amounts = $this->User_model->check_record_selected('ROUND(SUM(total_amount)) total_amount, ROUND(SUM(paid_amount)) collected_amount','student_invoice',array('invoice_type' => 1,'franchise_id' => $this->session_user_info->franchise_id));
             $franchise_invoice_amounts = $this->User_model->check_record_selected('ROUND(SUM(total_amount)) total_amount, ROUND(SUM(paid_amount)) collected_amount','student_invoice',array('invoice_type' => 3,'franchise_id' => $this->session_user_info->franchise_id));
-            $active_students = $this->User_model->check_record_selected('count(*) active_students','user',array('franchise_id'=>$this->session_user_info->franchise_id,'user_role_id'=>4,'user_status'=>1));
-            $all_students = $this->User_model->check_record_selected('count(*) all_students','user',array('franchise_id'=>$this->session_user_info->franchise_id,'user_role_id'=>4));
+            $active_students = $this->User_model->check_record_selected('count(*) active_students','student',array('franchise_id'=>$this->session_user_info->franchise_id,'status'=>1));
+            $all_students = $this->User_model->check_record_selected('count(*) all_students','student',array('franchise_id'=>$this->session_user_info->franchise_id));
 
             $data['number'] = 5; $data['start'] = 0;
             $data['sort'] = 'ticket_id'; $data['order'] = 'DESC';
@@ -851,8 +894,8 @@ class User extends REST_Controller
             
             $student_invoice_amounts = $this->User_model->check_record_selected('ROUND(SUM(total_amount)) total_amount, ROUND(SUM(paid_amount)) collected_amount','student_invoice',array('invoice_type' => 1,'school_id' => $this->session_user_info->school_id));
             $school_invoice_amounts = $this->User_model->check_record_selected('ROUND(SUM(total_amount)) total_amount, ROUND(SUM(paid_amount)) collected_amount','student_invoice',array('invoice_type' => 2,'school_id' => $this->session_user_info->school_id));
-            $active_students = $this->User_model->check_record_selected('count(*) active_students','user',array('school_id' => $this->session_user_info->school_id,'user_role_id'=>4,'user_status'=>1));
-            $all_students = $this->User_model->check_record_selected('count(*) all_students','user',array('school_id' => $this->session_user_info->school_id,'user_role_id'=>4));
+            $active_students = $this->User_model->check_record_selected('count(*) active_students','student',array('school_id' => $this->session_user_info->school_id,'status'=>1));
+            $all_students = $this->User_model->check_record_selected('count(*) all_students','student',array('school_id' => $this->session_user_info->school_id));
 
             $data['number'] = 5; $data['start'] = 0;
             $data['sort'] = 'ticket_id'; $data['order'] = 'DESC';

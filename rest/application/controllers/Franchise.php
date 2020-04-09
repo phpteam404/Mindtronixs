@@ -265,6 +265,16 @@ class Franchise extends REST_Controller
             $add['updated_on'] = currentDate();
             $update = $this->User_model->update_data('school_master',$add,array('id'=>$data['school_id']));
             if($update>0){
+                // 'user_role_id' => 10,
+                // 'school_id' => $data['school_id'],
+                $School_admin = array(
+                    'first_name' => $data['contact_person'],
+                    'email' => $data['email'],
+                    'phone_no' => $data['phone'],
+                    'updated_by' => $this->session_user_id,
+                    'updated_on' => currentDate()
+                );
+                $this->User_model->update_data('user',$School_admin,array('user_role_id' => 10,'school_id' => $data['school_id']));
                 $result = array('status'=>TRUE, 'message' => $this->lang->line('school_update'),'data' =>'2');
                 $this->response($result, REST_Controller::HTTP_OK);
             }

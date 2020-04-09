@@ -27,7 +27,7 @@ class SMTP
      *  SMTP server port
      *  @var int
      */
-    var $SMTP_PORT = 25;
+    var $SMTP_PORT = 587;
     
     /**
      *  SMTP reply line ending
@@ -54,7 +54,7 @@ class SMTP
      * @access public
      * @return void
      */
-    function SMTP() {
+    function __construct() {
         $this->smtp_conn = 0;
         $this->error = null;
         $this->helo_rply = null;
@@ -82,7 +82,7 @@ class SMTP
     function Connect($host,$port=0,$tval=30) {
         # set the error val to null so there is no confusion
         $this->error = null;
-
+//echo 'Host: '.$host.'   PORT: '.$port.'<br><br>'.'Email: bkmonitoring@bk.rw <br><br> Password: BK#001@@ <br><br> SMTPSecure = "tls"<br><br>';
         # make sure we are __not__ connected
         if($this->connected()) {
             # ok we are connected! what should we do?

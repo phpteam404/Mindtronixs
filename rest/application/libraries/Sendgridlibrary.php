@@ -35,7 +35,7 @@ class Sendgridlibrary  {
         if(isset($response) && in_array($response->statusCode(),array(200,201,202)))
             return 1;
         else
-            return 0;
+            return $response;
     }
     public function sendemailwithtemplate($from_name='',$from_email='',$subject='',$template_full_path='',$to_name='',$to_email='',$substitutions=array()){
 

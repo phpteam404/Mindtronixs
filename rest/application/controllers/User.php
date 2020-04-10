@@ -283,7 +283,7 @@ class User extends REST_Controller
                         'assigned_to' => $is_insert,
                         'notification_template' => $notification_message,
                         'notification_link' => $link,
-                        'notification_comments' => 'Welcome to Mindtronix',
+                        'notification_comments' => $template_configurations['notification_comments'],
                         'notification_type' => 'app',
                         'created_date_time' => currentDate(),
                         'module_type' => 'user'

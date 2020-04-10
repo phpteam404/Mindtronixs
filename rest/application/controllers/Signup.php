@@ -141,74 +141,24 @@ class Signup extends CI_Controller
             $check_school=$this->User_model->check_record('school_master',array('id'=>$result->school_id));
             $result->lc_name = isset($check_franchise[0])?$check_franchise[0]['name']:'';
             $result->school_name = isset($check_school[0])?$check_school[0]['name']:'';
-
-        if($result->user_role_id==1 || $result->user_role_id==6 || $result->user_role_id==7 ||  $result->user_role_id==8 || $result->user_role_id==9){
-            $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>array('data' => $result), 'access_token' => $access_token,'menu'=>$menu);
-                    header('Content-Type: application/json');
-                    echo json_encode($result);exit;  
-        }
-        if($result->user_role_id==4 || $result->user_role_id==10){
-            if($result->franchise_id==0){
+            
+            if(in_array($result->user_role_id,array(1,6,7,8))){//check login user role is Mindtronix admins
                 $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>array('data' => $result), 'access_token' => $access_token,'menu'=>$menu);
-                        header('Content-Type: application/json');
-                        echo json_encode($result);exit;
+                header('Content-Type: application/json');
+                echo json_encode($result);exit;
             }
-            if($result->franchise_id>0){
+            if(in_array($result->user_role_id,array(2,3,5,4,10))){//check login user role is Lc head/owner/trainer,parent/student,schooladmin 
                 $check_franchise=$this->User_model->check_record('franchise',array('id'=>$result->franchise_id));
-                if($check_franchise[0]['status']==1){
+                if($check_franchise[0]['status']==1){//check the login user frachise is in active or not
                     $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>array('data' => $result), 'access_token' => $access_token,'menu'=>$menu);
                     header('Content-Type: application/json');
                     echo json_encode($result);exit;
                 }
-                else{
-                    $result = array('status'=>FALSE,'error'=>array('message'=>$this->lang->line('franchise_status_inactive')),'data'=>'');
-                    echo json_encode($result);exit;
-                } 
-            }
-        }
-        if($result->user_role_id==3 || $result->user_role_id==2 || $result->user_role_id==4 || $result->user_role_id==5){
-            if($result->franchise_id==0){
-                $result = array('status'=>FALSE,'error'=>array('message'=>$this->lang->line('franchise_status_inactive')),'data'=>'');
-                echo json_encode($result);exit;  
-            }
-            else{
-                $check_franchise=$this->User_model->check_record('franchise',array('id'=>$result->franchise_id));
-                if($check_franchise[0]['status']==1){
-                    $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>array('data' => $result), 'access_token' => $access_token,'menu'=>$menu);
-                    header('Content-Type: application/json');
+                if($check_franchise[0]['status']==0){//if login use faranchise is in in active display error message
+                    $result = array('status'=>FALSE,'error'=>array('message'=>$this->lang->line('franchise_status_inactive')),'data'=>'1');
                     echo json_encode($result);exit;
                 }
-                else{
-                    $result = array('status'=>FALSE,'error'=>array('message'=>$this->lang->line('franchise_status_inactive')),'data'=>'');
-                    echo json_encode($result);exit;
-                }   
             }
-        }
-     
-        // $allowred_roles=array('1','5','4');
-        // if(in_array($result->user_role_id,$allowred_roles)){
-        //     if($result->user_role_id==4){
-
-        //     }
-        //     else{  
-        //         $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>array('data' => $result), 'access_token' => $access_token,'menu'=>$menu);
-        //         header('Content-Type: application/json');
-        //         echo json_encode($result);exit;
-        //     }
-        // }
-        // else{
-        //     $check_franchise=$this->User_model->check_record('franchise',array('id'=>$result->franchise_id));
-        //     if($check_franchise[0]['status']==1){
-        //         $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>array('data' => $result), 'access_token' => $access_token,'menu'=>$menu);
-        //         header('Content-Type: application/json');
-        //         echo json_encode($result);exit;
-        //     }
-        //     else{
-        //         $result = array('status'=>FALSE,'error'=>array('message'=>$this->lang->line('franchise_status_inactive')),'data'=>'');
-        //         echo json_encode($result);exit;
-        //     }
-        // }
-
     }
 
     public function forgetPassword()

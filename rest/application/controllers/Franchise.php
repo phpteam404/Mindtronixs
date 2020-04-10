@@ -331,7 +331,7 @@ class Franchise extends REST_Controller
         //this function is used to get schools list information
         $data = $this->input->get();
         // $data = tableOptions($data);
-        if($this->session_user_info->user_role_id==2){
+        if($this->session_user_info->user_role_id==2 || $this->session_user_info->user_role_id==5){
             $data['franchise_id']=$this->session_user_info->franchise_id;
         }
         $result = $this->Franchise_model->listSchools($data);//echo $this->db->last_query();exit;

@@ -22,10 +22,11 @@ class Cron extends CI_Controller
     {
         $limit=30;
         $mailer_data = $this->Email_model->getMailer(array('limit'=>$limit));
-        // $this->load->library('sendgridlibrary');
+        
         foreach($mailer_data as $k=>$v){
+            
             if($v['cron_status']==0 && $v['is_cron']==1){
-                $this->Customer_model->updateMailer(array('cron_status'=>1,'mailer_id'=>$v['mailer_id']));
+                $this->Email_model->updateMailer(array('cron_status'=>1,'mailer_id'=>$v['mailer_id']));
                 $from_name=$v['mail_from_name'];
                 $from=$v['mail_from'];
                 $subject=$v['mail_subject'];
@@ -33,13 +34,13 @@ class Cron extends CI_Controller
                 $to_name=$v['mail_to_name'];
                 $to=$v['mail_to'];
                 $mailer_id=$v['mailer_id'];
-                // $mail_sent_status=$this->sendgridlibrary->sendemail($from_name,$from,$subject,$body,$to_name,$to,array(),$mailer_id);
+                
                 $mail_sent_status=sendmail($to,$subject,$body);
                 if($mail_sent_status==1) {
-                    $this->Customer_model->updateMailer(array('status' => 1,'cron_status'=>2,'mailer_id' => $mailer_id));
+                    $this->Email_model->updateMailer(array('status' => 1,'cron_status'=>2,'mailer_id' => $mailer_id));
                 }
                 else{
-                    $this->Customer_model->updateMailer(array('cron_status'=>3,'mailer_id'=>$mailer_id));
+                    $this->Email_model->updateMailer(array('cron_status'=>3,'mailer_id'=>$mailer_id));
                 }
             }
         }
@@ -94,7 +95,7 @@ class Cron extends CI_Controller
                     $wildcards_replaces['year'] = date("Y");
                     $wildcards_replaces['url'] = WEB_BASE_URL;
                     $wildcards_replaces['href_text'] = $slv['invoice_number'];
-                    $wildcards_replaces['logo'] = WEB_BASE_URL.'/assets/img/logo.png';
+                    $wildcards_replaces['logo'] = WEB_BASE_URL.'assets/img/logo.png';
                     
                     $body = wildcardreplace($wildcards,$wildcards_replaces,$template_configurations['template_content']);
                     $subject = wildcardreplace($wildcards,$wildcards_replaces,$template_configurations['template_subject']);
@@ -192,7 +193,7 @@ class Cron extends CI_Controller
                     $wildcards_replaces['year'] = date("Y");
                     $wildcards_replaces['url'] = WEB_BASE_URL;
                     $wildcards_replaces['href_text'] = $flv['invoice_number'];
-                    $wildcards_replaces['logo'] = WEB_BASE_URL.'/assets/img/logo.png';
+                    $wildcards_replaces['logo'] = WEB_BASE_URL.'assets/img/logo.png';
                     
                     $body = wildcardreplace($wildcards,$wildcards_replaces,$template_configurations['template_content']);
                     $subject = wildcardreplace($wildcards,$wildcards_replaces,$template_configurations['template_subject']);

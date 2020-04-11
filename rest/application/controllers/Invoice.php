@@ -404,31 +404,37 @@ class Invoice extends REST_Controller
             $result = array('status'=>TRUE, 'message' => $this->lang->line('success'),'data'=>array('data' =>$school_invoice_list['data'],'school_invoice_payment_history'=>$school_invoice_payment_history));
         }
         else{
-
+            //only get the Learning center invoices in list for LCH and LCO
             if($this->session_user_info->user_role_id==2 || $this->session_user_info->user_role_id==5){
                 $data['franchise_id']=$this->session_user_info->franchise_id;
+                $data['status']=3;
+                $school_invoice_list=$this->Invoices_model->getFrachiseInvoiceList($data);
+                $result = array('status'=>TRUE, 'message' => $this->lang->line('success'),'data'=>array('data' =>$school_invoice_list['data'],'total_records' =>$school_invoice_list['total_records'],'table_headers'=>getTableHeads('franchise_invoice_list')));
             }
-            $data['status']=3;//for franchise invoice
-            $invoice_amount=$this->Invoices_model->getAmount($data);
-            $data['payment_status']=97;//to get collected amount  pass the payment status id is 97
-            $collected_amount=$this->Invoices_model->getAmount($data);
-            unset($data['payment_status']);
-            $data['payment_status']=98;//to get the due amount pass the payment status id as 98
-            $due_amount=$this->Invoices_model->getAmount($data);
-            unset($data['payment_status']);
-            $school_invoice_list=$this->Invoices_model->getFrachiseInvoiceList($data);
-            $total_invoices_amount=!empty($invoice_amount[0]['total_amount'])?$invoice_amount[0]['total_amount']:0;
-            $total_collected_amount=!empty($collected_amount[0]['paid_amount'])?$collected_amount[0]['paid_amount']:0;
-            $due_amount=!empty($due_amount[0]['total_amount'])?$due_amount[0]['total_amount']:0;
-            $invoices_count=!empty($invoice_amount[0]['count'])?(int)$invoice_amount[0]['count']:0;
-            for ($i = 0; $i <= 5; $i++) 
-            {
-               $months[$i]['label'] = date("M Y", strtotime( date( 'Y-m-01' )." -$i months"));
-               $months[$i]['value'] = date("Y-m", strtotime( date( 'Y-m-01' )." -$i months"));
-            
+            //get the amount  and invoice list for all mindtronix admin
+            else{
+                    $data['status']=3;//for franchise invoice
+                    $invoice_amount=$this->Invoices_model->getAmount($data);
+                    $data['payment_status']=97;//to get collected amount  pass the payment status id is 97
+                    $collected_amount=$this->Invoices_model->getAmount($data);
+                    unset($data['payment_status']);
+                    $data['payment_status']=98;//to get the due amount pass the payment status id as 98
+                    $due_amount=$this->Invoices_model->getAmount($data);
+                    unset($data['payment_status']);
+                    $school_invoice_list=$this->Invoices_model->getFrachiseInvoiceList($data);
+                    $total_invoices_amount=!empty($invoice_amount[0]['total_amount'])?$invoice_amount[0]['total_amount']:0;
+                    $total_collected_amount=!empty($collected_amount[0]['paid_amount'])?$collected_amount[0]['paid_amount']:0;
+                    $due_amount=!empty($due_amount[0]['total_amount'])?$due_amount[0]['total_amount']:0;
+                    $invoices_count=!empty($invoice_amount[0]['count'])?(int)$invoice_amount[0]['count']:0;
+                    for ($i = 0; $i <= 5; $i++) 
+                    {
+                    $months[$i]['label'] = date("M Y", strtotime( date( 'Y-m-01' )." -$i months"));
+                    $months[$i]['value'] = date("Y-m", strtotime( date( 'Y-m-01' )." -$i months"));
+                    
+                    }
+                    $result = array('status'=>TRUE, 'message' => $this->lang->line('success'),'data'=>array('data' =>$school_invoice_list['data'],'total_records' =>$school_invoice_list['total_records'],'total_invoices_amount'=>$total_invoices_amount,'total_collected_amount'=>$total_collected_amount,'invoices_count'=>$invoices_count,'due_amount'=>$due_amount,'last_six_months'=>$months,'table_headers'=>getTableHeads('franchise_invoice_list')));
+                }
             }
-            $result = array('status'=>TRUE, 'message' => $this->lang->line('success'),'data'=>array('data' =>$school_invoice_list['data'],'total_records' =>$school_invoice_list['total_records'],'total_invoices_amount'=>$total_invoices_amount,'total_collected_amount'=>$total_collected_amount,'invoices_count'=>$invoices_count,'due_amount'=>$due_amount,'last_six_months'=>$months,'table_headers'=>getTableHeads('franchise_invoice_list')));
-        }
         $this->response($result, REST_Controller::HTTP_OK);
     }
 

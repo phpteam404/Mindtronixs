@@ -187,7 +187,7 @@ class Invoices_model extends CI_Model
     }
 
     public function getSchoolData($data=null){
-        $this->db->select('sm.school_code,f.name as franchise_name,sm.franchise_id,f.franchise_code');
+        $this->db->select('sm.school_code,f.name as franchise_name,sm.franchise_id,f.franchise_code,sm.name school_name');
         $this->db->from('school_master sm');
         $this->db->join('franchise f','sm.franchise_id=f.id');
         if(!empty($data['school_id'])){

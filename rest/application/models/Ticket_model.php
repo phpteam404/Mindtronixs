@@ -89,7 +89,7 @@ class Ticket_model extends CI_Model
         
     }
     public function getTicketData($data){
-        $this->db->select('t.id as ticket_id,t.title,t.ticket_no as issue_id,t.description, mc.child_name as issue_type,mc1.child_name as status,CONCAT(u.first_name," ",u.last_name) as created_by,concat(u1.first_name," ",u1.last_name) as last_updated_by,t.created_on  created_date,t.last_update_on as last_updated,mc1.id as status_id,CONCAT(mc1.child_name, "-", mc1.id) as status_display');
+        $this->db->select('t.id as ticket_id,t.title,t.ticket_no as issue_id,t.description, mc.child_name as issue_type,mc1.child_name as status,CONCAT(u.first_name," ",u.last_name) as created_by,concat(u1.first_name," ",u1.last_name) as last_updated_by,t.created_on  created_date,t.last_update_on as last_updated,mc1.id as status_id,CONCAT(mc1.child_name, "-", mc1.id) as status_display,t.ticket_rised_by');
         $this->db->from('ticket t');
         $this->db->join('user u','t.ticket_rised_by=u.id','left');
         $this->db->join('user u1','t.last_updated_by=u1.id','left');

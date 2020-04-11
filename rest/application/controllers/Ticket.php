@@ -104,12 +104,10 @@ class Ticket extends REST_Controller
            if($inserted_id>0){
                $ticket_id="MINDTKTNO_".$inserted_id;
                $this->User_model->update_data('ticket',array('ticket_no'=>$ticket_id),array('id'=>$inserted_id));
-            //    $ticket_chat_id=$this->User_model->insertdata('ticket_chat',array('created_by'=>!empty($this->session_user_id)?$this->session_user_id:'0','ticket_id'=>$inserted_id,'created_on'=>currentDate(),'status'=>46));
             }
+            $this->sendTicketEmails($type='ticket_create',$user_display_ticket_id=$ticket_id,$data_base_ticket_no=$inserted_id,$user_ids=array(1));
             $this->User_model->update_where_in('documents',array('module_type_id'=>$inserted_id),array('id'=>$document_id));
-        //    if(!empty($_FILES) && $document_id){
-        //        $this->User_model->insertdata('documents',array('ticket_chat_id'=>$ticket_chat_id,'document_name'=>!empty($imageName)?$imageName:'','created_by'=>!empty($this->session_user_id)?$this->session_user_id:'0','created_on'=>currentDate(),'type'=>'chat'));
-        //    }
+
            $result = array('status'=>TRUE, 'message' => $this->lang->line('ticket_add'), 'data'=>array('data'=>$ticket_id));
            $this->response($result, REST_Controller::HTTP_OK);   
        }
@@ -118,92 +116,7 @@ class Ticket extends REST_Controller
             if($inserted_id>0){
             $ticket_id="MINDTKTNO_".$inserted_id;
             $this->User_model->update_data('ticket',array('ticket_no'=>$ticket_id),array('id'=>$inserted_id));
-            $template_configurations=$this->Email_model->EmailTemplateList(array('language_id' =>1,'module_key'=>'TICKET_CREATION_OWNER'));
-            if($template_configurations['total_records']>0){
-                $template_configurations=$template_configurations['data'][0];
-                $wildcards=$template_configurations['wildcards'];
-                $wildcards_replaces=array();
-                $wildcards_replaces['ticket_no']=$ticket_id;
-                $wildcards_replaces['logo']='logo.png';
-                $wildcards_replaces['year'] = date("Y");
-                $wildcards_replaces['url']=WEB_BASE_URL.'html';
-                $body = wildcardreplace($wildcards,$wildcards_replaces,$template_configurations['template_content']);
-                $subject = wildcardreplace($wildcards,$wildcards_replaces,$template_configurations['template_subject']);
-                /*$from_name=SEND_GRID_FROM_NAME;
-                $from=SEND_GRID_FROM_EMAIL;
-                $from_name=$cust_admin['name'];
-                $from=$cust_admin['email'];*/
-                $from_name=$template_configurations['email_from_name'];
-                $from=$template_configurations['email_from'];
-                $to_name=$this->session_user_info->first_name.' '.$this->session_user_info->last_name;
-                $mailer_data['mail_from_name']=$from_name;
-                $mailer_data['mail_to_name']=$this->session_user_info->first_name.' '.$this->session_user_info->last_name;
-                $mailer_data['mail_to_user_id']=$this->session_user_id;
-                $mailer_data['mail_from']=$from;
-                $mailer_data['mail_to']=$this->session_user_info->email;
-                $mailer_data['mail_subject']=$subject;
-                $mailer_data['mail_message']=$body;
-                $mailer_data['status']=0;
-                $mailer_data['send_date']=currentDate();
-                $mailer_data['is_cron']=1;//0-immediate mail,1-through cron job
-                $mailer_data['email_template_id']=$template_configurations['id_email_template'];
-                //echo '<pre>';print_r($customer_logo);exit;
-                $mailer_id=$this->Email_model->addMailer($mailer_data);
-                if($mailer_data['is_cron']==0) {
-                    $mail_sent_status=sendmail($to,$subject,$body);                        
-                    if($mail_sent_status==1)
-                        $this->Email_model->updateMailer(array('status'=>1,'mailer_id'=>$mailer_id));
-                }
-            }
-            $user_roles_ids_send_mails=array(1); //this is used for send mails for  specific admins to pass user_role id 
-            foreach($user_roles_ids_send_mails as $k=>$v){
-                $user_details=$this->User_model->check_record_selected('id as user_id,concat(first_name," ",last_name) as user_name,email','user',array('user_role_id'=>$v));
-                $ticket_info=$this->Ticket_model->getTicketData(array('ticket_id'=>$inserted_id));
-                $template_configurations=$this->Email_model->EmailTemplateList(array('language_id' =>1,'module_key'=>'TICKET_CREATION_ADMIN'));
-                if($template_configurations['total_records']>0){
-                        $template_configurations=$template_configurations['data'][0];
-                    $wildcards=$template_configurations['wildcards'];
-                    $wildcards_replaces=array();
-                    $wildcards_replaces['ticket_no']=$ticket_info[0]['issue_id'];
-                    $wildcards_replaces['ticket_title']=$ticket_info[0]['title'];
-                    $wildcards_replaces['ticket_description']=$ticket_info[0]['description'];
-                    $wildcards_replaces['issue_type']=$ticket_info[0]['issue_type'];
-                    $wildcards_replaces['status']=$ticket_info[0]['status'];
-                    $wildcards_replaces['created_by']=$ticket_info[0]['created_by'];
-                    $wildcards_replaces['created_date_time']=$ticket_info[0]['created_date'];
-                    $wildcards_replaces['logo']='logo.png';
-                    $wildcards_replaces['year'] = date("Y");
-                    $wildcards_replaces['url']=WEB_BASE_URL.'html';
-                    $body = wildcardreplace($wildcards,$wildcards_replaces,$template_configurations['template_content']);
-                    $subject = wildcardreplace($wildcards,$wildcards_replaces,$template_configurations['template_subject']);
-                    /*$from_name=SEND_GRID_FROM_NAME;
-                    $from=SEND_GRID_FROM_EMAIL;
-                    $from_name=$cust_admin['name'];
-                    $from=$cust_admin['email'];*/
-                    $from_name=$template_configurations['email_from_name'];
-                    $from=$template_configurations['email_from'];
-                    $to_name=$user_details[0]['user_name'];
-                    $mailer_data['mail_from_name']=$from_name;
-                    $mailer_data['mail_to_name']=$user_details[0]['user_name'];
-                    $mailer_data['mail_to_user_id']=$user_details[0]['user_id'];
-                    $mailer_data['mail_from']=$from;
-                    $mailer_data['mail_to']=$user_details[0]['email'];
-                    $mailer_data['mail_subject']=$subject;
-                    $mailer_data['mail_message']=$body;
-                    $mailer_data['status']=0;
-                    $mailer_data['send_date']=currentDate();
-                    $mailer_data['is_cron']=1;//0-immediate mail,1-through cron job
-                    $mailer_data['email_template_id']=$template_configurations['id_email_template'];
-                    //echo '<pre>';print_r($customer_logo);exit;
-                    $mailer_id=$this->Email_model->addMailer($mailer_data);
-                    if($mailer_data['is_cron']==0) {
-                        $mail_sent_status=sendmail($to,$subject,$body);                        
-                        if($mail_sent_status==1)
-                            $this->Email_model->updateMailer(array('status'=>1,'mailer_id'=>$mailer_id));
-                    }
-                }
-            }
-            // $ticket_chat_id=$this->User_model->insertdata('ticket_chat',array('created_by'=>!empty($this->session_user_id)?$this->session_user_id:'0','ticket_id'=>$inserted_id,'created_on'=>currentDate(),'status'=>46));
+            $this->sendTicketEmails($type='ticket_create',$user_display_ticket_id=$ticket_id,$data_base_ticket_no=$inserted_id,$user_ids=array(1));
             $result = array('status'=>TRUE, 'message' => $this->lang->line('ticket_add'), 'data'=>array('data'=>$ticket_id));
             $this->response($result, REST_Controller::HTTP_OK);
          }
@@ -292,6 +205,7 @@ class Ticket extends REST_Controller
             $ticket_chat_id=$this->User_model->insertdata('ticket_chat',$chat_data);
             $this->User_model->update_where_in('documents',array('module_type_id'=>$ticket_chat_id),array('id'=>$document_id));
             $this->User_model->update_data('ticket',array('last_updated_by'=>!empty($this->session_user_id)?$this->session_user_id:'0','last_update_on'=>currentDate(),'status'=>$data['ticket_status']),array('id'=>$data['ticket_id']));
+            $this->sendTicketEmails($type='ticket_update',$user_display_ticket_id=null,$data_base_ticket_no=$data['ticket_id'],$user_ids=null,$update_comments=$data['message']);
             $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>array());
             $this->response($result, REST_Controller::HTTP_OK);
 
@@ -300,6 +214,7 @@ class Ticket extends REST_Controller
         elseif(empty($_FILES)){
             $ticket_chat_id=$this->User_model->insertdata('ticket_chat',$chat_data);
             $this->User_model->update_data('ticket',array('last_updated_by'=>!empty($this->session_user_id)?$this->session_user_id:'0','last_update_on'=>currentDate(),'status'=>$data['ticket_status']),array('id'=>$data['ticket_id']));
+            $this->sendTicketEmails($type='ticket_update',$user_display_ticket_id=null,$data_base_ticket_no=$data['ticket_id'],$user_ids=null,$update_comments=$data['message']);
             $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>array());
             $this->response($result, REST_Controller::HTTP_OK);
         }
@@ -469,6 +384,201 @@ class Ticket extends REST_Controller
             $chat_data[]=$v1;
         }
         return $chat_data;
+    }
+    function sendTicketEmails($type,$user_display_ticket_id=null,$data_base_ticket_no=null,$user_ids=null,$update_commets=null){//this function is used to send emails in create application notifications  
+        $ticket_id=$user_display_ticket_id;
+        if($type=='ticket_create'){//this type is used for send create/update ticket mails based on type 
+            $template_configurations=$this->Email_model->EmailTemplateList(array('language_id' =>1,'module_key'=>'TICKET_CREATION_OWNER'));
+            if($template_configurations['total_records']>0){
+                $template_configurations=$template_configurations['data'][0];
+                $wildcards=$template_configurations['wildcards'];
+                $wildcards_replaces=array();
+                $wildcards_replaces['ticket_no']=$ticket_id;
+                $wildcards_replaces['logo']=WEB_BASE_URL.'/logo.png';
+                $wildcards_replaces['year'] = date("Y");
+                $wildcards_replaces['url']=WEB_BASE_URL.'html';
+                $body = wildcardreplace($wildcards,$wildcards_replaces,$template_configurations['template_content']);
+                $subject = wildcardreplace($wildcards,$wildcards_replaces,$template_configurations['template_subject']);
+                /*$from_name=SEND_GRID_FROM_NAME;
+                $from=SEND_GRID_FROM_EMAIL;
+                $from_name=$cust_admin['name'];
+                $from=$cust_admin['email'];*/
+                $from_name=$template_configurations['email_from_name'];
+                $from=$template_configurations['email_from'];
+                $to_name=$this->session_user_info->first_name.' '.$this->session_user_info->last_name;
+                $mailer_data['mail_from_name']=$from_name;
+                $mailer_data['mail_to_name']=$this->session_user_info->first_name.' '.$this->session_user_info->last_name;
+                $mailer_data['mail_to_user_id']=$this->session_user_id;
+                $mailer_data['mail_from']=$from;
+                $mailer_data['mail_to']=$this->session_user_info->email;
+                $mailer_data['mail_subject']=$subject;
+                $mailer_data['mail_message']=$body;
+                $mailer_data['status']=0;
+                $mailer_data['send_date']=currentDate();
+                $mailer_data['is_cron']=1;//0-immediate mail,1-through cron job
+                $mailer_data['email_template_id']=$template_configurations['id_email_template'];
+                //echo '<pre>';print_r($customer_logo);exit;
+                $mailer_id=$this->Email_model->addMailer($mailer_data);
+                if($mailer_data['is_cron']==0) {
+                    $mail_sent_status=sendmail($to,$subject,$body);                        
+                    if($mail_sent_status==1)
+                        $this->Email_model->updateMailer(array('status'=>1,'mailer_id'=>$mailer_id));
+                }
+                //App notification to be saved in Notification table.
+                // $link ='<a style="color: #22bcf2" class="sky-blue" href="'.WEB_BASE_URL . '#/notifications/'.base64_encode($is_insert).'">Here</a>';
+                $link=WEB_BASE_URL.'#/ticket/view/'.base64_encode($data_base_ticket_no);
+                $notification_wildcards_replaces['url_link'] =$link ;
+                $notification_wildcards_replaces['ticket_no'] = '#'.$ticket_id;
+                $notification_message = wildcardreplace($template_configurations['wildcards'],$notification_wildcards_replaces,$template_configurations['application_template_content']);
+                $notification_comments = wildcardreplace($template_configurations['application_wildcards'],$notification_wildcards_replaces,$template_configurations['notification_comments']);
+                $this->Email_model->addNotification(array(
+                    'assigned_to' =>$this->session_user_id,
+                    'notification_template' => $notification_message,
+                    'notification_link' => $link,
+                    'notification_comments' => $notification_comments,
+                    'notification_type' => 'app',
+                    'created_date_time' => currentDate(),
+                    'module_type' => 'ticket'
+                ));
+            }
+            $user_ids_send_mails=$user_ids; //this is used for send mails for  specific admins to pass user id 
+            foreach($user_ids_send_mails as $k=>$v){
+                $user_details=$this->User_model->check_record_selected('id as user_id,concat(first_name," ",last_name) as user_name,email','user',array('user_role_id'=>$v));
+                $ticket_info=$this->Ticket_model->getTicketData(array('ticket_id'=>$data_base_ticket_no));
+                $template_configurations=$this->Email_model->EmailTemplateList(array('language_id' =>1,'module_key'=>'TICKET_CREATION_ADMIN'));
+                if($template_configurations['total_records']>0){
+                        $template_configurations=$template_configurations['data'][0];
+                    $wildcards=$template_configurations['wildcards'];
+                    $wildcards_replaces=array();
+                    $wildcards_replaces['ticket_no']=$ticket_info[0]['issue_id'];
+                    $wildcards_replaces['ticket_title']=$ticket_info[0]['title'];
+                    $wildcards_replaces['ticket_description']=$ticket_info[0]['description'];
+                    $wildcards_replaces['issue_type']=$ticket_info[0]['issue_type'];
+                    $wildcards_replaces['status']=$ticket_info[0]['status'];
+                    $wildcards_replaces['created_by']=$ticket_info[0]['created_by'];
+                    $wildcards_replaces['created_date_time']=$ticket_info[0]['created_date'];
+                    $wildcards_replaces['logo']=WEB_BASE_URL.'/logo.png';
+                    $wildcards_replaces['year'] = date("Y");
+                    $wildcards_replaces['url']=WEB_BASE_URL.'html';
+                    $body = wildcardreplace($wildcards,$wildcards_replaces,$template_configurations['template_content']);
+                    $subject = wildcardreplace($wildcards,$wildcards_replaces,$template_configurations['template_subject']);
+                    /*$from_name=SEND_GRID_FROM_NAME;
+                    $from=SEND_GRID_FROM_EMAIL;
+                    $from_name=$cust_admin['name'];
+                    $from=$cust_admin['email'];*/
+                    $from_name=$template_configurations['email_from_name'];
+                    $from=$template_configurations['email_from'];
+                    $to_name=$user_details[0]['user_name'];
+                    $mailer_data['mail_from_name']=$from_name;
+                    $mailer_data['mail_to_name']=$user_details[0]['user_name'];
+                    $mailer_data['mail_to_user_id']=$user_details[0]['user_id'];
+                    $mailer_data['mail_from']=$from;
+                    $mailer_data['mail_to']=$user_details[0]['email'];
+                    $mailer_data['mail_subject']=$subject;
+                    $mailer_data['mail_message']=$body;
+                    $mailer_data['status']=0;
+                    $mailer_data['send_date']=currentDate();
+                    $mailer_data['is_cron']=1;//0-immediate mail,1-through cron job
+                    $mailer_data['email_template_id']=$template_configurations['id_email_template'];
+                    //echo '<pre>';print_r($customer_logo);exit;
+                    $mailer_id=$this->Email_model->addMailer($mailer_data);
+                    if($mailer_data['is_cron']==0) {
+                        $mail_sent_status=sendmail($to,$subject,$body);                        
+                        if($mail_sent_status==1)
+                            $this->Email_model->updateMailer(array('status'=>1,'mailer_id'=>$mailer_id));
+                    }
+                        //App notification to be saved in Notification table.
+                    $link=WEB_BASE_URL.'#/ticket/view/'.base64_encode($data_base_ticket_no);
+                    $notification_wildcards_replaces['url_link'] =$link ;
+                    $notification_wildcards_replaces['ticket_no'] = '#'.$ticket_id;
+                    $notification_message = wildcardreplace($template_configurations['wildcards'],$notification_wildcards_replaces,$template_configurations['application_template_content']);
+                    $notification_comments = wildcardreplace($template_configurations['application_wildcards'],$notification_wildcards_replaces,$template_configurations['notification_comments']);
+                    $this->Email_model->addNotification(array(
+                        'assigned_to' =>$user_details[0]['user_id'],
+                        'notification_template' => $notification_message,
+                        'notification_link' => $link,
+                        'notification_comments' => $notification_comments,
+                        'notification_type' => 'app',
+                        'created_date_time' => currentDate(),
+                        'module_type' => 'ticket'
+                    ));
+                }
+            }
+            return 1;
+        }
+        if($type=='ticket_update'){//this is used for send mails when ticket is updated
+            $ticket_info=$this->Ticket_model->getTicketData(array('ticket_id'=>$data_base_ticket_no));
+            if($this->session_user_info->user_id==$ticket_info[0]['ticket_rised_by']){//check the login user is ticket rised user or not for send maisl to admins/owners
+                $user_ids_send_mails=array(1);
+                $team_name='Support Team';
+            }
+            else{
+                $user_ids_send_mails=array($ticket_info[0]['ticket_rised_by']);
+                $team_name='Owner';
+            }
+            foreach($user_ids_send_mails as $k=>$v){
+                $user_details=$this->User_model->check_record_selected('id as user_id,concat(first_name," ",last_name) as user_name,email','user',array('id'=>$v));
+                $template_configurations=$this->Email_model->EmailTemplateList(array('language_id' =>1,'module_key'=>'TICKET_UPDATE'));
+                if($template_configurations['total_records']>0){
+                    $template_configurations=$template_configurations['data'][0];
+                    $wildcards=$template_configurations['wildcards'];
+                    $wildcards_replaces=array();
+                    $wildcards_replaces['ticket_no']=$ticket_info[0]['issue_id'];
+                    $wildcards_replaces['ticket_title']=$ticket_info[0]['title'];
+                    $wildcards_replaces['comments']=!empty($update_commets)?$update_commets:'';
+                    $wildcards_replaces['team_name']=$team_name;
+                    $wildcards_replaces['update_by']=!empty($ticket_info[0]['last_updated_by'])?$ticket_info[0]['last_updated_by']:'';
+                    $wildcards_replaces['update_date_time']=!empty($ticket_info[0]['last_updated'])?$ticket_info[0]['last_updated']:'';
+                    $wildcards_replaces['status']=$ticket_info[0]['status'];
+                    $wildcards_replaces['logo']=WEB_BASE_URL.'/logo.png';
+                    $wildcards_replaces['year'] = date("Y");
+                    $wildcards_replaces['url']=WEB_BASE_URL.'html';
+                    $body = wildcardreplace($wildcards,$wildcards_replaces,$template_configurations['template_content']);
+                    $subject = wildcardreplace($wildcards,$wildcards_replaces,$template_configurations['template_subject']);
+                    /*$from_name=SEND_GRID_FROM_NAME;
+                    $from=SEND_GRID_FROM_EMAIL;
+                    $from_name=$cust_admin['name'];
+                    $from=$cust_admin['email'];*/
+                    $from_name=$template_configurations['email_from_name'];
+                    $from=$template_configurations['email_from'];
+                    $to_name=$user_details[0]['user_name'];
+                    $mailer_data['mail_from_name']=$from_name;
+                    $mailer_data['mail_to_name']=$user_details[0]['user_name'];
+                    $mailer_data['mail_to_user_id']=$user_details[0]['user_id'];
+                    $mailer_data['mail_from']=$from;
+                    $mailer_data['mail_to']=$user_details[0]['email'];
+                    $mailer_data['mail_subject']=$subject;
+                    $mailer_data['mail_message']=$body;
+                    $mailer_data['status']=0;
+                    $mailer_data['send_date']=currentDate();
+                    $mailer_data['is_cron']=1;//0-immediate mail,1-through cron job
+                    $mailer_data['email_template_id']=$template_configurations['id_email_template'];
+                    //echo '<pre>';print_r($customer_logo);exit;
+                    $mailer_id=$this->Email_model->addMailer($mailer_data);
+                    if($mailer_data['is_cron']==0) {
+                        $mail_sent_status=sendmail($to,$subject,$body);                        
+                        if($mail_sent_status==1)
+                            $this->Email_model->updateMailer(array('status'=>1,'mailer_id'=>$mailer_id));
+                    }
+                        //App notification to be saved in Notification table.
+                    $link=WEB_BASE_URL.'#/ticket/view/'.base64_encode($inserted_id);
+                    $notification_wildcards_replaces['url_link'] =$link ;
+                    $notification_wildcards_replaces['ticket_no'] = '#'.$ticket_info[0]['issue_id'];
+                    $notification_message = wildcardreplace($template_configurations['wildcards'],$notification_wildcards_replaces,$template_configurations['application_template_content']);
+                    $notification_comments = wildcardreplace($template_configurations['application_wildcards'],$notification_wildcards_replaces,$template_configurations['notification_comments']);
+                    $this->Email_model->addNotification(array(
+                        'assigned_to' =>$user_details[0]['user_id'],
+                        'notification_template' => $notification_message,
+                        'notification_link' => $link,
+                        'notification_comments' => $notification_comments,
+                        'notification_type' => 'app',
+                        'created_date_time' => currentDate(),
+                        'module_type' => 'ticket'
+                    ));
+                }
+            }
+            return 1;
+        }
     }
 
 }

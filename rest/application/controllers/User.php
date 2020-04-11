@@ -240,7 +240,7 @@ class User extends REST_Controller
                     $wildcards_replaces['name']=$user_data['first_name']." ".$user_data['last_name'];
                     $wildcards_replaces['Learning_center_name']=!empty($learning_center_name)?"Learning Center: ".$learning_center_name:'';
                     $wildcards_replaces['school_name']=!empty($school_name)?"School Name: ".$school_name:'';
-                    $wildcards_replaces['logo']='/assets/img/logo.png';
+                    $wildcards_replaces['logo']=WEB_BASE_URL.'/logo.png';
                     $wildcards_replaces['email']=!empty($data['email'])?$data['email']:'';
                     // $wildcards_replaces['role']='Lc Admin';
                     $wildcards_replaces['password']=!empty($data['password'])?$data['password']:'';
@@ -279,11 +279,12 @@ class User extends REST_Controller
                     $link ='<a style="color: #22bcf2" class="sky-blue" href="'.WEB_BASE_URL . '#/notifications/'.base64_encode($is_insert).'">Here</a>';
                     $notification_wildcards_replaces['url_link'] = $link;
                     $notification_message = wildcardreplace($template_configurations['wildcards'],$notification_wildcards_replaces,$template_configurations['application_template_content']);
+                    $notification_comments = wildcardreplace($template_configurations['application_wildcards'],$notification_wildcards_replaces,$template_configurations['notification_comments']);
                     $this->Email_model->addNotification(array(
                         'assigned_to' => $is_insert,
                         'notification_template' => $notification_message,
                         'notification_link' => $link,
-                        'notification_comments' => 'Welcome to Mindtronix',
+                        'notification_comments' => $notification_comments,
                         'notification_type' => 'app',
                         'created_date_time' => currentDate(),
                         'module_type' => 'user'

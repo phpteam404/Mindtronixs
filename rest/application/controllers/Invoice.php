@@ -276,9 +276,74 @@ class Invoice extends REST_Controller
         $school_code=str_replace(" ","",$schooldata[0]['school_code']);
         $franchise_code=str_replace(" ","",$schooldata[0]['franchise_code']);
         $id=str_pad($insert_id,6,"0",STR_PAD_LEFT);
-        $student_invoice_number='MIN/'.$franchise_code.'/'.$school_code.'/'.date("Y").'/'.date("m").'/'.$id;
-        $this->User_model->update_data('student_invoice',array('invoice_number'=>$student_invoice_number),array('id'=>$insert_id));
+        $school_invoice_number='MIN/'.$franchise_code.'/'.$school_code.'/'.date("Y").'/'.date("m").'/'.$id;
+        $this->User_model->update_data('student_invoice',array('invoice_number'=>$school_invoice_number),array('id'=>$insert_id));
         if(!empty($insert_id)){
+            $user_ids_send_mails=array($data['school_id']);//send the emails to school admin  which we select the school in generating invoice
+            foreach($user_ids_send_mails as $k=>$v){//for every user id we send mails
+                $user_details=$this->User_model->check_record_selected('id as user_id,concat(first_name," ",last_name) as user_name,email','user',array('school_id'=>$v));
+                $template_configurations=$this->Email_model->EmailTemplateList(array('language_id' =>1,'module_key'=>'INVOICE_CREATION'));
+                if($template_configurations['total_records']>0){
+                    $template_configurations=$template_configurations['data'][0];
+                    $wildcards=$template_configurations['wildcards'];
+                    $wildcards_replaces=array();
+                    $wildcards_replaces['name']=$user_details[0]['user_name'];
+                    $wildcards_replaces['href_text']=!empty($school_invoice_number)?'#'.$school_invoice_number:'';
+                    $wildcards_replaces['fee_term']='';
+                    $wildcards_replaces['year']=date("Y");
+                    $wildcards_replaces['current_month']=strtoupper(date('M'));
+                    $wildcards_replaces['logo']=WEB_BASE_URL.'/logo.png';
+                    $wildcards_replaces['year'] = date("Y");
+                    $wildcards_replaces['url']=WEB_BASE_URL.'html';
+                    $body = wildcardreplace($wildcards,$wildcards_replaces,$template_configurations['template_content']);
+                    $subject = wildcardreplace($wildcards,$wildcards_replaces,$template_configurations['template_subject']);
+                    /*$from_name=SEND_GRID_FROM_NAME;
+                    $from=SEND_GRID_FROM_EMAIL;
+                    $from_name=$cust_admin['name'];
+                    $from=$cust_admin['email'];*/
+                    $from_name=$template_configurations['email_from_name'];
+                    $from=$template_configurations['email_from'];
+                    $to_name=$user_details[0]['user_name'];
+                    $mailer_data['mail_from_name']=$from_name;
+                    $mailer_data['mail_to_name']=$user_details[0]['user_name'];
+                    $mailer_data['mail_to_user_id']=$user_details[0]['user_id'];
+                    $mailer_data['mail_from']=$from;
+                    $mailer_data['mail_to']=$user_details[0]['email'];
+                    $mailer_data['mail_subject']=$subject;
+                    $mailer_data['mail_message']=$body;
+                    $mailer_data['status']=0;
+                    $mailer_data['send_date']=currentDate();
+                    $mailer_data['is_cron']=1;//0-immediate mail,1-through cron job
+                    $mailer_data['email_template_id']=$template_configurations['id_email_template'];
+                    //echo '<pre>';print_r($customer_logo);exit;
+                    $mailer_id=$this->Email_model->addMailer($mailer_data);
+                    if($mailer_data['is_cron']==0) {
+                        $mail_sent_status=sendmail($to,$subject,$body);                        
+                        if($mail_sent_status==1)
+                            $this->Email_model->updateMailer(array('status'=>1,'mailer_id'=>$mailer_id));
+                    }
+                        //App notification to be saved in Notification table.
+                    $link=WEB_BASE_URL.'#/invoices/school_invoice/view/'.$schooldata[0]['school_name'].'/'.base64_encode($insert_id);
+                    $notification_wildcards_replaces['url_link'] =$link ;
+                    $notification_wildcards_replaces['invoice_id'] = !empty($school_invoice_number)?'#'.$school_invoice_number:'';
+                    $notification_wildcards_replaces['fee_term'] = '';
+                    $notification_wildcards_replaces['year']=date("Y");
+                    $notification_wildcards_replaces['current_month']=strtoupper(date('M'));
+                    $notification_message = wildcardreplace($template_configurations['wildcards'],$notification_wildcards_replaces,
+                    $template_configurations['application_template_content']);
+                    // print_r($template_configurations['application_template_content']);exit;
+                    $notification_comments = wildcardreplace($template_configurations['application_wildcards'],$notification_wildcards_replaces,$template_configurations['notification_comments']);
+                    $this->Email_model->addNotification(array(
+                        'assigned_to' =>$user_details[0]['user_id'],
+                        'notification_template' => $notification_message,
+                        'notification_link' => $link,
+                        'notification_comments' => $notification_comments,
+                        'notification_type' => 'app',
+                        'created_date_time' => currentDate(),
+                        'module_type' => 'ticket'
+                    ));
+                }
+            }
             $result = array('status'=>TRUE, 'message' =>$this->lang->line('school_invoice_generate'), 'data'=>array('data'=>$insert_id));
             $this->response($result, REST_Controller::HTTP_OK);
          }

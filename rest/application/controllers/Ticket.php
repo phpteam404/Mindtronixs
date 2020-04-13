@@ -395,7 +395,7 @@ class Ticket extends REST_Controller
                 $wildcards=$template_configurations['wildcards'];
                 $wildcards_replaces=array();
                 $wildcards_replaces['ticket_no']=$ticket_id;
-                $wildcards_replaces['logo']=WEB_BASE_URL.'assets/img/logo.png'
+                $wildcards_replaces['logo']=WEB_BASE_URL.'assets/img/logo.png';
                 $wildcards_replaces['year'] = date("Y");
                 $wildcards_replaces['url']=WEB_BASE_URL;
                 $body = wildcardreplace($wildcards,$wildcards_replaces,$template_configurations['template_content']);

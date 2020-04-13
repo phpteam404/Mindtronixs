@@ -105,7 +105,7 @@ class Ticket extends REST_Controller
                $ticket_id="MINDTKTNO_".$inserted_id;
                $this->User_model->update_data('ticket',array('ticket_no'=>$ticket_id),array('id'=>$inserted_id));
             }
-            $this->sendTicketEmails($type='ticket_create',$user_display_ticket_id=$ticket_id,$data_base_ticket_no=$inserted_id,$user_ids=array(1));
+            $this->sendTicketEmails($type='ticket_create',$user_display_ticket_id=$ticket_id,$data_base_ticket=array('ticket_id'=>$inserted_id,'title'=>$data['title']),$user_ids=array(1));
             $this->User_model->update_where_in('documents',array('module_type_id'=>$inserted_id),array('id'=>$document_id));
 
            $result = array('status'=>TRUE, 'message' => $this->lang->line('ticket_add'), 'data'=>array('data'=>$ticket_id));
@@ -116,7 +116,7 @@ class Ticket extends REST_Controller
             if($inserted_id>0){
             $ticket_id="MINDTKTNO_".$inserted_id;
             $this->User_model->update_data('ticket',array('ticket_no'=>$ticket_id),array('id'=>$inserted_id));
-            $this->sendTicketEmails($type='ticket_create',$user_display_ticket_id=$ticket_id,$data_base_ticket_no=$inserted_id,$user_ids=array(1));
+            $this->sendTicketEmails($type='ticket_create',$user_display_ticket_id=$ticket_id,$data_base_ticket=array('ticket_id'=>$inserted_id,'title'=>$data['title']),$user_ids=array(1));
             $result = array('status'=>TRUE, 'message' => $this->lang->line('ticket_add'), 'data'=>array('data'=>$ticket_id));
             $this->response($result, REST_Controller::HTTP_OK);
          }
@@ -201,11 +201,12 @@ class Ticket extends REST_Controller
             }
             
         }
+        $ticket_info = $this->User_model->check_record('ticket',array('id'=>$data['ticket_id']));
         if(!empty($_FILES) && count($document_id)>0){
             $ticket_chat_id=$this->User_model->insertdata('ticket_chat',$chat_data);
             $this->User_model->update_where_in('documents',array('module_type_id'=>$ticket_chat_id),array('id'=>$document_id));
             $this->User_model->update_data('ticket',array('last_updated_by'=>!empty($this->session_user_id)?$this->session_user_id:'0','last_update_on'=>currentDate(),'status'=>$data['ticket_status']),array('id'=>$data['ticket_id']));
-            $this->sendTicketEmails($type='ticket_update',$user_display_ticket_id=null,$data_base_ticket_no=$data['ticket_id'],$user_ids=null,$update_comments=$data['message']);
+            $this->sendTicketEmails($type='ticket_update',$user_display_ticket_id=null,$data_base_ticket=array('ticket_id'=>$ticket_info[0]['id'],'title'=>$ticket_info[0]['title']),$user_ids=null,$update_comments=$data['message']);
             $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>array());
             $this->response($result, REST_Controller::HTTP_OK);
 
@@ -214,7 +215,7 @@ class Ticket extends REST_Controller
         elseif(empty($_FILES)){
             $ticket_chat_id=$this->User_model->insertdata('ticket_chat',$chat_data);
             $this->User_model->update_data('ticket',array('last_updated_by'=>!empty($this->session_user_id)?$this->session_user_id:'0','last_update_on'=>currentDate(),'status'=>$data['ticket_status']),array('id'=>$data['ticket_id']));
-            $this->sendTicketEmails($type='ticket_update',$user_display_ticket_id=null,$data_base_ticket_no=$data['ticket_id'],$user_ids=null,$update_comments=$data['message']);
+            $this->sendTicketEmails($type='ticket_update',$user_display_ticket_id=null,$data_base_ticket=array('ticket_id'=>$ticket_info[0]['id'],'title'=>$ticket_info[0]['title']),$user_ids=null,$update_comments=$data['message']);
             $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>array());
             $this->response($result, REST_Controller::HTTP_OK);
         }
@@ -385,7 +386,7 @@ class Ticket extends REST_Controller
         }
         return $chat_data;
     }
-    function sendTicketEmails($type,$user_display_ticket_id=null,$data_base_ticket_no=null,$user_ids=null,$update_commets=null){//this function is used to send emails in create application notifications  
+    function sendTicketEmails($type,$user_display_ticket_id=null,$data_base_ticket=null,$user_ids=null,$update_commets=null){//this function is used to send emails in create application notifications  
         $ticket_id=$user_display_ticket_id;
         if($type=='ticket_create'){//this type is used for send create/update ticket mails based on type 
             $template_configurations=$this->Email_model->EmailTemplateList(array('language_id' =>1,'module_key'=>'TICKET_CREATION_OWNER'));
@@ -394,9 +395,9 @@ class Ticket extends REST_Controller
                 $wildcards=$template_configurations['wildcards'];
                 $wildcards_replaces=array();
                 $wildcards_replaces['ticket_no']=$ticket_id;
-                $wildcards_replaces['logo']=WEB_BASE_URL.'/logo.png';
+                $wildcards_replaces['logo']=WEB_BASE_URL.'assets/img/logo.png'
                 $wildcards_replaces['year'] = date("Y");
-                $wildcards_replaces['url']=WEB_BASE_URL.'html';
+                $wildcards_replaces['url']=WEB_BASE_URL;
                 $body = wildcardreplace($wildcards,$wildcards_replaces,$template_configurations['template_content']);
                 $subject = wildcardreplace($wildcards,$wildcards_replaces,$template_configurations['template_subject']);
                 /*$from_name=SEND_GRID_FROM_NAME;
@@ -424,9 +425,9 @@ class Ticket extends REST_Controller
                     if($mail_sent_status==1)
                         $this->Email_model->updateMailer(array('status'=>1,'mailer_id'=>$mailer_id));
                 }
-                //App notification to be saved in Notification table.
+                //App notification to be saved in Notification table. array('ticket_id'=>$inserted_id,'title'=>$data['title'])
                 // $link ='<a style="color: #22bcf2" class="sky-blue" href="'.WEB_BASE_URL . '#/notifications/'.base64_encode($is_insert).'">Here</a>';
-                $link=WEB_BASE_URL.'#/ticket/view/'.base64_encode($data_base_ticket_no);
+                $link='#/ticket/view/'.$data_base_ticket['title'].'/'.base64_encode($data_base_ticket['ticket_id']);
                 $notification_wildcards_replaces['url_link'] =$link ;
                 $notification_wildcards_replaces['ticket_no'] = '#'.$ticket_id;
                 $notification_message = wildcardreplace($template_configurations['wildcards'],$notification_wildcards_replaces,$template_configurations['application_template_content']);
@@ -434,7 +435,7 @@ class Ticket extends REST_Controller
                 $this->Email_model->addNotification(array(
                     'assigned_to' =>$this->session_user_id,
                     'notification_template' => $notification_message,
-                    'notification_link' => $link,
+                    'notification_link' => '',
                     'notification_comments' => $notification_comments,
                     'notification_type' => 'app',
                     'created_date_time' => currentDate(),
@@ -444,7 +445,7 @@ class Ticket extends REST_Controller
             $user_ids_send_mails=$user_ids; //this is used for send mails for  specific admins to pass user id 
             foreach($user_ids_send_mails as $k=>$v){
                 $user_details=$this->User_model->check_record_selected('id as user_id,concat(first_name," ",last_name) as user_name,email','user',array('user_role_id'=>$v));
-                $ticket_info=$this->Ticket_model->getTicketData(array('ticket_id'=>$data_base_ticket_no));
+                $ticket_info=$this->Ticket_model->getTicketData(array('ticket_id'=>$data_base_ticket['ticket_id']));
                 $template_configurations=$this->Email_model->EmailTemplateList(array('language_id' =>1,'module_key'=>'TICKET_CREATION_ADMIN'));
                 if($template_configurations['total_records']>0){
                         $template_configurations=$template_configurations['data'][0];
@@ -457,9 +458,9 @@ class Ticket extends REST_Controller
                     $wildcards_replaces['status']=$ticket_info[0]['status'];
                     $wildcards_replaces['created_by']=$ticket_info[0]['created_by'];
                     $wildcards_replaces['created_date_time']=$ticket_info[0]['created_date'];
-                    $wildcards_replaces['logo']=WEB_BASE_URL.'/logo.png';
+                    $wildcards_replaces['logo']=WEB_BASE_URL.'assets/img/logo.png';
                     $wildcards_replaces['year'] = date("Y");
-                    $wildcards_replaces['url']=WEB_BASE_URL.'html';
+                    $wildcards_replaces['url']=WEB_BASE_URL;
                     $body = wildcardreplace($wildcards,$wildcards_replaces,$template_configurations['template_content']);
                     $subject = wildcardreplace($wildcards,$wildcards_replaces,$template_configurations['template_subject']);
                     /*$from_name=SEND_GRID_FROM_NAME;
@@ -488,7 +489,7 @@ class Ticket extends REST_Controller
                             $this->Email_model->updateMailer(array('status'=>1,'mailer_id'=>$mailer_id));
                     }
                         //App notification to be saved in Notification table.
-                    $link=WEB_BASE_URL.'#/ticket/view/'.base64_encode($data_base_ticket_no);
+                    $link='#/ticket/view/'.$data_base_ticket['title'].'/'.base64_encode($data_base_ticket['ticket_id']);
                     $notification_wildcards_replaces['url_link'] =$link ;
                     $notification_wildcards_replaces['ticket_no'] = '#'.$ticket_id;
                     $notification_message = wildcardreplace($template_configurations['wildcards'],$notification_wildcards_replaces,$template_configurations['application_template_content']);
@@ -496,7 +497,7 @@ class Ticket extends REST_Controller
                     $this->Email_model->addNotification(array(
                         'assigned_to' =>$user_details[0]['user_id'],
                         'notification_template' => $notification_message,
-                        'notification_link' => $link,
+                        'notification_link' => '',
                         'notification_comments' => $notification_comments,
                         'notification_type' => 'app',
                         'created_date_time' => currentDate(),
@@ -507,7 +508,7 @@ class Ticket extends REST_Controller
             return 1;
         }
         if($type=='ticket_update'){//this is used for send mails when ticket is updated
-            $ticket_info=$this->Ticket_model->getTicketData(array('ticket_id'=>$data_base_ticket_no));
+            $ticket_info=$this->Ticket_model->getTicketData(array('ticket_id'=>$data_base_ticket['ticket_id']));
             if($this->session_user_info->user_id==$ticket_info[0]['ticket_rised_by']){//check the login user is ticket rised user or not for send maisl to admins/owners
                 $user_ids_send_mails=array(1);
                 $team_name='Support Team';
@@ -530,9 +531,9 @@ class Ticket extends REST_Controller
                     $wildcards_replaces['update_by']=!empty($ticket_info[0]['last_updated_by'])?$ticket_info[0]['last_updated_by']:'';
                     $wildcards_replaces['update_date_time']=!empty($ticket_info[0]['last_updated'])?$ticket_info[0]['last_updated']:'';
                     $wildcards_replaces['status']=$ticket_info[0]['status'];
-                    $wildcards_replaces['logo']=WEB_BASE_URL.'/logo.png';
+                    $wildcards_replaces['logo']=WEB_BASE_URL.'assets/img/logo.png';
                     $wildcards_replaces['year'] = date("Y");
-                    $wildcards_replaces['url']=WEB_BASE_URL.'html';
+                    $wildcards_replaces['url']=WEB_BASE_URL;
                     $body = wildcardreplace($wildcards,$wildcards_replaces,$template_configurations['template_content']);
                     $subject = wildcardreplace($wildcards,$wildcards_replaces,$template_configurations['template_subject']);
                     /*$from_name=SEND_GRID_FROM_NAME;
@@ -561,7 +562,7 @@ class Ticket extends REST_Controller
                             $this->Email_model->updateMailer(array('status'=>1,'mailer_id'=>$mailer_id));
                     }
                         //App notification to be saved in Notification table.
-                    $link=WEB_BASE_URL.'#/ticket/view/'.base64_encode($inserted_id);
+                    $link='#/ticket/view/'.$data_base_ticket['title'].'/'.base64_encode($data_base_ticket['ticket_id']);
                     $notification_wildcards_replaces['url_link'] =$link ;
                     $notification_wildcards_replaces['ticket_no'] = '#'.$ticket_info[0]['issue_id'];
                     $notification_message = wildcardreplace($template_configurations['wildcards'],$notification_wildcards_replaces,$template_configurations['application_template_content']);
@@ -569,7 +570,7 @@ class Ticket extends REST_Controller
                     $this->Email_model->addNotification(array(
                         'assigned_to' =>$user_details[0]['user_id'],
                         'notification_template' => $notification_message,
-                        'notification_link' => $link,
+                        'notification_link' => '',
                         'notification_comments' => $notification_comments,
                         'notification_type' => 'app',
                         'created_date_time' => currentDate(),

@@ -1019,7 +1019,7 @@ class User extends REST_Controller
         if(empty($data)){
             $result = array('status'=>FALSE,'error'=>$this->lang->line('invalid_data'),'data'=>'');
             $this->response($result, REST_Controller::HTTP_OK);
-        }  
+        } 
         $this->form_validator->add_rules('notification_status', array('required' => $this->lang->line('notification_status_req')));
         // $this->form_validator->add_rules('module_url', array('required' => $this->lang->line('module_url_req')));
         $validated = $this->form_validator->validate($data);    
@@ -1028,12 +1028,9 @@ class User extends REST_Controller
             $result = array('status'=>FALSE,'error'=>$validated,'data'=>'');
             $this->response($result, REST_Controller::HTTP_OK);
         }
-        if(strtolower($data['notification_status']) == 'all')
+        if(strtolower($data['notification_status']) == 'all'){
             unset($data['notification_status']);
-            
-        if(isset($data['number'])){
-            if($data['number'] == 10)
-                $this->User_model->update_data('notification',array('notification_status'=>'read'),array('assigned_to'=>$this->session_user_id));
+            $this->User_model->update_data('notification',array('notification_status'=>'read'),array('assigned_to'=>$this->session_user_id));
         }
         $data['user_id'] = $this->session_user_id;
         $result = $this->Email_model->getNotifications($data); 

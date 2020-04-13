@@ -104,6 +104,7 @@ class Email_model extends CI_Model
             // $this->db->where("(CONCAT(u.first_name, \" \", u.last_name) LIKE '%".$data['search_key']."%' || n.notification_type LIKE '%".$data['search_key']."%' || ar.approval_name LIKE '%".$data['search_key']."%' || n.notification_subject LIKE '%".$data['search_key']."%')");
         }        
         $this->db->where('status','1');
+        $this->db->where('created_date_time BETWEEN CURDATE() - INTERVAL 30 DAY AND CURDATE()+1');
         $this->db->order_by('n.id_notification','DESC');
 
         $all_clients_count_db=clone $this->db;

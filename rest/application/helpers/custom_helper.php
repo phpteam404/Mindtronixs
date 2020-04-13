@@ -991,7 +991,7 @@ if (!function_exists('getTableHeads')) {
         function getShortURL($data){
             
             // $domain_data["fullName"] = "myteamwwe";
-            $post_data["destination"] = WEB_BASE_URL.'/content/?content_id='.$data['content_id'].'&user_id='.$data['session_id'];
+            $post_data["destination"] = WEB_BASE_URL.'content/index.html?content_id='.$data['content_id'].'&user_id='.$data['session_id'];
             // $post_data["domain"] = $domain_data;
             // $post_data["slashtag"] = "MTX_SLASH";
             // $post_data["title"] = "First url";

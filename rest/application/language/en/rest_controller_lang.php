@@ -489,6 +489,8 @@ $lang['frachise_status_update'] = 'Franchise fee management updated successfully
 $lang['lead_source_req'] = 'Lead source is required';
 $lang['school_id_req'] = 'School id is required';
 $lang['school_invoice_generate'] = 'School invoice generated Successfully';
+$lang['name_req'] = 'Full name is required.';
+$lang['contact_num_req'] = 'Contact number required.';
 
 
 

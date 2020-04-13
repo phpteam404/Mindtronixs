@@ -30,6 +30,13 @@ class Externalcontroller extends CI_Controller
             $result = array('status'=>FALSE,'message'=>$this->lang->line('invalid_data'),'data'=>'1');
             echo json_encode($result); exit;
         }
+        $this->form_validator->add_rules('digital_content_management_id', array('required'=> $this->lang->line('digital_content_management_id_req')));
+        $validated = $this->form_validator->validate($data);
+        if($validated != 1)
+        {
+            $result = array('status'=>FALSE,'error'=>$validated,'data'=>'');
+            echo json_encode($result);exit;
+        }
         if(!empty($data['digital_content_management_id'])){
             $data['request_type']='view';
             $content_info=$this->Digitalcontent_model->getDigitalContentInfo($data);
@@ -54,10 +61,6 @@ class Externalcontroller extends CI_Controller
             $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>array('data' => $content_info));
             echo json_encode($result);exit;
         }
-        else{
-            $result = array('status'=>FALSE,'message'=>$this->lang->line('digital_content_management_id_req'),'data'=>'2');
-            echo json_encode($result); exit;
-        }
     }
     //* digital content view for online user  end *//
 
@@ -70,6 +73,17 @@ class Externalcontroller extends CI_Controller
         if(empty($data)){
             $result = array('status'=>FALSE,'message'=>$this->lang->line('invalid_data'),'data'=>'1');
             echo json_encode($result); exit;
+        }
+        $this->form_validator->add_rules('email', array('required'=> $this->lang->line('email_req')));
+        $this->form_validator->add_rules('name', array('required'=> $this->lang->line('name_req')));
+        $this->form_validator->add_rules('leadsource', array('required'=> $this->lang->line('lead_source_req')));
+        $this->form_validator->add_rules('password', array('required'=> $this->lang->line('password_req')));
+        $this->form_validator->add_rules('number', array('required'=> $this->lang->line('contact_num_req')));
+        $validated = $this->form_validator->validate($data);
+        if($validated != 1)
+        {
+            $result = array('status'=>FALSE,'error'=>$validated,'data'=>'');
+            echo json_encode($result);exit;
         }
         if(!empty($data['email'])){
             $email_check = $this->User_model->check_email(array('email' => $data['email']));

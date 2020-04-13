@@ -291,7 +291,7 @@ class Invoice extends REST_Controller
                     $wildcards_replaces['href_text']=!empty($school_invoice_number)?'#'.$school_invoice_number:'';
                     $wildcards_replaces['fee_term']='';
                     $wildcards_replaces['year']=date("Y");
-                    $wildcards_replaces['current_month']=strtoupper(date('M'));
+                    $wildcards_replaces['month']=strtoupper(date('M'));
                     $wildcards_replaces['logo']=WEB_BASE_URL.'/logo.png';
                     $wildcards_replaces['year'] = date("Y");
                     $wildcards_replaces['url']=WEB_BASE_URL.'html';
@@ -328,7 +328,7 @@ class Invoice extends REST_Controller
                     $notification_wildcards_replaces['invoice_id'] = !empty($school_invoice_number)?'#'.$school_invoice_number:'';
                     $notification_wildcards_replaces['fee_term'] = '';
                     $notification_wildcards_replaces['year']=date("Y");
-                    $notification_wildcards_replaces['current_month']=strtoupper(date('M'));
+                    $notification_wildcards_replaces['month']=strtoupper(date('M'));
                     $notification_message = wildcardreplace($template_configurations['wildcards'],$notification_wildcards_replaces,
                     $template_configurations['application_template_content']);
                     // print_r($template_configurations['application_template_content']);exit;

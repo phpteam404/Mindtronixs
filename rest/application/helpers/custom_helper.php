@@ -987,4 +987,32 @@ if (!function_exists('getTableHeads')) {
         }
 
     }
+    if(!function_exists('getShortURL')){
+        function getShortURL($data){
+            
+            // $domain_data["fullName"] = "myteamwwe";
+            $post_data["destination"] = WEB_BASE_URL.'/content/?content_id='.$data['content_id'].'&user_id='.$data['session_id'];
+            // $post_data["domain"] = $domain_data;
+            // $post_data["slashtag"] = "MTX_SLASH";
+            // $post_data["title"] = "First url";
+            $ch = curl_init("https://api.rebrandly.com/v1/links");
+            curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+                "apikey: 9cadf20cb6394cf69a1b30e6848f5117",
+                "Content-Type: application/json"
+            ));
+            curl_setopt($ch, CURLOPT_POST, 1);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($post_data));
+            $result = curl_exec($ch);
+            curl_close($ch);
+            $response = json_decode($result, true);
+            //echo '<pre>'.print_r($response);
+            return $response["shortUrl"];
+        }
+    }
+    if(!function_exists('getQR')){
+        function getQR($size,$url){
+            return 'https://api.qrserver.com/v1/create-qr-code/?size='.$size.'&data='.urlencode($url);
+        }
+    }
 }

@@ -1,7 +1,7 @@
 <?php
 
 defined('BASEPATH') OR exit('No direct script access allowed');
-error_reporting(0);
+error_reporting(1);
 require APPPATH . '/third_party/mailer/mailer.php';
 
 class Cron extends CI_Controller
@@ -13,9 +13,9 @@ class Cron extends CI_Controller
         $this->load->model('Invoices_model');
     }
     public function testcron(){
-        echo 'test cron executed';
-        // $this->load->library('sendgridlibrary');
-        // echo 'mailer status '.$mail_sent_status=$this->sendgridlibrary->sendemail('SAIPRASAD','saiprasad.b@gmail.com','subject','body','saiprasd','saiprasad.b@thresholdsoft.com',array(),'2');
+        // $_SESSION['__ci_last_regenerate']
+        echo '<pre>'.print_r($_SESSION);exit;
+            
     }
     // send email through cron
     public function sendemails()

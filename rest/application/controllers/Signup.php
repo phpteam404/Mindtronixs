@@ -67,10 +67,6 @@ class Signup extends CI_Controller
             $result = array('status'=>FALSE,'error'=>array('message'=>$this->lang->line('login_inactive_error')),'data'=>'');
             echo json_encode($result);exit;
         }
-        if($check_status[0]['user_status']==2){
-            $result = array('status'=>FALSE,'error'=>array('message'=>$this->lang->line('text_rest_invalid_credentials')),'data'=>'');
-            echo json_encode($result);exit;
-        }
         $result = $this->User_model->login($data);//echo $this->db->last_query();exit;
         if(count($result)==0){
             $result = array('status'=>FALSE,'error'=>array('message'=>$this->lang->line('text_rest_invalid_credentials')),'data'=>'');
@@ -205,7 +201,7 @@ class Signup extends CI_Controller
                     $wildcards=$template_configurations['wildcards'];
                     $wildcards_replaces=array();
                     $wildcards_replaces['name']=$result->first_name." ".$result->last_name;
-                    $wildcards_replaces['logo']='/assets/img/logo.png';
+                    $wildcards_replaces['logo']=WEB_BASE_URL.'assets/img/logo.png';
                     $wildcards_replaces['email']=!empty($data['email'])?$data['email']:'';
                     $wildcards_replaces['password']=$new_password;
                     $wildcards_replaces['year'] = date("Y");

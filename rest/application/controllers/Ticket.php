@@ -563,7 +563,7 @@ class Ticket extends REST_Controller
                             $this->Email_model->updateMailer(array('status'=>1,'mailer_id'=>$mailer_id));
                     }
                     //App notification to be saved in Notification table.
-                    $link='<a class="sky-blue" href="#/ticket/view/'.urlencode($data_base_ticket['title']).'/'.base64_encode($data_base_ticket['ticket_id']).'">#'.$ticket_id.'</a>';
+                    $link='<a class="sky-blue" href="#/ticket/view/'.urlencode($data_base_ticket['title']).'/'.base64_encode($data_base_ticket['ticket_id']).'">#'.$ticket_info[0]['issue_id'].'</a>';
                     // $link='#/ticket/view/'.urlencode($data_base_ticket['title']).'/'.base64_encode($data_base_ticket['ticket_id']);
                     $notification_wildcards_replaces['url_link'] =$link ;
                     $notification_wildcards_replaces['ticket_no'] = '#'.$ticket_info[0]['issue_id'];

@@ -140,7 +140,7 @@ class Digitalcontent extends REST_Controller
                 $content_data['created_on']=currentDate();
                 $insert_id = $this->User_model->insertdata('digital_content_management',$content_data);
                 if($insert_id>0){
-                    $this->generateQrCode($insert_id,'www.google.com');
+                    //$this->generateQrCode($insert_id,'www.google.com');
                     $this->User_model->insert_data('documents',array('module_type_id'=>$insert_id,'document_name'=>$insert_id.'.png','module_type'=>'qr_code','created_by'=>!empty($this->session_user_id)?$this->session_user_id:0,'created_on'=>currentDate()));
                     if(!empty($data['external_urls'])){
                         $this->addDigitalContentUrls($insert_id,$data['external_urls']);
@@ -175,7 +175,7 @@ class Digitalcontent extends REST_Controller
                 $insert_id = $this->User_model->insertdata('digital_content_management',$content_data);
                 if($insert_id>0){
                     $this->User_model->update_where_in('documents',array('module_type_id'=>$insert_id),array('id'=>$document_id));
-                    $this->generateQrCode($insert_id,'www.google.com');
+                    //$this->generateQrCode($insert_id,'www.google.com');
                     $this->User_model->insert_data('documents',array('module_type_id'=>$insert_id,'document_name'=>$insert_id.'.png','module_type'=>'qr_code','created_by'=>!empty($this->session_user_id)?$this->session_user_id:0,'created_on'=>currentDate()));
                     if(!empty($data['external_urls'])){
                         $this->addDigitalContentUrls($insert_id,$data['external_urls']);
@@ -260,6 +260,7 @@ class Digitalcontent extends REST_Controller
             // else{
             //     $content_info[0]['qr_code']=array();
             // }
+            $content_info[0]['short_url'] = getShortURL(array('content_id'=>$content_info[0]['digital_content_management_id'],'session_id'=>$_SESSION['__ci_last_regenerate']));
             $content_info[0]['qr_code'] = getQR(QR_SMALL,getShortURL(array('content_id'=>$content_info[0]['digital_content_management_id'],'session_id'=>$_SESSION['__ci_last_regenerate'])));
             $content_info[0]['documents']=!empty($documents)?$documents:array();
             $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>array('data' => $content_info));

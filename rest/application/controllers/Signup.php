@@ -209,7 +209,7 @@ class Signup extends CI_Controller
                     $wildcards_replaces['email']=!empty($data['email'])?$data['email']:'';
                     $wildcards_replaces['password']=$new_password;
                     $wildcards_replaces['year'] = date("Y");
-                    $wildcards_replaces['url']=WEB_BASE_URL.'html';
+                    $wildcards_replaces['url']=WEB_BASE_URL;
                     $body = wildcardreplace($wildcards,$wildcards_replaces,$template_configurations['template_content']);
                     $subject = wildcardreplace($wildcards,$wildcards_replaces,$template_configurations['template_subject']);
                     $from_name=$template_configurations['email_from_name'];

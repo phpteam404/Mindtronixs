@@ -127,7 +127,7 @@ class Cron extends CI_Controller
                     }
                     //Your Invoice Term {fee_term}  -  {current_month} -{year} is ready for view. Click on the link to view {url_link}
                     //App notification to be saved in Notification table.
-                    $link ='<a class="sky-blue" href="#/invoices/students_invoice/view/'.$slv['user_name'].'/'.base64_encode($slv['invoice_pk_id']).'">'.$slv['invoice_number'].'</a>';
+                    $link ='<a class="sky-blue" href="#/invoices/students_invoice/view/'.urlencode($slv['user_name']).'/'.base64_encode($slv['invoice_pk_id']).'">'.$slv['invoice_number'].'</a>';
                     $notification_wildcards_replaces['fee_term'] = $slv['child_name'];
                     $notification_wildcards_replaces['month'] = date('M');
                     $notification_wildcards_replaces['year'] = date('Y');
@@ -225,7 +225,7 @@ class Cron extends CI_Controller
                     }
                     //Your Invoice Term {fee_term}  -  {current_month} -{year} is ready for view. Click on the link to view {url_link}
                     //App notification to be saved in Notification table.
-                    $link ='<a class="sky-blue" href="#/invoices/students_invoice/view/'.$flv['user_name'].'/'.base64_encode($flv['invoice_pk_id']).'">'.$flv['invoice_number'].'</a>';
+                    $link ='<a class="sky-blue" href="#/invoices/students_invoice/view/'.urlencode($flv['user_name']).'/'.base64_encode($flv['invoice_pk_id']).'">'.$flv['invoice_number'].'</a>';
                     $notification_wildcards_replaces['fee_term'] = '';
                     $notification_wildcards_replaces['month'] = date('M');
                     $notification_wildcards_replaces['year'] = date('Y');

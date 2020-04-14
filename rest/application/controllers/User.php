@@ -276,7 +276,7 @@ class User extends REST_Controller
                     }
 
                     //App notification to be saved in Notification table.
-                    $link ='<a class="sky-blue" href="'.WEB_BASE_URL . '#/notifications/'.base64_encode($is_insert).'">Here</a>';
+                    $link ='<a class="sky-blue" href="#/">Click Here</a>';
                     $notification_wildcards_replaces['url_link'] = $link;
                     $notification_message = wildcardreplace($template_configurations['wildcards'],$notification_wildcards_replaces,$template_configurations['application_template_content']);
                     $notification_comments = wildcardreplace($template_configurations['application_wildcards'],$notification_wildcards_replaces,$template_configurations['notification_comments']);

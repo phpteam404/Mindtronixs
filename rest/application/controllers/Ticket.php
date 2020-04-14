@@ -427,7 +427,7 @@ class Ticket extends REST_Controller
                 }
                 //App notification to be saved in Notification table. array('ticket_id'=>$inserted_id,'title'=>$data['title'])
                 // $link ='<a style="color: #22bcf2" class="sky-blue" href="'.WEB_BASE_URL . '#/notifications/'.base64_encode($is_insert).'">Here</a>';
-                $link='#/ticket/view/'.$data_base_ticket['title'].'/'.base64_encode($data_base_ticket['ticket_id']);
+                $link='<a class="sky-blue" href="#/ticket/view/'.urlencode($data_base_ticket['title']).'/'.base64_encode($data_base_ticket['ticket_id']).'">#'.$ticket_id.'</a>';
                 $notification_wildcards_replaces['url_link'] =$link ;
                 $notification_wildcards_replaces['ticket_no'] = '#'.$ticket_id;
                 $notification_message = wildcardreplace($template_configurations['wildcards'],$notification_wildcards_replaces,$template_configurations['application_template_content']);
@@ -488,8 +488,9 @@ class Ticket extends REST_Controller
                         if($mail_sent_status==1)
                             $this->Email_model->updateMailer(array('status'=>1,'mailer_id'=>$mailer_id));
                     }
-                        //App notification to be saved in Notification table.
-                    $link='#/ticket/view/'.$data_base_ticket['title'].'/'.base64_encode($data_base_ticket['ticket_id']);
+                    //App notification to be saved in Notification table.
+                    $link='<a class="sky-blue" href="#/ticket/view/'.urlencode($data_base_ticket['title']).'/'.base64_encode($data_base_ticket['ticket_id']).'">#'.$ticket_id.'</a>';
+                    // $link='#/ticket/view/'.urlencode($data_base_ticket['title']).'/'.base64_encode($data_base_ticket['ticket_id']);
                     $notification_wildcards_replaces['url_link'] =$link ;
                     $notification_wildcards_replaces['ticket_no'] = '#'.$ticket_id;
                     $notification_message = wildcardreplace($template_configurations['wildcards'],$notification_wildcards_replaces,$template_configurations['application_template_content']);
@@ -561,8 +562,9 @@ class Ticket extends REST_Controller
                         if($mail_sent_status==1)
                             $this->Email_model->updateMailer(array('status'=>1,'mailer_id'=>$mailer_id));
                     }
-                        //App notification to be saved in Notification table.
-                    $link='#/ticket/view/'.$data_base_ticket['title'].'/'.base64_encode($data_base_ticket['ticket_id']);
+                    //App notification to be saved in Notification table.
+                    $link='<a class="sky-blue" href="#/ticket/view/'.urlencode($data_base_ticket['title']).'/'.base64_encode($data_base_ticket['ticket_id']).'">#'.$ticket_id.'</a>';
+                    // $link='#/ticket/view/'.urlencode($data_base_ticket['title']).'/'.base64_encode($data_base_ticket['ticket_id']);
                     $notification_wildcards_replaces['url_link'] =$link ;
                     $notification_wildcards_replaces['ticket_no'] = '#'.$ticket_info[0]['issue_id'];
                     $notification_message = wildcardreplace($template_configurations['wildcards'],$notification_wildcards_replaces,$template_configurations['application_template_content']);

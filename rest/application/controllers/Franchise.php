@@ -313,6 +313,56 @@ class Franchise extends REST_Controller
                 );
                 $user_id=$this->User_model->insert_data('user',$School_admin);
                 $this->User_model->update_data('school_master',array('user_id'=>$user_id),array('id'=>$inser_id));
+
+                //* email notification for school admin start *//
+                $learning_center_name=$this->User_model->check_record_selected('name as learning_center_name','franchise',array('id'=>$data['franchise_id']));
+                $learning_center_name=!empty($learning_center_name[0]['learning_center_name'])?$learning_center_name[0]['learning_center_name']:'';
+                $template_configurations=$this->Email_model->EmailTemplateList(array('language_id' =>1,'module_key'=>'USER_CREATION'));
+                if($template_configurations['total_records']>0){
+                    $template_configurations=$template_configurations['data'][0];
+                    $wildcards=$template_configurations['wildcards'];
+                    $wildcards_replaces=array();
+                    $wildcards_replaces['name']=$data['contact_person'];
+                    $wildcards_replaces['Learning_center_name']=!empty($learning_center_name)?"Learning Center: ".$learning_center_name:'';
+                    $wildcards_replaces['school_name']=!empty($data['name'])?"School Name: ".$data['name']:'';
+                    $wildcards_replaces['logo']=WEB_BASE_URL.'assets/img/logo.png';
+                    $wildcards_replaces['email']=!empty($data['email'])?$data['email']:'';
+                    // $wildcards_replaces['role']='Lc Admin';
+                    $wildcards_replaces['password']=!empty($new_password)?$new_password:'';
+                    $wildcards_replaces['year'] = date("Y");
+                    $wildcards_replaces['url']=WEB_BASE_URL;
+                    $body = wildcardreplace($wildcards,$wildcards_replaces,$template_configurations['template_content']);
+                    $subject = wildcardreplace($wildcards,$wildcards_replaces,$template_configurations['template_subject']);
+                    /*$from_name=SEND_GRID_FROM_NAME;
+                    $from=SEND_GRID_FROM_EMAIL;
+                    $from_name=$cust_admin['name'];
+                    $from=$cust_admin['email'];*/
+                    $from_name=$template_configurations['email_from_name'];
+                    $from=$template_configurations['email_from'];
+                    $to=$data['email'];
+                    $to_name=$data['name'];
+                    $mailer_data['mail_from_name']=$from_name;
+                    $mailer_data['mail_to_name']=$data['name'];
+                    $mailer_data['mail_to_user_id']=$user_id;
+                    $mailer_data['mail_from']=$from;
+                    $mailer_data['mail_to']=$data['email'];
+                    $mailer_data['mail_subject']=$subject;
+                    $mailer_data['mail_message']=$body;
+                    $mailer_data['status']=0;
+                    $mailer_data['send_date']=currentDate();
+                    $mailer_data['is_cron']=0;//0-immediate mail,1-through cron job
+                    $mailer_data['email_template_id']=$template_configurations['id_email_template'];
+                    //echo '<pre>';print_r($customer_logo);exit;
+                    $mailer_id=$this->Email_model->addMailer($mailer_data);
+                    if($mailer_data['is_cron']==0) {
+                        $mail_sent_status=sendmail($data['email'],$subject,$body);                        
+                        if($mail_sent_status==1)
+                            $this->Email_model->updateMailer(array('status'=>1,'mailer_id'=>$mailer_id));
+                    }
+                    
+                }
+                //* email notification for school admin end *//
+
                 $result = array('status'=>TRUE, 'message' => $this->lang->line('school_create'), 'data' => $inser_id);
                 $this->response($result, REST_Controller::HTTP_OK);  
             }

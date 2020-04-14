@@ -294,7 +294,7 @@ class Invoice extends REST_Controller
                     $wildcards_replaces['month']=strtoupper(date('M'));
                     $wildcards_replaces['logo']=WEB_BASE_URL.'/logo.png';
                     $wildcards_replaces['year'] = date("Y");
-                    $wildcards_replaces['url']=WEB_BASE_URL.'html';
+                    $wildcards_replaces['url']=WEB_BASE_URL;
                     $body = wildcardreplace($wildcards,$wildcards_replaces,$template_configurations['template_content']);
                     $subject = wildcardreplace($wildcards,$wildcards_replaces,$template_configurations['template_subject']);
                     /*$from_name=SEND_GRID_FROM_NAME;

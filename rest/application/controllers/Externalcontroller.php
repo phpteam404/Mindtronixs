@@ -68,7 +68,7 @@ class Externalcontroller extends CI_Controller
     //* online user registration start *//
     public function addOnlineUser(){
         $data=$this->input->post();
-        $data = json_decode(file_get_contents("php://input"), true);
+        // $data = json_decode(file_get_contents("php://input"), true);
         // print_r($data);exit;
         if(empty($data)){
             $result = array('status'=>FALSE,'message'=>$this->lang->line('invalid_data'),'data'=>'1');
@@ -79,6 +79,7 @@ class Externalcontroller extends CI_Controller
         $this->form_validator->add_rules('leadsource', array('required'=> $this->lang->line('lead_source_req')));
         $this->form_validator->add_rules('password', array('required'=> $this->lang->line('password_req')));
         $this->form_validator->add_rules('number', array('required'=> $this->lang->line('contact_num_req')));
+        $this->form_validator->add_rules('fee_master_id', array('required'=> $this->lang->line('fee_master_id_req')));
         $validated = $this->form_validator->validate($data);
         if($validated != 1)
         {
@@ -92,8 +93,8 @@ class Externalcontroller extends CI_Controller
                 echo json_encode($result); exit;
             }
         }
-        if(!empty($data['fee_structure_id'])){
-            $next_invoice_days=$this->getInvoiceDate($data['fee_structure_id']);
+        if(!empty($data['fee_master_id'])){
+            $next_invoice_days=$this->getInvoiceDate($data['fee_master_id']);
         }
         // print_r($next_invoice_days['next_invoice_date']);exit;
         $user_table_data=array(
@@ -112,17 +113,17 @@ class Externalcontroller extends CI_Controller
             'grade'=>!empty($data['grade'])?$data['grade']:'',
             'parent'=>!empty($data['parentname'])?$data['parentname']:'',
             'lead_source'=>!empty($data['leadsource'])?$data['leadsource']:'',
-            'franchise_fee_id'=>!empty($data['fee_structure_id'])?$data['fee_structure_id']:0,
+            'franchise_fee_id'=>!empty($data['fee_master_id'])?$data['fee_master_id']:0,
             'created_by'=>0,
             'created_on'=>currentDate(),
             'relation_with_student'=>!empty($data['relation'])?$data['relation']:0,
-            'next_invoice_date'=>$next_invoice_days['next_invoice_date'],
-            'remaining_invoice_days'=>$next_invoice_days['days']
+            'next_invoice_date'=>!empty($next_invoice_days['next_invoice_date'])?$next_invoice_days['next_invoice_date']:'',
+            'remaining_invoice_days'=>!empty($next_invoice_days['days'])?$next_invoice_days['days']:0
         );
         $student_id=$this->User_model->insert_data('student',$student_table_data);
         // email notification and application notification for online user start //
 
-        $get_fee_structure_details=$this->User_model->Check_record('fee_master',array('id'=>$data['fee_structure_id']));
+        $get_fee_structure_details=$this->User_model->Check_record('fee_master',array('id'=>$data['fee_master_id']));
         $fee_structure=$get_fee_structure_details[0]['name'].','.round($get_fee_structure_details[0]['amount']).'/-';
         $template_configurations=$this->Email_model->EmailTemplateList(array('language_id' =>1,'module_key'=>'ONLINE_USER_CREATION'));
         if($template_configurations['total_records']>0){

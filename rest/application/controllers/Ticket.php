@@ -457,7 +457,7 @@ class Ticket extends REST_Controller
                     $wildcards_replaces['issue_type']=$ticket_info[0]['issue_type'];
                     $wildcards_replaces['status']=$ticket_info[0]['status'];
                     $wildcards_replaces['created_by']=$ticket_info[0]['created_by'];
-                    $wildcards_replaces['created_date_time']=$ticket_info[0]['created_date'];
+                    $wildcards_replaces['created_date_time']=date("d M Y H:i:s A", strtotime($ticket_info[0]['created_date']));
                     $wildcards_replaces['logo']=WEB_BASE_URL.'assets/img/logo.png';
                     $wildcards_replaces['year'] = date("Y");
                     $wildcards_replaces['url']=WEB_BASE_URL;
@@ -530,7 +530,7 @@ class Ticket extends REST_Controller
                     $wildcards_replaces['comments']=!empty($update_commets)?$update_commets:'';
                     $wildcards_replaces['team_name']=$team_name;
                     $wildcards_replaces['update_by']=!empty($ticket_info[0]['last_updated_by'])?$ticket_info[0]['last_updated_by']:'';
-                    $wildcards_replaces['update_date_time']=!empty($ticket_info[0]['last_updated'])?$ticket_info[0]['last_updated']:'';
+                    $wildcards_replaces['update_date_time']=!empty($ticket_info[0]['last_updated'])?date("d M Y H:i:s A", strtotime($ticket_info[0]['last_updated'])):'';
                     $wildcards_replaces['status']=$ticket_info[0]['status'];
                     $wildcards_replaces['logo']=WEB_BASE_URL.'assets/img/logo.png';
                     $wildcards_replaces['year'] = date("Y");

@@ -323,7 +323,7 @@ class Invoice extends REST_Controller
                             $this->Email_model->updateMailer(array('status'=>1,'mailer_id'=>$mailer_id));
                     }
                         //App notification to be saved in Notification table.
-                    $link ='<a class="sky-blue" href="#/invoices/school_invoice/view/'.urlencode($schooldata[0]['school_name']).'/'.base64_encode($insert_id).'">'.$school_invoice_number.'</a>';
+                    $link ='<a class="sky-blue" href="#/invoices/school_invoice/view/'.rawurlencode($schooldata[0]['school_name']).'/'.base64_encode($insert_id).'">'.$school_invoice_number.'</a>';
                     
                     $notification_wildcards_replaces['url_link'] =$link ;
                     $notification_wildcards_replaces['invoice_id'] = !empty($school_invoice_number)?'#'.$school_invoice_number:'';

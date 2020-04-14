@@ -68,7 +68,7 @@ class Externalcontroller extends CI_Controller
     //* online user registration start *//
     public function addOnlineUser(){
         $data=$this->input->post();
-        // $data = json_decode(file_get_contents("php://input"), true);
+        $data = json_decode(file_get_contents("php://input"), true);
         // print_r($data);exit;
         if(empty($data)){
             $result = array('status'=>FALSE,'message'=>$this->lang->line('invalid_data'),'data'=>'1');
@@ -260,7 +260,7 @@ class Externalcontroller extends CI_Controller
             }
             //Your Invoice Term {fee_term}  -  {current_month} -{year} is ready for view. Click on the link to view {url_link}
             //App notification to be saved in Notification table.
-            $link ='<a class="sky-blue" href="#/invoices/online_users_invoice/view/'.$data['name'].'/'.base64_encode($invoice_insert).'">'.$invoice_number.'</a>';
+            $link ='<a class="sky-blue" href="#/invoices/online_users_invoice/view/'.rawurlencode($data['name']).'/'.base64_encode($invoice_insert).'">'.$invoice_number.'</a>';
             $notification_wildcards_replaces['fee_term'] = $get_fee_structure_details[0]['name'];
             $notification_wildcards_replaces['month'] = date('M');
             $notification_wildcards_replaces['year'] = date('Y');

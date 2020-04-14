@@ -127,7 +127,7 @@ class Cron extends CI_Controller
                     }
                     //Your Invoice Term {fee_term}  -  {current_month} -{year} is ready for view. Click on the link to view {url_link}
                     //App notification to be saved in Notification table.
-                    $link ='<a class="sky-blue" href="#/invoices/students_invoice/view/'.urlencode($slv['user_name']).'/'.base64_encode($slv['invoice_pk_id']).'">'.$slv['invoice_number'].'</a>';
+                    $link ='<a class="sky-blue" href="#/invoices/students_invoice/view/'.rawurlencode($slv['user_name']).'/'.base64_encode($slv['invoice_pk_id']).'">'.$slv['invoice_number'].'</a>';
                     $notification_wildcards_replaces['fee_term'] = $slv['child_name'];
                     $notification_wildcards_replaces['month'] = date('M');
                     $notification_wildcards_replaces['year'] = date('Y');
@@ -154,7 +154,7 @@ class Cron extends CI_Controller
             $this->db->query($query_b);
             
             //Franchise Invoice Select Query
-            $franchise_select = 'SELECT SUM(si.total_amount) as amount,si.franchise_id, CONCAT("MIN/",f.name,"/",YEAR(CURDATE()),"/",DATE_FORMAT(CURDATE(),"%m"),"/",@b:=LPAD(@b+1, 6, 0)) invoice_number,(SUM(si.total_amount)*'.FRACHISE_PERCENTAGE.'/100) as royal_amount,CURDATE(),3 as invoice_type,CURRENT_DATE as created_on ,'.FRACHISE_TAX_PERCENTAGE.' as tax,(SUM(si.total_amount)*'.FRACHISE_TAX_PERCENTAGE.'/100) as tax_amount,((SUM(si.total_amount)*'.FRACHISE_PERCENTAGE.'/100)+(SUM(si.total_amount)*'.FRACHISE_TAX_PERCENTAGE.'/100)) as total_amount
+            $franchise_select = 'SELECT SUM(si.total_amount) as amount,si.franchise_id, CONCAT("MIN/",f.franchise_code,"/",YEAR(CURDATE()),"/",DATE_FORMAT(CURDATE(),"%m"),"/",@b:=LPAD(@b+1, 6, 0)) invoice_number,(SUM(si.total_amount)*'.FRACHISE_PERCENTAGE.'/100) as royal_amount,CURDATE(),3 as invoice_type,CURRENT_DATE as created_on ,'.FRACHISE_TAX_PERCENTAGE.' as tax,(SUM(si.total_amount)*'.FRACHISE_TAX_PERCENTAGE.'/100) as tax_amount,((SUM(si.total_amount)*'.FRACHISE_PERCENTAGE.'/100)+(SUM(si.total_amount)*'.FRACHISE_TAX_PERCENTAGE.'/100)) as total_amount
             FROM student_invoice si
             LEFT JOIN student s ON si.student_id=s.id
             LEFT JOIN franchise f ON si.franchise_id = f.id
@@ -178,7 +178,7 @@ class Cron extends CI_Controller
         /* Email + Notification for Franchise Invoice Starts */
         if($FRANCHISE_NOTIFICATION){
             // echo $franchise_select;exit;
-            $franchise_select = "SELECT si.invoice_number,si.id invoice_pk_id,u.id uid,u.email,CONCAT(u.first_name,' ',u.last_name) user_name FROM user u JOIN student_invoice si ON u.franchise_id = si.franchise_id AND u.user_role_id = 5 WHERE si.invoice_date = CURDATE() AND si.invoice_type = 3";
+            $franchise_select = "SELECT si.invoice_number,si.id invoice_pk_id,u.id uid,u.email,CONCAT(u.first_name,' ',u.last_name) user_name,f.name franchise_name FROM user u JOIN student_invoice si ON u.franchise_id = si.franchise_id JOIN franchise f ON si.franchise_id=f.id AND u.user_role_id = 5 WHERE si.invoice_date = CURDATE() AND si.invoice_type = 3";
             // echo $franchise_select;exit;
             $franchise_list = $this->User_model->custom_query($franchise_select);
             $template_configurations=$this->Email_model->EmailTemplateList(array('language_id' =>1,'module_key'=>'INVOICE_CREATION'));
@@ -225,7 +225,7 @@ class Cron extends CI_Controller
                     }
                     //Your Invoice Term {fee_term}  -  {current_month} -{year} is ready for view. Click on the link to view {url_link}
                     //App notification to be saved in Notification table.
-                    $link ='<a class="sky-blue" href="#/invoices/students_invoice/view/'.urlencode($flv['user_name']).'/'.base64_encode($flv['invoice_pk_id']).'">'.$flv['invoice_number'].'</a>';
+                    $link ='<a class="sky-blue" href="#/invoices/franchise_invoice/view/'.rawurlencode($flv['franchise_name']).'/'.base64_encode($flv['invoice_pk_id']).'">'.$flv['invoice_number'].'</a>';
                     $notification_wildcards_replaces['fee_term'] = '';
                     $notification_wildcards_replaces['month'] = date('M');
                     $notification_wildcards_replaces['year'] = date('Y');
@@ -245,7 +245,7 @@ class Cron extends CI_Controller
             }
         }
         /* Email + Notification for Franchise Invoice Ends */
-
+        $STUDENT_NEXT_INVOICE_DATE=TRUE;
         /* Updating Next Invoice Date for Students */
         if($STUDENT_NEXT_INVOICE_DATE){
             $query2='UPDATE student s 

@@ -942,7 +942,7 @@ class User_model extends CI_Model
         return $query->result_array();
     }
     public function onlineUserList($data=null){
-        $this->db->select('concat(u.first_name," ",u.last_name) as user_name,u.email,u.phone_no,DATE_FORMAT(u.created_on,"%Y-%m-%d") as date_of_registration,fm.amount as plan_amount,mc.child_name as plan,s.next_invoice_date as plan_expiry_date');
+        $this->db->select('u.id as user_id,concat(u.first_name," ",u.last_name) as user_name,u.email,u.phone_no,DATE_FORMAT(u.created_on,"%Y-%m-%d") as date_of_registration,fm.amount as plan_amount,mc.child_name as plan,s.next_invoice_date as plan_expiry_date');
         $this->db->from('user u');
         $this->db->join('student s','u.id=s.user_id','left');
         $this->db->join('fee_master fm','s.franchise_fee_id=fm.id','left');

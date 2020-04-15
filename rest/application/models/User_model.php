@@ -941,8 +941,8 @@ class User_model extends CI_Model
         $query = $this->db->get();
         return $query->result_array();
     }
-    public function onlineUserList($data=null){
-        $this->db->select('`u`.`id` as `user_id`, concat(u.first_name, " ", u.last_name) as user_name, `u`.`email`, `u`.`phone_no`, DATE_FORMAT(u.created_on, "%Y-%m-%d") as date_of_registration, round(fm.amount) as `plan_amount`, `mc`.`child_name` as `plan`, `s`.`next_invoice_date` as `plan_expiry_date`,s.parent,mc1.child_key as grade,mc2.child_key as relation');
+    public function getOnlineuservoiceList($data=null){
+        $this->db->select('`u`.`id` as `user_id`, concat(u.first_name, " ", u.last_name) as user_name, `u`.`email`, `u`.`phone_no`, DATE_FORMAT(u.created_on, "%Y-%m-%d") as date_of_registration, round(fm.amount) as `plan_amount`, `mc`.`child_name` as `plan`, `s`.`next_invoice_date` as `plan_expiry_date`,s.parent,mc1.child_name as grade,mc2.child_name as relation');
         $this->db->from('user u');
         $this->db->join('student s','u.id=s.user_id','left');
         $this->db->join('fee_master fm','s.franchise_fee_id=fm.id','left');

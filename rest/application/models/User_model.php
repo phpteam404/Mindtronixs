@@ -942,12 +942,17 @@ class User_model extends CI_Model
         return $query->result_array();
     }
     public function onlineUserList($data=null){
-        $this->db->select('u.id as user_id,concat(u.first_name," ",u.last_name) as user_name,u.email,u.phone_no,DATE_FORMAT(u.created_on,"%Y-%m-%d") as date_of_registration,fm.amount as plan_amount,mc.child_name as plan,s.next_invoice_date as plan_expiry_date');
+        $this->db->select('`u`.`id` as `user_id`, concat(u.first_name, " ", u.last_name) as user_name, `u`.`email`, `u`.`phone_no`, DATE_FORMAT(u.created_on, "%Y-%m-%d") as date_of_registration, round(fm.amount) as `plan_amount`, `mc`.`child_name` as `plan`, `s`.`next_invoice_date` as `plan_expiry_date`,s.parent,mc1.child_key as grade,mc2.child_key as relation');
         $this->db->from('user u');
         $this->db->join('student s','u.id=s.user_id','left');
         $this->db->join('fee_master fm','s.franchise_fee_id=fm.id','left');
         $this->db->join('master_child mc','fm.term=mc.id AND mc.master_id=11','left');
+        $this->db->join('`master_child` `mc1`','s.grade=`mc1`.`id` AND `mc1`.`master_id`=5','left');
+        $this->db->join('`master_child` `mc2`','s.relation_with_student=`mc2`.`id` AND `mc2`.`master_id`=10','left');
         $this->db->where('u.user_role_id=',9);
+        if(!empty($data['user_id'])){
+            $this->db->where('u.id',$data['user_id']);
+        }
         if(isset($data['search_key'])){
             $this->db->group_start();
             $this->db->where('u.first_name like "%'.$data['search_key'].'%" or u.last_name like "%'.$data['search_key'].'%" or CONCAT(u.first_name,\' \',u.last_name) like "%'.$data['search_key'].'%" or u.email like "%'.$data['search_key'].'%" or u.phone_no like "%'.$data['search_key'].'%" or mc.child_key like "%'.$data['search_key'].'%"');

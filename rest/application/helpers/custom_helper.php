@@ -997,7 +997,7 @@ if (!function_exists('getTableHeads')) {
             // $post_data["title"] = "First url";
             $ch = curl_init("https://api.rebrandly.com/v1/links");
             curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-                "apikey: 9cadf20cb6394cf69a1b30e6848f5117",
+                "apikey: ".RE_BRANDLY_API_KEY,
                 "Content-Type: application/json"
             ));
             curl_setopt($ch, CURLOPT_POST, 1);

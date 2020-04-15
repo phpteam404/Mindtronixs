@@ -910,14 +910,13 @@ if (!function_exists('getTableHeads')) {
                break;
             case 'online_users_list':
                 return array(
-                    array('field'=> 'name', 'header'=> 'Student Name','alias'=>'name'),
-                    array('field'=>'manager', 'header'=> 'Parent Name','alias'=>'manager' ),
-                    array('field'=> 'grade', 'header'=> 'Grade','alias'=>'grade' ),
-                    array('field'=> 'city', 'header'=> 'City','alias'=>'city' ),
+                    array('field'=> 'user_name', 'header'=> ' Name','alias'=>'user_name'),
                     array('field'=> 'email', 'header'=>'Email','alias'=>'email' ),
-                    array('field'=> 'phone', 'header'=> 'Phone','alias' =>'phone' ),
-                    array('field'=> 'status', 'header'=> 'Status','alias'=>'status' ),
-                    array('field'=> 'actions', 'header'=> 'Actions','alias'=>'actions' )
+                    array('field'=> 'phone_no', 'header'=> 'Contact','alias' =>'phone_no' ),
+                    array('field'=> 'date_of_registration', 'header'=> 'Date of Registration','alias' =>'date_of_registration' ),
+                    array('field'=> 'plan', 'header'=> 'Plan','alias'=>'plan' ),
+                    array('field'=> 'plan_amount', 'header'=> 'Plan Amount','alias'=>'plan_amount' ),
+                    array('field'=> 'plan_expiry_date', 'header'=> 'Plan Expiry Date','alias'=>'plan_expiry_date' )
                 );
                 break;
             case 'trainer_schedule_list':

@@ -1110,5 +1110,13 @@ class User extends REST_Controller
             }
         }
     }
+    //* online subscription(online user) list start  *//
+    public function onlineSubscriptionList_get(){
+        $data=$this->input->get();
+        $online_subscription_data=$this->User_model->onlineUserList($data);
+        $result = array('status'=>TRUE, 'message' => $this->lang->line('success'),'data'=>array('data' =>$online_subscription_data['data'],'total_records' =>$online_subscription_data['total_records'],'table_headers'=>getTableHeads('online_users_list')));
+        $this->response($result, REST_Controller::HTTP_OK);
+    }
+    //* online subscription(online user) list end  *//
 
 }

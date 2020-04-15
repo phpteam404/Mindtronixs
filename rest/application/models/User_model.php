@@ -941,6 +941,31 @@ class User_model extends CI_Model
         $query = $this->db->get();
         return $query->result_array();
     }
+    public function onlineUserList($data=null){
+        $this->db->select('concat(u.first_name," ",u.last_name) as user_name,u.email,u.phone_no,DATE_FORMAT(u.created_on,"%Y-%m-%d") as date_of_registration,fm.amount as plan_amount,mc.child_name as plan,s.next_invoice_date as plan_expiry_date');
+        $this->db->from('user u');
+        $this->db->join('student s','u.id=s.user_id','left');
+        $this->db->join('fee_master fm','s.franchise_fee_id=fm.id','left');
+        $this->db->join('master_child mc','fm.term=mc.id AND mc.master_id=11','left');
+        $this->db->where('u.user_role_id=',9);
+        if(isset($data['search_key'])){
+            $this->db->group_start();
+            $this->db->where('u.first_name like "%'.$data['search_key'].'%" or u.last_name like "%'.$data['search_key'].'%" or CONCAT(u.first_name,\' \',u.last_name) like "%'.$data['search_key'].'%" or u.email like "%'.$data['search_key'].'%" or u.phone_no like "%'.$data['search_key'].'%" or mc.child_key like "%'.$data['search_key'].'%"');
+            $this->db->group_end();
+        }
+        $all_clients_count_db=clone $this->db;
+        $all_clients_count = $all_clients_count_db->get()->num_rows();
+        if(isset($data['start']) && $data['number']!='')
+            $this->db->limit($data['number'],$data['start']);
+        if(isset($data['sort']))
+            $this->db->order_by($data['sort'],$data['order']);
+        else
+        $this->db->order_by('u.id','desc');
+        
+        $query = $this->db->get();//echo $this->db->last_query();exit;
+        return array('total_records' => $all_clients_count,'data' => $query->result_array());
+        return $query->result_array();
+    }
 }
 
 

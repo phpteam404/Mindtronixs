@@ -80,7 +80,12 @@ class Cron extends CI_Controller
 
         /* Email + Notification for Students Invoice Starts */
         if($STUDENT_NOTIFICATION){
-            $student_select = "SELECT mc.child_name,si.invoice_number,si.id invoice_pk_id,u.email,u.id uid,CONCAT(u.first_name,' ',u.last_name) user_name FROM user u LEFT JOIN student s ON u.id = s.user_id LEFT JOIN student_invoice si ON si.student_id = s.id LEFT JOIN franchise_fee ff ON s.franchise_fee_id = ff.id LEFT JOIN fee_master fm ON ff.fee_master_id = fm.id LEFT JOIN master_child mc ON fm.term = mc.id WHERE s.next_invoice_date = CURDATE()";
+            $student_select = "SELECT mc.child_name,si.invoice_number,si.id invoice_pk_id,u.email,u.id uid,CONCAT(u.first_name,' ',u.last_name) user_name ,s.franchise_fee_id
+            FROM user u 
+            LEFT JOIN student s ON u.id = s.user_id 
+            LEFT JOIN student_invoice si ON si.student_id = s.id 
+            LEFT JOIN fee_master fm ON si.franchise_fee_id= fm.id 
+            LEFT JOIN master_child mc ON fm.term = mc.id WHERE s.next_invoice_date = CURDATE()";
             // echo $student_select;exit;
             $studnets_list = $this->User_model->custom_query($student_select);
             $template_configurations=$this->Email_model->EmailTemplateList(array('language_id' =>1,'module_key'=>'INVOICE_CREATION'));
@@ -178,7 +183,7 @@ class Cron extends CI_Controller
         /* Email + Notification for Franchise Invoice Starts */
         if($FRANCHISE_NOTIFICATION){
             // echo $franchise_select;exit;
-            $franchise_select = "SELECT si.invoice_number,si.id invoice_pk_id,u.id uid,u.email,CONCAT(u.first_name,' ',u.last_name) user_name,f.name franchise_name FROM user u JOIN student_invoice si ON u.franchise_id = si.franchise_id JOIN franchise f ON si.franchise_id=f.id AND u.user_role_id = 5 WHERE si.invoice_date = CURDATE() AND si.invoice_type = 3";
+            $franchise_select = "SELECT si.invoice_number,si.id invoice_pk_id,u.id uid,u.email,CONCAT(u.first_name,' ',u.last_name) user_name,f.name franchise_name FROM user u JOIN student_invoice si ON u.franchise_id = si.franchise_id JOIN franchise f ON si.franchise_id=f.id AND u.user_role_id = 5 WHERE si.invoice_date = CURDATE() AND si.invoice_type = 3 AND u.user_status=1";
             // echo $franchise_select;exit;
             $franchise_list = $this->User_model->custom_query($franchise_select);
             $template_configurations=$this->Email_model->EmailTemplateList(array('language_id' =>1,'module_key'=>'INVOICE_CREATION'));

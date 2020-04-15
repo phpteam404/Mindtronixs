@@ -292,7 +292,7 @@ class Invoice extends REST_Controller
                     $wildcards_replaces['fee_term']='';
                     $wildcards_replaces['year']=date("Y");
                     $wildcards_replaces['month']=strtoupper(date('M'));
-                    $wildcards_replaces['logo']=WEB_BASE_URL.'/logo.png';
+                    $wildcards_replaces['logo']=WEB_BASE_URL.'assets/img/logo.png';
                     $wildcards_replaces['year'] = date("Y");
                     $wildcards_replaces['url']=WEB_BASE_URL;
                     $body = wildcardreplace($wildcards,$wildcards_replaces,$template_configurations['template_content']);

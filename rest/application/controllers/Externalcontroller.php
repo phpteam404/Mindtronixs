@@ -68,7 +68,7 @@ class Externalcontroller extends CI_Controller
     //* online user registration start *//
     public function addOnlineUser(){
         $data=$this->input->post();
-        $data = json_decode(file_get_contents("php://input"), true);
+        // $data = json_decode(file_get_contents("php://input"), true);
         // print_r($data);exit;
         if(empty($data)){
             $result = array('status'=>FALSE,'message'=>$this->lang->line('invalid_data'),'data'=>'1');

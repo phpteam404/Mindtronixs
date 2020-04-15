@@ -842,11 +842,13 @@ if (!function_exists('getTableHeads')) {
                 break;
             case 'online_user_invoice_list':
                 return array(
-                  array('field'=> 'name', 'header'=> 'Name' ,'alias'=>'name'),
-                  array('field' => 'phone', 'header'=> 'Phone','alias'=> 'phone'),
-                  array('field'=> 'month', 'header'=> 'Month','alias'=>'month' ),
-                  array('field'=> 'bill', 'header'=> 'Bill' ,'alias'=>'bill'),
-                  array('field'=> 'status', 'header'=> 'Status','alias'=>'status')
+                    array('field'=> 'invoice_number', 'header'=> 'Invoice #','alias'=>'invoice_number'),
+                    array('field'=>'user_name', 'header'=> 'Name','alias'=>'user_name' ),
+                    array('field'=> 'phone_no', 'header'=> 'Contact','alias'=>'phone_no' ),
+                    array('field'=> 'email', 'header'=> 'Email','alias'=>'email' ),
+                    array('field'=> 'invoice_date', 'header'=> 'Invoice Date','alias'=>'invoice_date' ),
+                    array('field'=> 'amount', 'header'=> 'Amount','alias'=>'amount' ),
+                    array('field'=> 'status', 'header'=> 'Status','alias'=>'status' )
                 );
                 break;
             case 'school_mngmt_list' :

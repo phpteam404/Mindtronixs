@@ -137,7 +137,7 @@ class Invoices_model extends CI_Model
             $this->db->where('si.franchise_id',$data['franchise_id']);
         }
         if(!empty($data['online_user_id'])){
-            $this->db->where('si.studen_id',$data['online_user_id']);
+            $this->db->where('si.student_id',$data['online_user_id']);
         }
         if(!empty($data['school_invoice_id'])){
             $this->db->select('si.id as school_invoice_id,si.school_id');

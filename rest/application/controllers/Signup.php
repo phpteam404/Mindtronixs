@@ -56,9 +56,8 @@ class Signup extends CI_Controller
         }
         
         
-        $data['password'] = base64_decode($data['password']);//print_r($data['password']);exit;
-        // $mailCheck = $this->User_model->check_email(array('email'=>$data['username']));echo  
-        $check_status=$this->User_model->check_record('user',array('email'=>$data['username']));
+        $data['password'] = base64_decode($data['password']);
+        $check_status=$this->User_model->check_record_where_in('user_status','user',array('email'=>$data['username']),array('user_status'=>array(1,0)));
         if(empty($check_status)){
             $result = array('status'=>FALSE,'error'=>array('message'=>$this->lang->line('text_rest_invalid_credentials')),'data'=>'');
             echo json_encode($result);exit;
@@ -138,7 +137,7 @@ class Signup extends CI_Controller
             $result->lc_name = isset($check_franchise[0])?$check_franchise[0]['name']:'';
             $result->school_name = isset($check_school[0])?$check_school[0]['name']:'';
             
-            if(in_array($result->user_role_id,array(1,6,7,8))){//check login user role is Mindtronix admins
+            if(in_array($result->user_role_id,array(1,6,7,8,9))){//check login user role is Mindtronix admins and online user
                 $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>array('data' => $result), 'access_token' => $access_token,'menu'=>$menu);
                 header('Content-Type: application/json');
                 echo json_encode($result);exit;

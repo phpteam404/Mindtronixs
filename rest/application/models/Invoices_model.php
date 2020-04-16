@@ -136,6 +136,9 @@ class Invoices_model extends CI_Model
         if(!empty($data['franchise_id'])){
             $this->db->where('si.franchise_id',$data['franchise_id']);
         }
+        if(!empty($data['online_user_id'])){
+            $this->db->where('si.student_id',$data['online_user_id']);
+        }
         if(!empty($data['school_invoice_id'])){
             $this->db->select('si.id as school_invoice_id,si.school_id');
             $this->db->where_not_in('si.id',array($data['school_invoice_id']));
@@ -146,12 +149,17 @@ class Invoices_model extends CI_Model
             $this->db->where_not_in('si.id',array($data['franchise_invoice_id']));
             $this->db->where('si.invoice_type',3);
         }
+        if(!empty($data['onlineuser_invoice_id'])){
+            $this->db->select('si.id as onlineuser_invoice_id,si.student_id as online_user_id');
+            $this->db->where_not_in('si.id',array($data['onlineuser_invoice_id']));
+            $this->db->where('si.invoice_type',4);
+        }
         $this->db->order_by('si.id','desc');
         $query = $this->db->get();
         return $query->result_array();
         
     }
-    public function getStudentPaymentHistory($data=null){
+    public function getStudentPaymentHistory($data=null){ 
         $this->db->select('concat(u.first_name," ",u.last_name) as updated_by,mc.child_key as status,mc1.child_key as payment_type,comments,DATE_FORMAT(sih.update_on,"%Y-%m-%d") updated_on');
         $this->db->from('student_invoice_payment_history sih');
         $this->db->join('user u','sih.updated_by =u.id','left');
@@ -168,6 +176,10 @@ class Invoices_model extends CI_Model
         if(!empty($data['franchise_invoice_id'])){
             $this->db->select('sih.franchise_invoice_id');
             $this->db->where('sih.franchise_invoice_id',$data['franchise_invoice_id']);
+        }
+        if(!empty($data['onlineuser_invoice_id'])){
+            $this->db->select('sih.onlineuser_invoice_id');
+            $this->db->where('sih.onlineuser_invoice_id',$data['onlineuser_invoice_id']);
         }
         $this->db->order_by('sih.id','desc');
         $query = $this->db->get();
@@ -286,6 +298,56 @@ class Invoices_model extends CI_Model
         }
         if(!empty($data['franchise_invoice_id'])){
             $this->db->where('si.id',$data['franchise_invoice_id']);
+        }
+        if(!empty($data['month'])){
+            $this->db->like('si.invoice_date', $data['month'], 'both');
+        }
+        if(isset($data['sort']) && isset($data['order']))
+            $this->db->order_by($data['sort'],$data['order']);
+        else
+        $this->db->order_by('si.id','desc');
+        $all_clients_count_db=clone $this->db;
+        $all_clients_count = $all_clients_count_db->get()->num_rows();
+        if(isset($data['start']) && $data['number']!='')
+            $this->db->limit($data['number'],$data['start']);
+        $query = $this->db->get();
+        return array('total_records' => $all_clients_count,'data' => $query->result_array());
+    }
+     public function getOnlineuservoiceList($data=null){
+            $this->db->select('si.id as onlineuser_invoice_id,replace(si.invoice_number," ","") as invoice_number,concat(u.first_name," ",u.last_name) as user_name,u.phone_no ,u.email as email,si.invoice_date,TRIM(si.total_amount)+0 as amount,mc.child_name as status,if(si.paid_amount="","0",si.paid_amount) as paid_amount,si.student_id as online_user_id');
+            if(!empty($data['onlineuser_invoice_id'])){
+                $this->db->select('fm.name as fee_structure,fm.term,si.payment_status,DATE_FORMAT(s.created_on, "%Y-%m-%d") as member_since,s.id as student_id,s.next_invoice_date,si.due_date,si.paid_date');
+            }
+        $this->db->from('student_invoice si');
+        $this->db->join('student s','si.student_id=s.id','left');
+        $this->db->join('user u','s.user_id=u.id','left');
+        $this->db->join('master_child mc','si.payment_status=mc.id AND mc.master_id=23','left');
+        if(!empty($data['onlineuser_invoice_id'])){
+            $this->db->join('fee_master fm','si.franchise_fee_id=fm.id','left');
+            $this->db->join('master_child mc1','fm.term=mc1.id AND mc1.master_id=11','left');
+        }
+        if(isset($data['search_key']) && $data['search_key']!==''){
+            $this->db->group_start();
+            $this->db->where('u.first_name like "%'.$data['search_key'].'%" or u.last_name like "%'.$data['search_key'].'%" or CONCAT(u.first_name,\' \',u.last_name) like "%'.$data['search_key'].'%" or u.email like "%'.$data['search_key'].'%"  or u.phone_no like "%'.$data['search_key'].'%"or si.invoice_number like "%'.$data['search_key'].'%"');
+            $this->db->group_end();
+        }
+        
+        $this->db->where('si.invoice_type',4);
+        if(!empty($data['from_date']) && !empty($data['to_date'])){
+            $this->db->where('si.invoice_date between "'.$data['from_date'].'" and "'.$data['to_date'].'"');
+        }
+        if(!empty($data['status_id'])){
+            $this->db->where('si.payment_status',$data['status_id']);
+        }
+        if(!empty($data['franchise_id'])){
+            $this->db->where('si.franchise_id',$data['franchise_id']);
+        }
+        if(empty($data['from_date']) && empty($data['to_date']) &&  empty($data['month']) && empty($data['onlineuser_invoice_id'])){
+            $this->db->where('MONTH(si.invoice_date)', date('m')); //For current month
+            $this->db->where('YEAR(si.invoice_date)', date('Y')); // For current year
+        }
+        if(!empty($data['onlineuser_invoice_id'])){
+            $this->db->where('si.id',$data['onlineuser_invoice_id']);
         }
         if(!empty($data['month'])){
             $this->db->like('si.invoice_date', $data['month'], 'both');

@@ -103,7 +103,7 @@ class Externalcontroller extends CI_Controller
             'email'=>!empty($data['email'])?$data['email']:'',
             'password'=>!empty($data['password'])?md5($data['password']):'',
             'user_role_id'=>9,
-            'phone_no'=>!empty($data['number'])?$data['phone_no']:'',
+            'phone_no'=>!empty($data['number'])?$data['number']:'',
             'created_by'=>0,
             'created_on'=>currentDate()
         );

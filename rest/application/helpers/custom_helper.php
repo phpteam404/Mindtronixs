@@ -917,8 +917,8 @@ if (!function_exists('getTableHeads')) {
                     array('field'=> 'phone_no', 'header'=> 'Contact','alias' =>'phone_no' ),
                     array('field'=> 'date_of_registration', 'header'=> 'Date of Registration','alias' =>'date_of_registration' ),
                     array('field'=> 'plan', 'header'=> 'Plan','alias'=>'plan' ),
-                    array('field'=> 'plan_amount', 'header'=> 'Plan Amount','alias'=>'plan_amount' ),
-                    array('field'=> 'plan_expiry_date', 'header'=> 'Plan Expiry Date','alias'=>'plan_expiry_date' )
+                    array('field'=> 'plan_amount', 'header'=> 'Amount','alias'=>'plan_amount' ),
+                    array('field'=> 'plan_expiry_date', 'header'=> 'Expiry Date','alias'=>'plan_expiry_date' )
                 );
                 break;
             case 'trainer_schedule_list':

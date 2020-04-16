@@ -344,6 +344,9 @@ class Invoices_model extends CI_Model
         if(!empty($data['franchise_id'])){
             $this->db->where('si.franchise_id',$data['franchise_id']);
         }
+        if(!empty($data['student_id'])){
+            $this->db->where('si.student_id',$data['student_id']);
+        }
         if(empty($data['from_date']) && empty($data['to_date']) &&  empty($data['month']) && empty($data['onlineuser_invoice_id'])){
             $this->db->where('MONTH(si.invoice_date)', date('m')); //For current month
             $this->db->where('YEAR(si.invoice_date)', date('Y')); // For current year

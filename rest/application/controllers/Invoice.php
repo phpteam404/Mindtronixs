@@ -91,7 +91,7 @@ class Invoice extends REST_Controller
             $this->response($result, REST_Controller::HTTP_OK);
         }
         $previous_invoice_data=$this->Invoices_model->getPreviousStudentInvoice($data);
-        $result = array('status'=>TRUE, 'message' => $this->lang->line('success'),'data'=>array('data' =>!empty($previous_invoice_data)?$previous_invoice_data:array()));
+        $result = array('status'=>TRUE, 'message' => $this->lang->line('success'),'data'=>array('data' =>!empty($previous_invoice_data)?$previous_invoice_data:array(),'total_records'=>count($previous_invoice_data)));
         $this->response($result, REST_Controller::HTTP_OK);
     }
 

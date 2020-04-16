@@ -223,6 +223,68 @@ class Invoice extends REST_Controller
         $invoice_insert=$this->User_model->insert_data('student_invoice',$invoice_data);
          $id=str_pad($invoice_insert,6,"0",STR_PAD_LEFT);
         $invoice_number="MIN/".$franchise_name."/".$year."/".$month."/".$id;
+        //* email and application notification for student invoice  start *//
+        $template_configurations=$this->Email_model->EmailTemplateList(array('language_id' =>1,'module_key'=>'INVOICE_CREATION'));
+            if($template_configurations['total_records']>0){
+                $template_configurations=$template_configurations['data'][0];
+                $wildcards=$template_configurations['wildcards'];
+                $wildcards_replaces=array();
+                $wildcards_replaces['name'] = $student_data[0]['student_name'];
+                $wildcards_replaces['fee_term'] = $student_data[0]['fee_term'];
+                $wildcards_replaces['month'] = date('M');
+                $wildcards_replaces['year'] = date("Y");
+                $wildcards_replaces['url'] = WEB_BASE_URL;
+                $wildcards_replaces['href_text'] = $invoice_number;
+                $wildcards_replaces['logo'] = WEB_BASE_URL.'assets/img/logo.png';
+                
+                $body = wildcardreplace($wildcards,$wildcards_replaces,$template_configurations['template_content']);
+                $subject = wildcardreplace($wildcards,$wildcards_replaces,$template_configurations['template_subject']);
+                /*$from_name=SEND_GRID_FROM_NAME;
+                $from=SEND_GRID_FROM_EMAIL;
+                $from_name=$cust_admin['name'];
+                $from=$cust_admin['email'];*/
+                $from_name=$template_configurations['email_from_name'];
+                $from=$template_configurations['email_from'];
+                $to=$student_data[0]['email'];
+                $to_name=$student_data[0]['student_name'];
+                $mailer_data['mail_from_name']=$from_name;
+                $mailer_data['mail_to_name']=$student_data[0]['student_name'];
+                $mailer_data['mail_to_user_id']=$student_data[0]['user_id'];
+                $mailer_data['mail_from']=$from;
+                $mailer_data['mail_to']=$student_data[0]['email'];
+                $mailer_data['mail_subject']=$subject;
+                $mailer_data['mail_message']=$body;
+                $mailer_data['status']=0;
+                $mailer_data['send_date']=currentDate();
+                $mailer_data['is_cron']=1;//0-immediate mail,1-through cron job
+                $mailer_data['email_template_id']=$template_configurations['id_email_template'];
+                //echo '<pre>';print_r($customer_logo);exit;
+                $mailer_id=$this->Email_model->addMailer($mailer_data);
+                if($mailer_data['is_cron']==0) {
+                    $mail_sent_status=sendmail($data['email'],$subject,$body);                        
+                    if($mail_sent_status==1)
+                        $this->Email_model->updateMailer(array('status'=>1,'mailer_id'=>$mailer_id));
+                }
+                //Your Invoice Term {fee_term}  -  {current_month} -{year} is ready for view. Click on the link to view {url_link}
+                //App notification to be saved in Notification table.
+                $link ='<a class="sky-blue" href="#/invoices/students_invoice/view/'.rawurlencode($student_data[0]['student_name']).'/'.base64_encode($invoice_insert).'">'.$invoice_number.'</a>';
+                $notification_wildcards_replaces['fee_term'] = $student_data[0]['fee_term'];
+                $notification_wildcards_replaces['month'] = date('M');
+                $notification_wildcards_replaces['year'] = date('Y');
+                $notification_wildcards_replaces['url_link'] = $link;
+                $notification_message = wildcardreplace($template_configurations['wildcards'],$notification_wildcards_replaces,$template_configurations['application_template_content']);
+                $this->Email_model->addNotification(array(
+                    'assigned_to' => $student_data[0]['user_id'],
+                    'notification_template' => $notification_message,
+                    'notification_link' => '',
+                    'notification_comments' => str_replace('{invoice_id}',$invoice_number,$template_configurations['notification_comments']),
+                    'notification_type' => 'app',
+                    'created_date_time' => currentDate(),
+                    'module_type' => 'user'
+                ));
+                
+            }
+        //* email and application notification for student invoice end *//
         $this->User_model->update_data('student_invoice',array('invoice_number'=>$invoice_number),array('id'=>$invoice_insert));
         if(!empty($invoice_insert)){
             $result = array('status'=>TRUE, 'message' =>$this->lang->line('invoice_generate'), 'data'=>array('data'=>$invoice_insert));

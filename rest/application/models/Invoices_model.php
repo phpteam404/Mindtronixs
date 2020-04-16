@@ -187,10 +187,12 @@ class Invoices_model extends CI_Model
 
     }
     public function getStudentInvoicedData($data=null){
-        $this->db->select(' `s`.`id` `student_id`, `s`.`franchise_id`, `fm`.`amount`, `fm`.`discount`, `fm`.`tax`, `fm`.`term`, TRIM(((fm.amount+(s.remaining_invoice_days*(fm.amount/30)))-((fm.amount+(s.remaining_invoice_days*(fm.amount/30)))*fm.discount/100)+((fm.amount+(s.remaining_invoice_days*(fm.amount/30)))*fm.tax/100)))+0 as total_amount, `s`.`franchise_fee_id`, `f`.`franchise_code`, TRIM(((fm.amount+(s.remaining_invoice_days*(fm.amount/30)))*fm.discount/100))+0 as discount_amount, TRIM((fm.amount+(s.remaining_invoice_days*(fm.amount/30)))*fm.tax/100)+0 as tax_amount, `fm`.`due_days`');
+        $this->db->select(' `s`.`id` `student_id`, `s`.`franchise_id`, `fm`.`amount`, `fm`.`discount`, `fm`.`tax`, `fm`.`term`, TRIM(((fm.amount+(s.remaining_invoice_days*(fm.amount/30)))-((fm.amount+(s.remaining_invoice_days*(fm.amount/30)))*fm.discount/100)+((fm.amount+(s.remaining_invoice_days*(fm.amount/30)))*fm.tax/100)))+0 as total_amount, `s`.`franchise_fee_id`, `f`.`franchise_code`, TRIM(((fm.amount+(s.remaining_invoice_days*(fm.amount/30)))*fm.discount/100))+0 as discount_amount, TRIM((fm.amount+(s.remaining_invoice_days*(fm.amount/30)))*fm.tax/100)+0 as tax_amount, `fm`.`due_days`,CONCAT(u.first_name," ",u.last_name) as student_name,u.email,mc.child_name as fee_term,u.id as user_id');
         $this->db->from('student s');
         $this->db->join('franchise f','s.franchise_id=f.id','left');
         $this->db->join('fee_master fm','s.franchise_fee_id=fm.id','left');
+        $this->db->join('master_child mc','mc.id=fm.term AND mc.master_id=11','left');
+        $this->db->join('user u','s.user_id=u.id','left');
         if(!empty($data['student_id'])){
             $this->db->where('s.id',$data['student_id']);
         }

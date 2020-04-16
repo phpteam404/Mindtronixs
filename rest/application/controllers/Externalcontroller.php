@@ -54,6 +54,7 @@ class Externalcontroller extends CI_Controller
                 'client_browser' => $_SERVER['HTTP_USER_AGENT'],
                 'client_os' => getUserOS($_SERVER['HTTP_USER_AGENT']),
                 'client_remote_address' => $_SERVER['REMOTE_ADDR'],
+                'server_referer'=>isset($_SERVER['HTTP_REFERER'])?$_SERVER['HTTP_REFERER']:'',
                 'created_date' => currentDate()
                 );
             $this->User_model->insert_data('digital_content_view_history',$content_history);

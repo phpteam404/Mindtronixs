@@ -1098,7 +1098,7 @@ class User extends REST_Controller
                      return array('next_invoice_date'=>$next_invoice_date,'days'=>'0');
                 }
             }
-            if($term_type[0]['child_key']==ANNUAL_TERM_KEY){
+            if($term_type[0]['child_key']==ANNUAL_TERM_KEY || $term_type[0]['child_key']=='one_time'){
                 if($day<=10){
                      $next_invoice_date= date('Y-m-01', strtotime($date .'+12 month'));
                      return array('next_invoice_date'=>$next_invoice_date,'days'=>'0');

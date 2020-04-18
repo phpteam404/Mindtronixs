@@ -177,7 +177,7 @@ class Invoice extends REST_Controller
                      $remaining_days='0';
                 }
             }
-            if($term_type[0]['child_key']==ANNUAL_TERM_KEY){//if  yearly plan then generate yearly invoice date
+            if($term_type[0]['child_key']==ANNUAL_TERM_KEY || $term_type[0]['child_key']=='one_time'){//if  yearly plan then generate yearly invoice date
                 if($day<=10){
                      $next_invoice_date= date('Y-m-01', strtotime($date .'+12 month'));
                      $remaining_days='0';

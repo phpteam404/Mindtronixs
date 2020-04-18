@@ -97,7 +97,6 @@ class Externalcontroller extends CI_Controller
         if(!empty($data['fee_master_id'])){
             $next_invoice_days=$this->getInvoiceDate($data['fee_master_id']);
         }
-        // print_r($next_invoice_days['next_invoice_date']);exit;
         $user_table_data=array(
             'first_name'=>!empty($data['name'])?$data['name']:'',
             'last_name'=>!empty($data['last_name'])?$data['last_name']:' ',
@@ -266,7 +265,7 @@ class Externalcontroller extends CI_Controller
             $notification_wildcards_replaces['month'] = date('M');
             $notification_wildcards_replaces['year'] = date('Y');
             $notification_wildcards_replaces['url_link'] = $link;
-            $notification_wildcards_replaces['payment_link'] ='<a class="sky-blue" href="http://mindtronix.com/">Here</a>';
+            $notification_wildcards_replaces['payment_link'] ='<a class="sky-blue" href="http://mindtronix.com/" target="_blank">Here</a>';
             $notification_message = wildcardreplace($template_configurations['wildcards'],$notification_wildcards_replaces,$template_configurations['application_template_content']);
             $this->Email_model->addNotification(array(
                 'assigned_to' => $user_id,
@@ -337,7 +336,7 @@ class Externalcontroller extends CI_Controller
                      return array('next_invoice_date'=>$next_invoice_date,'days'=>'0');
                 }
             }
-            if($term_type[0]['child_key']==ANNUAL_TERM_KEY){
+            if($term_type[0]['child_key']==ANNUAL_TERM_KEY || $term_type[0]['child_key']=='one_time'){
                 if($day<=10){
                      $next_invoice_date= date('Y-m-01', strtotime($date .'+12 month'));
                      return array('next_invoice_date'=>$next_invoice_date,'days'=>'0');

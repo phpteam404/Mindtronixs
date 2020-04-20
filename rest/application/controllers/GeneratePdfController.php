@@ -215,7 +215,10 @@ class GeneratePdfController extends REST_Controller {
         $dompdf->setPaper($paper, $orientation);
         $dompdf->render();
         $dompdf->stream($filename.".pdf", array("Attachment" => 1));
+        $result = array('status'=>TRUE, 'message' => $this->lang->line('success'), 'data'=>array('filename'=>$filename));
+        $this->response($result, REST_Controller::HTTP_OK);
     }
+
     //* generating pdf for all invoices(student/) end *//
 }
 ?>

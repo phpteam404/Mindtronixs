@@ -17,8 +17,8 @@ class GeneratePdfController extends REST_Controller {
             $result = array('status'=>FALSE,'error'=>$this->lang->line('invalid_data'),'data'=>'1');
             $this->response($result, REST_Controller::HTTP_OK);
         }
-        if(!empty($data['student_invoice_id']) || $data['onlineuser_inoive_id']){// to get student/online user information to generate pdf
-            $student_invoice_data=$this->Invoices_model->getStudentInvoiceInfo(array('student_invoice_id'=>!empty($data['student_invoice_id'])?$data['student_invoice_id']:$data['onlineuser_inoive_id'])); 
+        if(!empty($data['student_invoice_id']) || $data['onlineuser_invoice_id']){// to get student/online user information to generate pdf
+            $student_invoice_data=$this->Invoices_model->getStudentInvoiceInfo(array('student_invoice_id'=>!empty($data['student_invoice_id'])?$data['student_invoice_id']:$data['onlineuser_invoice_id'])); 
             $invoice_number=!empty($student_invoice_data[0]['invoice_number'])?$student_invoice_data[0]['invoice_number']:'';
             $amount=!empty($student_invoice_data[0]['amount'])?number_format($student_invoice_data[0]['amount']):0;
             $tax=!empty($student_invoice_data[0]['tax'])?$student_invoice_data[0]['tax']:0;

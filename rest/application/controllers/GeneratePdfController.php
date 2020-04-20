@@ -306,14 +306,15 @@ class GeneratePdfController extends REST_Controller {
         $options = new Options();
         $options->set('isRemoteEnabled', TRUE);
         $dompdf = new Dompdf($options);
-        $contxt = stream_context_create([ 
-        'ssl' => [ 
-            'verify_peer' => FALSE, 
-            'verify_peer_name' => FALSE,
-            'allow_self_signed'=> TRUE
-            ] 
-        ]);
-        $dompdf->setHttpContext($contxt);
+        // $dompdf = new Dompdf();
+        // $contxt = stream_context_create([ 
+        // 'ssl' => [ 
+        //     'verify_peer' => FALSE, 
+        //     'verify_peer_name' => FALSE,
+        //     'allow_self_signed'=> TRUE
+        //     ] 
+        // ]);
+        // $dompdf->setHttpContext($contxt);
         $dompdf->loadHtml($html);
         $dompdf->setPaper($paper, $orientation);
         $dompdf->render();

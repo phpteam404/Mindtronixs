@@ -376,6 +376,9 @@ class Invoices_model extends CI_Model
         if(!empty($data['student_invoice_id'])){
             $this->db->where('si.id',$data['student_invoice_id']);
         }
+        if(!empty($data['onlineuser_inoive_id'])){
+            $this->db->where('si.id',$data['onlineuser_inoive_id']);
+        }
         $query = $this->db->get();
         return $query->result_array();
     }

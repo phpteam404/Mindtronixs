@@ -33,7 +33,7 @@ class GeneratePdfController extends REST_Controller {
             $address=!empty($student_invoice_data[0]['address'])?$student_invoice_data[0]['address']:'';
             $phone_no=!empty($student_invoice_data[0]['phone_no'])?$student_invoice_data[0]['phone_no']:'';
             $description=!empty($student_invoice_data[0]['description'])?$student_invoice_data[0]['description']:'';
-            // echo $this->db->last_query();exit;
+            // $file_name=trim($user_name)."_".date("M")."_".date("Y");
          }
         if(!empty($data['school_invoice_id'])){// to get school information to generate pdf
             $school_invoice_data=$this->Invoices_model->getSchoolInvoiceInfo(array('school_invoice_id'=>$data['school_invoice_id']));
@@ -51,6 +51,7 @@ class GeneratePdfController extends REST_Controller {
             $address=!empty($school_invoice_data[0]['address'])?$school_invoice_data[0]['address']:'';
             $due_date=!empty($school_invoice_data[0]['due_date'])?$school_invoice_data[0]['due_date']:'';
             $description=!empty($school_invoice_data[0]['description'])?$school_invoice_data[0]['description']:'';
+            // $file_name=trim($user_name)."_".date("M")."_".date("Y");
          }
          if(!empty($data['franchise_invoice_id'])){// to get franchise  information to generate pdf
             $franchise_invoice_data=$this->Invoices_model->getFranchiseInvoiceInfo(array('franchise_invoice_id'=>$data['franchise_invoice_id']));
@@ -67,8 +68,8 @@ class GeneratePdfController extends REST_Controller {
             $email=!empty($franchise_invoice_data[0]['email'])?$franchise_invoice_data[0]['email']:'';
             $phone_no=!empty($franchise_invoice_data[0]['primary_contact'])?$franchise_invoice_data[0]['primary_contact']:'';
             $address=!empty($franchise_invoice_data[0]['address'])?$franchise_invoice_data[0]['address']:'';
-            $description=!empty($franchise_invoice_data[0]['description'])?$franchise_invoice_data[0]['description']:'';
-           
+            $description=!empty($franchise_invoice_data[0]['description'])?$franchise_invoice_data[0]['description']:''; 
+            // $file_name=trim($user_name)."_".date("M")."_".date("Y");
          }
      $filename=!empty($student_invoice_data[0]['invoice_number'])?str_replace("/","_",$student_invoice_data[0]['invoice_number']):''; $stream=TRUE; $paper = 'A4'; $orientation = "portrait";
     $html='<!DOCTYPE html>

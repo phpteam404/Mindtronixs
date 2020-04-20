@@ -369,7 +369,7 @@ class Invoices_model extends CI_Model
         return array('total_records' => $all_clients_count,'data' => $query->result_array());
     }
     public function getStudentInvoiceInfo($data=null){
-        $this->db->select('si.invoice_number,round(si.amount) amount,round(si.tax) tax,round(si.tax_amount) tax_amount,round(si.discount)disount,round(si.discount_amount) discount_amount,round(si.total_amount)total_amount,si.invoice_date,si.due_date,CONCAT(CONCAT(UCASE(LEFT(trim(first_name), 1)),SUBSTRING(trim(first_name), 2))," ",u.last_name) as user_name,u.email,u.phone_no,u.address,concat(DATE_FORMAT(CURDATE(),"%M"),"-Invoice") as description');
+        $this->db->select('si.invoice_number,round(si.amount) amount,round(si.tax) tax,round(si.tax_amount) tax_amount,round(si.discount)discount,round(si.discount_amount) discount_amount,round(si.total_amount)total_amount,DATE_FORMAT(si.invoice_date,"%d,%b %Y") invoice_date,DATE_FORMAT(si.due_date,"%d,%b %Y") due_date,CONCAT(CONCAT(UCASE(LEFT(trim(first_name), 1)),SUBSTRING(trim(first_name), 2))," ",u.last_name) as user_name,u.email,u.phone_no,u.address,concat(DATE_FORMAT(CURDATE(),"%M"),"-Invoice") as description');
         $this->db->from('student_invoice si');
         $this->db->join('student s','si.student_id=s.id','left');
         $this->db->join('user u','s.user_id=u.id','left');
@@ -380,7 +380,7 @@ class Invoices_model extends CI_Model
         return $query->result_array();
     }
     public function getSchoolInvoiceInfo($data=null){
-        $this->db->select('si.invoice_number,round(si.amount) amount,round(si.tax) tax,round(si.tax_amount) tax_amount,round(si.discount)disount,round(si.discount_amount) discount_amount,round(si.total_amount)total_amount,si.invoice_date,sm.contact_person as user_name,sm.email,sm.phone,sm.address, DATE_ADD(si.invoice_date, INTERVAL 10 DAY) due_date');
+        $this->db->select('`si`.`invoice_number`, round(si.amount) amount, round(si.tax) tax, round(si.tax_amount) tax_amount, round(si.discount)discount, round(si.discount_amount) discount_amount, round(si.total_amount)total_amount, DATE_FORMAT(si.invoice_date,"%d,%b %Y") invoice_date, `sm`.`contact_person` as `user_name`, `sm`.`email`, `sm`.`phone`, `sm`.`address`, DATE_FORMAT(DATE_ADD(si.invoice_date, INTERVAL 10 DAY),"%d,%b %Y") due_date,si.school_invoice_description as description');
         $this->db->from('student_invoice si');
         $this->db->join('school_master sm','si.school_id=sm.id','left');
         if(!empty($data['school_invoice_id'])){
@@ -390,7 +390,7 @@ class Invoices_model extends CI_Model
         return $query->result_array();
     }
     public function getFranchiseInvoiceInfo($data=null){
-        $this->db->select('si.invoice_number,round(si.amount) amount,round(si.tax) tax,round(si.tax_amount) tax_amount,round(si.discount)disount,round(si.discount_amount) discount_amount,round(si.total_amount)total_amount,si.invoice_date,DATE_ADD(si.invoice_date, INTERVAL 10 DAY) due_date,f.name franchise_name,f.email,f.primary_contact,mc.child_name as satate,mc1.child_name as city,f.landmark,f.address,pincode');
+        $this->db->select('si.invoice_number,round(si.amount) amount,round(si.tax) tax,round(si.tax_amount) tax_amount,round(si.discount)discount,round(si.discount_amount) discount_amount,round(si.total_amount)total_amount,DATE_FORMAT(si.invoice_date,"%d,%b %Y") invoice_date,DATE_FORMAT(DATE_ADD(si.invoice_date, INTERVAL 10 DAY),"%d,%b %Y") due_date,f.name franchise_name,f.email,f.primary_contact,mc.child_name as satate,mc1.child_name as city,f.landmark,f.address,pincode,concat(DATE_FORMAT(CURDATE(),"%M"),"-Invoice") as description');
         $this->db->from('student_invoice si');
         $this->db->join('franchise f','si.franchise_id=f.id','left');
         $this->db->join('master_child mc','f.state=mc.id AND mc.master_id=13','left');
